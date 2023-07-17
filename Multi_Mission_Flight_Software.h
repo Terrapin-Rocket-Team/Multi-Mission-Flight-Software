@@ -2,10 +2,10 @@
 #define MULTI_MISSION_FLIGHT_SOFTWARE_H
 
 //Include all the Sensors
-#include "Sensors/Barometer.h"
-#include "Sensors/GPS.h"
-#include "Sensors/IMU.h"
-#include "Sensors/LightSensor.h"
+#include "Sensors/Barometer/Barometer.h"
+#include "Sensors/GPS/GPS.h"
+#include "Sensors/IMU/IMU.h"
+#include "Sensors/LightSensor/LightSensor.h"
 
 //Include State
 #include "State/State.h"
