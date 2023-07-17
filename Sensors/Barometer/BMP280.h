@@ -5,7 +5,8 @@
 
 static Adafruit_BMP280 bmp; // I2C Interface
 
-extern float GROUNDPRESSURE = 1013.25; //in hPa
+extern float GROUNDPRESSURE;
+GROUNDPRESSURE = 1013.25; //in hPa (default sea level pressure)
 
 bool setupBMP280();
 double getBMP280pressure();
