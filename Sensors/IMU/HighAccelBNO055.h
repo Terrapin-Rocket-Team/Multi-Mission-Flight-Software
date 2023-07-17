@@ -3,7 +3,7 @@
 
 #include <Adafruit_BNO055.h>
 
-extern static Adafruit_BNO055 highAccelbno = Adafruit_BNO055(55);
+static Adafruit_BNO055 highAccelbno = Adafruit_BNO055(55);
 
 bool setupHighAccelBNO055();
 void calibrate_bno();  // TODO only can use this if there is a timeout built in

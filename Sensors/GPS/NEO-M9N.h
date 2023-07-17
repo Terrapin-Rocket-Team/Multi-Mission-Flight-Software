@@ -4,7 +4,7 @@
 #include <SparkFun_u-blox_GNSS_Arduino_Library.h>
 #include "../IMU/imumaths.h"
 
-extern SFE_UBLOX_GNSS myGNSS;
+static SFE_UBLOX_GNSS myGNSS;
 
 extern int fixQuality; // gives the int quality of the most recent fix (0, 1, 2 = Invalid, GPS, DGPS)
 extern imu::Vector<3> gpsStartPos;   // in longitude, latitude, altitude
