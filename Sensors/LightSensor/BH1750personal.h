@@ -3,7 +3,7 @@
 
 #include <BH1750.h>
 
-BH1750 lightMeter;
+extern BH1750 lightMeter;
 
 bool setupBH1750();
 float getBH1750lux();

@@ -4,11 +4,11 @@
 #include <SparkFun_u-blox_GNSS_Arduino_Library.h>
 #include "../IMU/imumaths.h"
 
-SFE_UBLOX_GNSS myGNSS;
+extern SFE_UBLOX_GNSS myGNSS;
 
-int fixQuality; // gives the int quality of the most recent fix (0, 1, 2 = Invalid, GPS, DGPS)
-imu::Vector<3> gpsStartPos;   // in longitude, latitude, altitude
-bool gpsFirstFixReceived = false;  //if we've gotten the first fix yet
+extern int fixQuality; // gives the int quality of the most recent fix (0, 1, 2 = Invalid, GPS, DGPS)
+extern imu::Vector<3> gpsStartPos;   // in longitude, latitude, altitude
+extern bool gpsFirstFixReceived = false;  //if we've gotten the first fix yet
 
 bool setupNEOM9N();
 void runNEOM9Nbackground();
