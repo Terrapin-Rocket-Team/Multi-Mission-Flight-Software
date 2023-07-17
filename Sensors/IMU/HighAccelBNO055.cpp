@@ -1,7 +1,7 @@
 #include "HighAccelBNO055.h"
 
 bool setupHighAccelBNO055(){
-    if(!bno.begin()){
+    if(!highAccelbno.begin()){
         Serial.println("BNO055 failed to begin");
         return false;
     }
@@ -26,7 +26,7 @@ void calibrate_bno(){
 //   Serial.println("Calibrating BNO055");
   while ((system != 3) || (gyro != 3) || (accel != 3) || (mag != 3))
   {
-    bno.getCalibration(&system, &gyro, &accel, &mag);
+    highAccelbno.getCalibration(&system, &gyro, &accel, &mag);
     i = i + 1;
     if (i == 10)
     { // Only want to print every 10 iterations
@@ -46,13 +46,13 @@ void calibrate_bno(){
 }
 
 imu::Vector<3> getHighAccelBNO055acceleration(){
-    return bno.getVector(Adafruit_BNO055::VECTOR_ACCELEROMETER);
+    return highAccelbno.getVector(Adafruit_BNO055::VECTOR_ACCELEROMETER);
 }
 
 imu::Vector<3> getHighAccelBNO055angularVelocity(){
-    return bno.getVector(Adafruit_BNO055::VECTOR_GYROSCOPE);
+    return highAccelbno.getVector(Adafruit_BNO055::VECTOR_GYROSCOPE);
 }
 
 imu::Vector<3> getHighAccelBNO055magneticFieldStrength(){
-    return bno.getVector(Adafruit_BNO055::VECTOR_MAGNETOMETER);
+    return highAccelbno.getVector(Adafruit_BNO055::VECTOR_MAGNETOMETER);
 }
