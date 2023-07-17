@@ -9,7 +9,7 @@ static SFE_UBLOX_GNSS myGNSS;
 extern int fixQuality; // gives the int quality of the most recent fix (0, 1, 2 = Invalid, GPS, DGPS)
 extern imu::Vector<3> gpsStartPos;   // in longitude, latitude, altitude
 extern bool gpsFirstFixReceived;  //if we've gotten the first fix yet
-gpsFirstFixReceived = false;
+bool gpsFirstFixReceived = false;
 
 bool setupNEOM9N();
 void runNEOM9Nbackground();
