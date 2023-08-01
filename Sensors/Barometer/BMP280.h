@@ -3,8 +3,6 @@
 
 #include <Adafruit_BMP280.h>
 
-int hi = 0;
-
 static Adafruit_BMP280 bmp; // I2C Interface
 
 extern float GROUNDPRESSURE;
