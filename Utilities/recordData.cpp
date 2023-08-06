@@ -1,7 +1,11 @@
 #include "recordData.h"
 
+int PRE_FLIGHT_DATA_DUMP_DURATION = 600;  //in seconds
+int PRE_FLIGHT_TIME_SINCE_LAST_DUMP = 0;  //in seconds
+int PRE_FLIGHT_TIME_OF_LAST_DUMP = 0;  //in seconds
+
 // TODO this entire function has to be checked
-void recordData(State& state, std::string stage){
+void recordData(State& state, String stage){
     if(stage == "PreFlight"){
         dataToPSRAM(state);
         PRE_FLIGHT_TIME_SINCE_LAST_DUMP = (millis()/1000) - PRE_FLIGHT_TIME_OF_LAST_DUMP;
@@ -21,7 +25,7 @@ void recordData(State& state, std::string stage){
         }
     }
     else{
-        throw std::invalid_argument("Invalid stage for record data. Can only be [PreFlight, Flight, PostFlight]");
+       // TODO create error code here
     }
 }
 

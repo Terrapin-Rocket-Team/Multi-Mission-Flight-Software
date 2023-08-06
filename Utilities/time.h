@@ -1,5 +1,5 @@
-#ifndef PAYLOAD_TIME_H
-#define PAYLOAD_TIME_H
+#ifndef TIME_H
+#define TIME_H
 
 
 

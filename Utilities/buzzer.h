@@ -3,6 +3,6 @@
 
 #include <Arduino.h>
 
-void buzz(int);
+void buzz(int buzzer_pin, int durationOfBuzz);
 
 #endif

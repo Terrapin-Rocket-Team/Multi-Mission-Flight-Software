@@ -1,5 +1,7 @@
 #include "NEO-M9N.h"
 
+bool gpsFirstFixReceived = false;
+
 bool setupNEOM9N(){
 
     Wire.begin();

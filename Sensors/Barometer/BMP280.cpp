@@ -1,5 +1,7 @@
 #include "BMP280.h"
 
+float GROUNDPRESSURE = 1013.25; //in hPa (default sea level pressure)
+
 bool setupBMP280(){
     if(!bmp.begin()){
         Serial.println("BMP280 failed to begin");
