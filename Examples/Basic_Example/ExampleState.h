@@ -5,7 +5,7 @@
 
 class ExampleState: public State{
 public:
-    void determineFrameStage();
+    void determineExampleStage();
 
 private:
 
