@@ -2,7 +2,11 @@
 #define NAV_H
 
 #include <PWMServo.h>
+<<<<<<< Updated upstream
 #include "BNO55.cpp"
+=======
+#include "BNO055.cpp"
+>>>>>>> Stashed changes
 #include "imumaths.h"
 
 void setupServo();
