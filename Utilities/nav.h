@@ -9,7 +9,7 @@
 >>>>>>> Stashed changes
 #include "imumaths.h"
 
-void setupServo();
+void setupServo(int s1, int s2,int s3,int s4,int u1,int u2,int u3,int u4);
 void moveServo(double p1, double p2, double p3, double p4);
 imu::Vector<3> quatToXYZ();
 void goDirection(string D, double neg);
