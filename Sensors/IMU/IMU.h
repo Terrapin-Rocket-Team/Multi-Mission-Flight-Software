@@ -34,6 +34,7 @@ private:
 
     String csvHeader;
     String dataString;
+    imu::Vector<3> quatToXYZ();
 
 };
 
