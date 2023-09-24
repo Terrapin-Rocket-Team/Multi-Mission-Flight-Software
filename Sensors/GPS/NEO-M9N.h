@@ -17,6 +17,6 @@ double getNEOM9Nlatitude();
 double getNEOM9Naltitude();
 imu::Vector<3> getNEOM9NgpsPosition(double longitude, double latitude, double altitude);
 double getNEOM9NheadingAngle();
-double getNEOM9Nsatellites();
+int getNEOM9Nsatellites();
 
 #endif

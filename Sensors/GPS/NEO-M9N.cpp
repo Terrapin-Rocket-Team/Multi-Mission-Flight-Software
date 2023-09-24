@@ -10,18 +10,20 @@ bool setupNEOM9N(){
 
     if(!myGNSS.begin()){  //Connect to the u-blox module using Wire port
         Serial.println(F("u-blox GNSS not detected at default I2C address. Please check wiring."));
+        return false;
     }
 
     myGNSS.setI2COutput(COM_TYPE_UBX); //Set the I2C port to output UBX only (turn off NMEA noise)
     myGNSS.setNavigationFrequency(5);
     myGNSS.saveConfigSelective(VAL_CFG_SUBSEC_IOPORT); //Save (only) the communications port settings to flash and BBR
+    return true;
 }
 
 void runNEOM9Nbackground(){
     fixQuality = (int)myGNSS.getFixType();
 
     if (!gpsFirstFixReceived && fixQuality != 0) {
-        gpsStartPos = imu::Vector<3>(longitude, latitude, altitude);
+        gpsStartPos = imu::Vector<3>(getNEOM9Nlongitude(), getNEOM9Nlongitude(), getNEOM9Naltitude());
         gpsFirstFixReceived = true;
     }
 }
@@ -61,13 +63,9 @@ imu::Vector<3> getNEOM9NgpsPosition(double longitude, double latitude, double al
 }
 
 double getNEOM9NheadingAngle(){
-    if (fixQuality != 0) {
-        return (double)myGNSS.getHeading() / 100000;
-    }
+    return (double)myGNSS.getHeading() / 100000;
 }
 
 int getNEOM9Nsatellites(){
-    if (fixQuality != 0) {
-        return (int)myGNSS.getSIV();
-    }
+    return (int)myGNSS.getSIV();
 }

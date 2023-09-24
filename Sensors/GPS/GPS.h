@@ -4,6 +4,7 @@
 #include <string>
 
 #include "NEO-M9N.h"
+#include "NEO-M9N.cpp"
 
 
 class GPS {
@@ -17,7 +18,7 @@ public:
     imu::Vector<3> gpsPosition;  //in meters from the start location
     double headingAngle;    //degrees from true north/heading
     int satellites;   //number of satellites in use
-    static uint32_t gpsTimer;
+    uint32_t gpsTimer;
 
     GPS();
     GPS(std::string inputSensorName);

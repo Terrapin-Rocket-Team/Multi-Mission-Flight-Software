@@ -2,6 +2,7 @@
 #define PSRAM_H
 
 #include "sdCard.h"
+#include "sdCard.cpp"
 #include <vector>
 
 #define PSRAM_DUMP_TIMEOUT 0.5

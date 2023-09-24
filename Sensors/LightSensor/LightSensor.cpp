@@ -1,5 +1,11 @@
 #include "LightSensor.h"
 
+LightSensor::LightSensor(){
+    sensorName = "";
+    setupSuccessful = false;
+    luxFlag = false;
+}
+
 LightSensor::LightSensor(std::string inputSensorName){
     sensorName = inputSensorName;
     setupSuccessful = false;

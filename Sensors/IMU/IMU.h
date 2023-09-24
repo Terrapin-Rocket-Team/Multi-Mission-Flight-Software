@@ -4,7 +4,9 @@
 #include <string>
 #include "imumaths.h"  //Not needed if working with the Adafruit_BNO055 library
 #include "BNO055.h"
+#include "BNO055.cpp"
 #include "HighAccelBNO055.h"
+#include "HighAccelBNO055.cpp"
 
 class IMU {
     //Code written for ['BNO055', 'High Accel BNO055']
