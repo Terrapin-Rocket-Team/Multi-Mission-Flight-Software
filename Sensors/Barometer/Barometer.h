@@ -4,6 +4,7 @@
 #include <string>
 
 #include "BMP280.h"
+#include "BMP280.cpp"
 
 class Barometer {
     //Code written for ['BMP280']

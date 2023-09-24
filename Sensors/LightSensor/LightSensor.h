@@ -4,6 +4,7 @@
 #include <string>
 
 #include "BH1750personal.h"
+#include "BH1750personal.cpp"
 
 class LightSensor {
     //Code written for ['BH1750']

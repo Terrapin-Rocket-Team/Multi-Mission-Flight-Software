@@ -2,10 +2,11 @@
 #define STATE_H
 
 //Include all the sensor classes
-#include "../Sensors/Barometer/Barometer.h"
+/*#include "../Sensors/Barometer/Barometer.h"
 #include "../Sensors/GPS/GPS.h"
 #include "../Sensors/IMU/IMU.h"
-#include "../Sensors/LightSensor/LightSensor.h"
+#include "../Sensors/LightSensor/LightSensor.h"*/
+#include "../Sensors/sensors.h"
 
 class State{
 public:

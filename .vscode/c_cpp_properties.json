@@ -1,0 +1,47 @@
+{
+    "configurations": [
+      {
+        "name": "Mac",
+        "includePath": [
+          "${workspaceFolder}/**",
+          "/Applications/Arduino.app/Contents/Java/hardware/**",
+          "/Applications/Arduino.app/Contents/Java/libraries/**"
+        ],
+        "macFrameworkPath": [
+          "/System/Library/Frameworks",
+          "/Library/Frameworks"
+        ],
+        "defines": [],
+        "compilerPath": "/usr/bin/g++",
+        "cStandard": "c11",
+        "cppStandard": "c++17",
+        "intelliSenseMode": "clang-x64"
+      },
+      {
+        "name": "Windows",
+        "includePath": [
+          "${workspaceFolder}/**",
+          "C:/Program Files (x86)/Arduino/hardware/**",
+          "C:/Program Files (x86)/Arduino/libraries/**"
+        ],
+        "defines": [],
+        "compilerPath": "C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/VC/Tools/MSVC/14.29.30133/bin/Hostx64/x64/cl.exe",
+        "cStandard": "c11",
+        "cppStandard": "c++17",
+        "intelliSenseMode": "msvc-x64"
+      },
+      {
+        "name": "Arduino",
+        "includePath": [
+          "${workspaceFolder}/**",
+          "/Applications/Arduino.app/Contents/Java/libraries/**",
+          "C:/Program Files (x86)/Arduino/libraries/**"
+        ],
+        "defines": [],
+        "cStandard": "c11",
+        "cppStandard": "c++17"
+      }
+    ],
+    "version": 4
+  }
+  

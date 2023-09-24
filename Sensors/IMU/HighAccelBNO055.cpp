@@ -9,7 +9,7 @@ bool setupHighAccelBNO055(){
     return true;
 }
 
-void calibrate_bno(){
+void calibrateHighAccelBNO(){
   // Instructions on how to calibrate BNO055
   // Hold still to calibrate gyro
   // Move in figure 8 to calibrate mag

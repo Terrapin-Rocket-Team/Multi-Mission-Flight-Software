@@ -1,5 +1,11 @@
 #include "Barometer.h"
 
+Barometer::Barometer(){
+    sensorName = "";
+    setupSuccessful = false;
+    pressureFlag = false; temperatureFlag = false; relativeAltitudeFlag = false;
+}
+
 Barometer::Barometer(std::string inputSensorName){
     sensorName = inputSensorName;
     setupSuccessful = false;
