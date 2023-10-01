@@ -1,6 +1,8 @@
 #include "NEO-M9N.h"
 
 bool gpsFirstFixReceived = false;
+int fixQuality = 0;
+imu::Vector<3> gpsStartPos = imu::Vector<3>(0.0, 0.0, 0.0);
 
 bool setupNEOM9N(){
 
