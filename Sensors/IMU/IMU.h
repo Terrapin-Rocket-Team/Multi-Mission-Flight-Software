@@ -27,6 +27,7 @@ public:
     String getcsvHeader();
     void setdataString();
     String getdataString();
+    imu::Vector<3> quatToXYZ();
 
 private:
     bool accelerationFlag;
@@ -36,7 +37,6 @@ private:
 
     String csvHeader;
     String dataString;
-
 };
 
 #endif

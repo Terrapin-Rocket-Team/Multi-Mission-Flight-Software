@@ -101,3 +101,14 @@ void IMU::setdataString(){
 String IMU::getdataString(){
     return dataString;
 }
+
+imu::Vector<3> IMU::quatToXYZ(){
+  imu::Vector<3> XYZ;
+  imu::Quaternion q = UDMSTATE.stateIMU.absoluteOrientation; //Unsure if this is the right way to get the absoluteOrientation from the BNO55
+  double qw = q.w(), qx = q.x(), qy = q.y(), qz = q.z();
+  XYZ.x() = atan2(2 * (qw*qx + qy*qz), 1 - 2 * (qx*qx + qy*qy));//-pi to pi
+  XYZ.y() = asin(2 * (qw*qy - qz*qx));//-pi/2 to pi/2
+  XYZ.z() = atan2(2 * (qw*qz + qx*qy), 1 - 2 * (qy*qy + qz*qz));//-pi to pi
+  XYZ.toDegrees(); //function from vector.h
+  return XYZ;
+}
