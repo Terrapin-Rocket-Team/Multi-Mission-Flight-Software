@@ -97,9 +97,6 @@ String IMU::getdataString(){
 
 void IMU::quatToXYZ(){
   imu::Vector<3> XYZ;
-<<<<<<< Updated upstream
-  imu::Quaternion q = UDMSTATE.stateIMU.absoluteOrientation; //Unsure if this is the right way to get the absoluteOrientation from the BNO55
-=======
   imu::Quaternion q = absoluteOrientation;
 >>>>>>> Stashed changes
   double qw = q.w(), qx = q.x(), qy = q.y(), qz = q.z();
