@@ -5,6 +5,7 @@ IMU::IMU(){
     setupSuccessful = false;
     accelerationFlag = false; angularVelocityFlag = false;
     magneticFieldStrengthFlag = false; absoluteOrientationFlag = false;
+    absoluteOrientationEulerFlag = false;
 }
 
 IMU::IMU(std::string inputSensorName){
@@ -12,6 +13,7 @@ IMU::IMU(std::string inputSensorName){
     setupSuccessful = false;
     accelerationFlag = false; angularVelocityFlag = false;
     magneticFieldStrengthFlag = false; absoluteOrientationFlag = false;
+    absoluteOrientationEulerFlag = false;
 }
 
 void IMU::setupIMU(){
@@ -19,6 +21,7 @@ void IMU::setupIMU(){
         setupSuccessful = setupBNO055();
         accelerationFlag = true; angularVelocityFlag = true;
         magneticFieldStrengthFlag = true; absoluteOrientationFlag = true;
+        absoluteOrientationEulerFlag = true;
     }
     if(sensorName == "High Accel BNO055"){
         setupSuccessful = setupHighAccelBNO055();
