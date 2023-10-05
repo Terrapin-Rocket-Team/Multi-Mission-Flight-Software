@@ -17,7 +17,7 @@ public:
     imu::Vector<3> angularVelocity;  //in rad/s
     imu::Vector<3> magneticFieldStrength;  //in microTesla relative to the rocket reference frame
     imu::Quaternion absoluteOrientation;  //only used for data logging purposes, normailzed as well
-    imu::Vector<3> eulerOrientationXYZ; //use to access euler Angles in XYZ notation
+    imu::Vector<3> absoluteOrientationEuler; // [Roll, Pitch, Yaw] Think airplane
 
     IMU();
     IMU(std::string inputSensorName);
@@ -35,6 +35,7 @@ private:
     bool angularVelocityFlag;
     bool magneticFieldStrengthFlag;
     bool absoluteOrientationFlag;
+    bool absoluteOrientationEulerFlag;
 
     String csvHeader;
     String dataString;
