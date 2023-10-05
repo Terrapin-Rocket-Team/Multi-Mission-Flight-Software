@@ -5,6 +5,7 @@ IMU::IMU(){
     setupSuccessful = false;
     accelerationFlag = false; angularVelocityFlag = false;
     magneticFieldStrengthFlag = false; absoluteOrientationFlag = false;
+    absoluteOrientationEulerFlag = false;
 }
 
 IMU::IMU(std::string inputSensorName){
@@ -12,6 +13,7 @@ IMU::IMU(std::string inputSensorName){
     setupSuccessful = false;
     accelerationFlag = false; angularVelocityFlag = false;
     magneticFieldStrengthFlag = false; absoluteOrientationFlag = false;
+    absoluteOrientationEulerFlag = false;
 }
 
 void IMU::setupIMU(){
@@ -19,6 +21,7 @@ void IMU::setupIMU(){
         setupSuccessful = setupBNO055();
         accelerationFlag = true; angularVelocityFlag = true;
         magneticFieldStrengthFlag = true; absoluteOrientationFlag = true;
+        absoluteOrientationEulerFlag = true;
     }
     if(sensorName == "High Accel BNO055"){
         setupSuccessful = setupHighAccelBNO055();
@@ -36,6 +39,7 @@ void IMU::readIMU(){
         angularVelocity = getBNO055angularVelocity();
         magneticFieldStrength = getBNO055magneticFieldStrength();
         absoluteOrientation = getBNO055absoluteOrientation();
+        quatToXYZ();
     }
     if(sensorName == "High Accel BNO055"){
         acceleration = getHighAccelBNO055acceleration();
@@ -67,6 +71,11 @@ void IMU::setcsvHeader(){
         csvHeader += "IMU "; csvHeader += "OrientationY"; csvHeader += ",";
         csvHeader += "IMU "; csvHeader += "OrientationZ"; csvHeader += ",";
     }
+    if(absoluteOrientationEulerFlag){
+        csvHeader += "IMU "; csvHeader += "Roll"; csvHeader += ",";
+        csvHeader += "IMU "; csvHeader += "Pitch"; csvHeader += ",";
+        csvHeader += "IMU "; csvHeader += "Yaw"; csvHeader += ",";
+    }
 }
 
 String IMU::getcsvHeader(){
@@ -96,6 +105,11 @@ void IMU::setdataString(){
         dataString += String(absoluteOrientation.y()); dataString += ",";
         dataString += String(absoluteOrientation.z()); dataString += ",";
     }
+    if(absoluteOrientationEulerFlag){
+        dataString += String(absoluteOrientationEuler.x()); dataString += ",";
+        dataString += String(absoluteOrientationEuler.y()); dataString += ",";
+        dataString += String(absoluteOrientationEuler.z()); dataString += ",";
+    }
 }
 
 String IMU::getdataString(){
@@ -110,5 +124,5 @@ void IMU::quatToXYZ(){
   XYZ.y() = asin(2 * (qw*qy - qz*qx));//-pi/2 to pi/2
   XYZ.z() = atan2(2 * (qw*qz + qx*qy), 1 - 2 * (qy*qy + qz*qz));//-pi to pi
   XYZ.toDegrees(); //function from vector.h
-  eulerOrientationXYZ = XYZ;
+  absoluteOrientationEuler = XYZ;
 }
