@@ -1,5 +1,14 @@
 #include "GPS.h"
 
+GPS::GPS(){
+    sensorName = "";
+    setupSuccessful = false;
+    gpsTimer = millis();
+
+    latitudeFlag = false; longitudeFlag = false; altitudeFlag = false;
+    gpsPositionFlag = false; headingAngleFlag = false; satellitesFlag = false;
+}
+
 GPS::GPS(std::string inputSensorName){
     sensorName = inputSensorName;
     setupSuccessful = false;

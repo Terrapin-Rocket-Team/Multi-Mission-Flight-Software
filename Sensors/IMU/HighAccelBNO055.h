@@ -6,7 +6,7 @@
 static Adafruit_BNO055 highAccelbno = Adafruit_BNO055(55);
 
 bool setupHighAccelBNO055();
-void calibrate_bno();  // TODO only can use this if there is a timeout built in
+void calibrateHighAccelBNO();  // TODO only can use this if there is a timeout built in
 imu::Vector<3> getHighAccelBNO055acceleration();
 imu::Vector<3> getHighAccelBNO055angularVelocity();
 imu::Vector<3> getHighAccelBNO055magneticFieldStrength();

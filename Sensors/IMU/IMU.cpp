@@ -1,5 +1,12 @@
 #include "IMU.h"
 
+IMU::IMU(){
+    sensorName = "";
+    setupSuccessful = false;
+    accelerationFlag = false; angularVelocityFlag = false;
+    magneticFieldStrengthFlag = false; absoluteOrientationFlag = false;
+}
+
 IMU::IMU(std::string inputSensorName){
     sensorName = inputSensorName;
     setupSuccessful = false;
