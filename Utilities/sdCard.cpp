@@ -71,6 +71,7 @@ bool setupSDCard(String csvHeader){
             logFile.println(csvHeader);
             logFile.close(); // close the file
             Serial.println("Log file created: " + logFileName);
+            sdReady = true;
         }else{
             Serial.println(F("SD Card reader found, but file was unable to be created"));
             return false;

@@ -63,15 +63,19 @@ void State::setcsvHeader(){
     csvHeader += "VeloX"; csvHeader += ","; csvHeader += "VeloY"; csvHeader += ","; csvHeader += "VeloZ"; csvHeader += ",";
     csvHeader += "AccelX"; csvHeader += ","; csvHeader += "AccelY"; csvHeader += ","; csvHeader += "AccelZ"; csvHeader += ",";
     if(barometerFlag){
+        stateBarometer.setcsvHeader();
         csvHeader += stateBarometer.getcsvHeader();
     }
     if(gpsFlag){
+        stateGPS.setcsvHeader();
         csvHeader += stateGPS.getcsvHeader();
     }
     if(imuFlag){
+        stateIMU.setcsvHeader();
         csvHeader += stateIMU.getcsvHeader();
     }
     if(lightSensorFlag){
+        stateLightSensor.setcsvHeader();
         csvHeader += stateLightSensor.getcsvHeader();
     }
 }
@@ -90,15 +94,19 @@ void State::setdataString(){
     dataString += String(acceleration.y()); dataString += ",";
     dataString += String(acceleration.z()); dataString += ",";
     if(barometerFlag){
+        stateBarometer.setdataString();
         dataString += stateBarometer.getdataString();
     }
     if(gpsFlag){
+        stateGPS.setdataString();
         dataString += stateGPS.getdataString();
     }
     if(imuFlag){
+        stateIMU.setdataString();
         dataString += stateIMU.getdataString();
     }
     if(lightSensorFlag){
+        stateLightSensor.setdataString();
         dataString += stateLightSensor.getdataString();
     }
 }
