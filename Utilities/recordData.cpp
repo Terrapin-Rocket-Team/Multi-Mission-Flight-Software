@@ -1,6 +1,6 @@
 #include "recordData.h"
 
-int PRE_FLIGHT_DATA_DUMP_DURATION = 10;  //in seconds
+int PRE_FLIGHT_DATA_DUMP_DURATION = 60;  //in seconds
 int PRE_FLIGHT_TIME_SINCE_LAST_DUMP = 0;  //in seconds
 int PRE_FLIGHT_TIME_OF_LAST_DUMP = 0;  //in seconds
 
