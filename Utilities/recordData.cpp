@@ -6,7 +6,6 @@ int PRE_FLIGHT_TIME_OF_LAST_DUMP = 0;  //in seconds
 
 // TODO this entire function has to be checked
 void recordData(State& state, String stage){
-    Serial.println(stage);
     if(stage == "PreFlight"){
         dataToPSRAM(state);
         PRE_FLIGHT_TIME_SINCE_LAST_DUMP = (millis()/1000) - PRE_FLIGHT_TIME_OF_LAST_DUMP;
