@@ -5,7 +5,7 @@
 #include "sdCard.cpp"
 #include <vector>
 
-#define PSRAM_DUMP_TIMEOUT 0.5
+#define PSRAM_DUMP_TIMEOUT 0.5  // TODO maybe make this longer?
 
 extern "C" uint8_t external_psram_size;
 extern char *psram_memory_begin, *psram_memory_end;
