@@ -38,7 +38,7 @@ void psramPrintln(){
 // Dump FRAM to SD Card
 void PSRAMDumpToSD(){
   if(isSDReady() && PSRAMReady){
-      Serial.println("Dumping to SD...");
+      Serial.print("Dumping to SD...");
       String curStr = "";
       float startTime = micros() / (1000000.0f);
       for(; psram_memory_cur < psramNextLoc; psram_memory_cur++){
@@ -60,11 +60,12 @@ void PSRAMDumpToSD(){
         }
 
         float curTime = micros() / (1000000.0f);
-        if((curTime - startTime) > PSRAM_DUMP_TIMEOUT){
+        if((curTime - startTime) > PSRAM_DUMP_TIMEOUT){ // TODO this condition doesn't seem to work
+          Serial.println("SD Timeout");
           return;
         }
       }
-      Serial.print("Dumped");
+      Serial.println("Dumped");
   }
 
   psramNextLoc = psram_memory_begin;

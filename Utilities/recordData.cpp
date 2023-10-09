@@ -4,13 +4,12 @@ int PRE_FLIGHT_DATA_DUMP_DURATION = 60;  //in seconds
 int PRE_FLIGHT_TIME_SINCE_LAST_DUMP = 0;  //in seconds
 int PRE_FLIGHT_TIME_OF_LAST_DUMP = 0;  //in seconds
 
-// TODO this entire function has to be checked
 void recordData(State& state, String stage){
     if(stage == "PreFlight"){
         dataToPSRAM(state);
         PRE_FLIGHT_TIME_SINCE_LAST_DUMP = (millis()/1000) - PRE_FLIGHT_TIME_OF_LAST_DUMP;
         if(PRE_FLIGHT_TIME_SINCE_LAST_DUMP > PRE_FLIGHT_DATA_DUMP_DURATION){
-            PSRAMDumpToSD();  // TODO check the functionality of this
+            PSRAMDumpToSD();
             resetPSRAMDumpStatus();
             PRE_FLIGHT_TIME_OF_LAST_DUMP = millis()/1000;
         }
