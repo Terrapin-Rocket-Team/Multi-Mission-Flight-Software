@@ -115,6 +115,6 @@ String State::getdataString(){
     return dataString;
 }
 
-String State::getrecordDataState(){
+String State::getrecordDataStage(){
     return recordDataStage;
 }

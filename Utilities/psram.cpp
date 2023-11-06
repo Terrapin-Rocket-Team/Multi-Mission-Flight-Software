@@ -60,7 +60,7 @@ void PSRAMDumpToSD(){
         }
 
         float curTime = micros() / (1000000.0f);
-        if((curTime - startTime) > PSRAM_DUMP_TIMEOUT){ // TODO this condition doesn't seem to work
+        if((curTime - startTime) > PSRAM_DUMP_TIMEOUT){
           Serial.println("SD Timeout");
           return;
         }

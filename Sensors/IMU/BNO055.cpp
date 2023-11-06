@@ -30,14 +30,14 @@ void calibrate_bno(){
     i = i + 1;
     if (i == 10)
     { // Only want to print every 10 iterations
-    //   Serial.print("CALIBRATION: Sys=");
-    //   Serial.print(system, DEC);
-    //   Serial.print(" Gyro=");
-    //   Serial.print(gyro, DEC);
-    //   Serial.print(" Accel=");
-    //   Serial.print(accel, DEC);
-    //   Serial.print(" Mag=");
-    //   Serial.println(mag, DEC);
+       Serial.print("CALIBRATION: Sys=");
+       Serial.print(system, DEC);
+       Serial.print(" Gyro=");
+       Serial.print(gyro, DEC);
+       Serial.print(" Accel=");
+       Serial.print(accel, DEC);
+       Serial.print(" Mag=");
+       Serial.println(mag, DEC);
       i = 0;
     }
     delay(10);
