@@ -27,7 +27,7 @@ public:
     void setcsvHeader();
     void setdataString();
     String getdataString();
-    String getrecordDataState();
+    String getrecordDataStage();
 
     //add sensor functions
     void addBarometer(const Barometer& Barometer);
