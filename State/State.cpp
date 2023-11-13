@@ -57,11 +57,11 @@ void State::determinetimeSinceLaunch(){
 
 void State::setcsvHeader(){
     csvHeader = "";
-    csvHeader += "Time"; csvHeader += ",";
+    csvHeader += "Time (ms)"; csvHeader += ",";
     csvHeader += "Stage"; csvHeader += ",";
-    csvHeader += "PosX"; csvHeader += ","; csvHeader += "PosY"; csvHeader += ","; csvHeader += "PosZ"; csvHeader += ",";
-    csvHeader += "VeloX"; csvHeader += ","; csvHeader += "VeloY"; csvHeader += ","; csvHeader += "VeloZ"; csvHeader += ",";
-    csvHeader += "AccelX"; csvHeader += ","; csvHeader += "AccelY"; csvHeader += ","; csvHeader += "AccelZ"; csvHeader += ",";
+    csvHeader += "PosX (m)"; csvHeader += ","; csvHeader += "PosY (m)"; csvHeader += ","; csvHeader += "PosZ (m)"; csvHeader += ",";
+    csvHeader += "VeloX (m/s)"; csvHeader += ","; csvHeader += "VeloY (m/s)"; csvHeader += ","; csvHeader += "VeloZ (m/s)"; csvHeader += ",";
+    csvHeader += "AccelX (m/s^2)"; csvHeader += ","; csvHeader += "AccelY (m/s^2)"; csvHeader += ","; csvHeader += "AccelZ (m/s^2)"; csvHeader += ",";
     if(barometerFlag){
         stateBarometer.setcsvHeader();
         csvHeader += stateBarometer.getcsvHeader();
