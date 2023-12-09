@@ -9,9 +9,11 @@ void recordData(State& state, String stage){
         dataToPSRAM(state);
         PRE_FLIGHT_TIME_SINCE_LAST_DUMP = (millis()/1000) - PRE_FLIGHT_TIME_OF_LAST_DUMP;
         if(PRE_FLIGHT_TIME_SINCE_LAST_DUMP > PRE_FLIGHT_DATA_DUMP_DURATION){
-            PSRAMDumpToSD();
+            String dumped = PSRAMDumpToSD();
+            if(dumped == "Dumped"){
             resetPSRAMDumpStatus();
             PRE_FLIGHT_TIME_OF_LAST_DUMP = millis()/1000;
+            }
         }
     }
     else if(stage == "Flight"){

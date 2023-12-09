@@ -37,7 +37,7 @@ template< typename T > void psramPrint( T data ){
   }
 }
 
-void PSRAMDumpToSD();  // Dump FRAM to SD Card
+String PSRAMDumpToSD();  // Dump FRAM to SD Card, returns Timeout if timeout and Dumped if successful
 void PSRAMPreLaunchDump();
 
 bool isPSRAMReady();  // Returns whether the FRAM is initialized

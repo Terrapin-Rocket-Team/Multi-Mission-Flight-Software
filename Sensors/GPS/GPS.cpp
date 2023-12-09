@@ -30,7 +30,7 @@ void GPS::readGPS(){
     if(!setupSuccessful){
         return;
     }
-    if (millis() - gpsTimer > 1000){
+    if (millis() - gpsTimer > 2000){
         //Query module only every second. Doing it more often will just cause I2C traffic.
         //The module only responds when a new position is available
 
@@ -39,7 +39,7 @@ void GPS::readGPS(){
         if(sensorName == "NEO-M9N"){
             runNEOM9Nbackground();
             longitude = getNEOM9Nlongitude();
-            latitude = getNEOM9Naltitude();
+            latitude = getNEOM9Nlatitude();
             altitude = getNEOM9Naltitude();
             gpsPosition = getNEOM9NgpsPosition(longitude, latitude, altitude);
             headingAngle = getNEOM9NheadingAngle();
