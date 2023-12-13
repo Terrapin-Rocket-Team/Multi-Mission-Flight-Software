@@ -10,6 +10,6 @@ extern int PRE_FLIGHT_TIME_SINCE_LAST_DUMP;
 extern int PRE_FLIGHT_TIME_OF_LAST_DUMP;
 
 void recordData(State& state, String stage);  //Stages can be "PreFlight", "Flight", "PostFlight"
-void dataToPSRAM(State& state);
+void dataToPSRAM(String data);
 
 #endif

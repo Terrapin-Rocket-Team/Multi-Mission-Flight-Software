@@ -4,9 +4,9 @@ int PRE_FLIGHT_DATA_DUMP_DURATION = 60;  //in seconds
 int PRE_FLIGHT_TIME_SINCE_LAST_DUMP = 0;  //in seconds
 int PRE_FLIGHT_TIME_OF_LAST_DUMP = 0;  //in seconds
 
-void recordData(State& state, String stage){
+void recordData(String data, String stage){
     if(stage == "PreFlight"){
-        dataToPSRAM(state);
+        dataToPSRAM(data);
         PRE_FLIGHT_TIME_SINCE_LAST_DUMP = (millis()/1000) - PRE_FLIGHT_TIME_OF_LAST_DUMP;
         if(PRE_FLIGHT_TIME_SINCE_LAST_DUMP > PRE_FLIGHT_DATA_DUMP_DURATION){
             String dumped = PSRAMDumpToSD();
@@ -18,7 +18,7 @@ void recordData(State& state, String stage){
     }
     else if(stage == "Flight"){
         psramMarkLiftoff();  // TODO this should only have to run the first time
-        dataToPSRAM(state);
+        dataToPSRAM(data);
     }
     else if(stage == "PostFlight"){
         if(!isPSRAMDumped()){
@@ -31,9 +31,7 @@ void recordData(State& state, String stage){
     }
 }
 
-void dataToPSRAM(State& state){
-    state.setdataString();
-    String data = state.getdataString();
+void dataToPSRAM(String data){
     if(isPSRAMReady()){
         psramPrintln(data);
     }
