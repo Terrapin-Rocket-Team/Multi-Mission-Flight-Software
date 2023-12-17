@@ -15,6 +15,7 @@ public:
     imu::Vector<3> velocity;  //in m/s
     imu::Vector<3> acceleration;  //in m/s^2
     String stage;
+    int stageNumber;
     Barometer stateBarometer;
     GPS stateGPS;
     IMU stateIMU;
@@ -38,6 +39,7 @@ public:
 
 protected:  //able to be accesses by the child classes
     double apogee;  //in m above start position
+    double apogeeTime; //in s
     double accelerationMagnitude;  //in m/s^2
     double timeLaunch; //in s
     double timeSinceLaunch;  //in s

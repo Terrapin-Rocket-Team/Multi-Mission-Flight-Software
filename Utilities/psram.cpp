@@ -38,6 +38,7 @@ void psramPrintln(){
 // Dump FRAM to SD Card
 String PSRAMDumpToSD(){
   String success;
+  Serial.println(" ");
   if(isSDReady() && PSRAMReady){
       Serial.print("Dumping to SD...");
       String curStr = "";
