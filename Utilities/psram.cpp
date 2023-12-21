@@ -36,7 +36,9 @@ void psramPrintln(){
 }
 
 // Dump FRAM to SD Card
-void PSRAMDumpToSD(){
+String PSRAMDumpToSD(){
+  String success;
+  Serial.println(" ");
   if(isSDReady() && PSRAMReady){
       Serial.print("Dumping to SD...");
       String curStr = "";
@@ -62,7 +64,7 @@ void PSRAMDumpToSD(){
         float curTime = micros() / (1000000.0f);
         if((curTime - startTime) > PSRAM_DUMP_TIMEOUT){
           Serial.println("SD Timeout");
-          return;
+          return "Timeout";
         }
       }
       Serial.println("Dumped");
@@ -71,6 +73,7 @@ void PSRAMDumpToSD(){
   psramNextLoc = psram_memory_begin;
   PSRAMDumped = true;
   psram_memory_cur = psram_memory_begin;
+  return "Dumped";
 }
 
 void PSRAMPreLaunchDump(){

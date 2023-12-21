@@ -5,7 +5,7 @@
 #include "sdCard.cpp"
 #include <vector>
 
-#define PSRAM_DUMP_TIMEOUT 5
+#define PSRAM_DUMP_TIMEOUT .25
 
 extern "C" uint8_t external_psram_size;
 extern char *psram_memory_begin, *psram_memory_end;
@@ -37,7 +37,7 @@ template< typename T > void psramPrint( T data ){
   }
 }
 
-void PSRAMDumpToSD();  // Dump FRAM to SD Card
+String PSRAMDumpToSD();  // Dump FRAM to SD Card, returns Timeout if timeout and Dumped if successful
 void PSRAMPreLaunchDump();
 
 bool isPSRAMReady();  // Returns whether the FRAM is initialized

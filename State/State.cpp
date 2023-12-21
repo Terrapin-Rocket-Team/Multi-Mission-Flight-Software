@@ -2,8 +2,9 @@
 
 State::State(){
     stage = "Pre Launch";
+    stageNumber = 0;
     recordDataStage = "PreFlight";
-    timeAbsolute = millis();
+    timeAbsolute = millis()/1000.0;
     timePreviousStage = 0;
     position.x() = 0; position.y() = 0; position.z() = 0;
     velocity.x() = 0; velocity.y() = 0; velocity.z() = 0;
@@ -34,7 +35,7 @@ void State::addLightSensor(const LightSensor& LightSensor){
 }
 
 void State::settimeAbsolute(){
-    timeAbsolute = millis();
+    timeAbsolute = millis()/1000.0;
 }
 
 void State::determineaccelerationMagnitude(imu::Vector<3> accel){
@@ -44,6 +45,7 @@ void State::determineaccelerationMagnitude(imu::Vector<3> accel){
 void State::determineapogee(double zPosition){
     if(apogee < zPosition){
         apogee = zPosition;
+        apogeeTime = millis()/1000.0;
     }
 }
 

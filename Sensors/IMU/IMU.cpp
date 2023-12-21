@@ -117,12 +117,20 @@ String IMU::getdataString(){
 }
 
 void IMU::quatToXYZ(){
-  imu::Vector<3> XYZ;
-  imu::Quaternion q = absoluteOrientation;
-  double qw = q.w(), qx = q.x(), qy = q.y(), qz = q.z();
-  XYZ.x() = atan2(2 * (qw*qx + qy*qz), 1 - 2 * (qx*qx + qy*qy));//-pi to pi
-  XYZ.y() = asin(2 * (qw*qy - qz*qx));//-pi/2 to pi/2
-  XYZ.z() = atan2(2 * (qw*qz + qx*qy), 1 - 2 * (qy*qy + qz*qz));//-pi to pi
-  XYZ.toDegrees(); //function from vector.h
-  absoluteOrientationEuler = XYZ;
+    imu::Vector<3> XYZ;
+    imu::Quaternion q = absoluteOrientation;
+    double qw = q.w(), qx = q.x(), qy = q.y(), qz = q.z();
+
+    // 3-2-1 Euler Angles
+    XYZ.x() = atan2(2 * (qw*qx + qy*qz), 1 - 2 * (qx*qx + qy*qy));//-pi to pi
+    XYZ.y() = asin(2 * (qw*qy - qz*qx));//-pi/2 to pi/2
+    XYZ.z() = atan2(2 * (qw*qz + qx*qy), 1 - 2 * (qy*qy + qz*qz));//-pi to pi
+    // 3-1-3 Euler Angles
+    // XYZ.x() = atan2(2 * (qx*qy + qw*qz), qw*qw - qx*qx - qy*qy + qz*qz);
+    // XYZ.y() = asin(2 * (qw*qy - qx*qz));
+    // XYZ.z() = atan2(2 * (qx*qy + qw*qz), qw*qw + qx*qx - qy*qy - qz*qz);
+   
+    XYZ.toDegrees(); //function from vector.h
+
+    absoluteOrientationEuler = XYZ;
 }
