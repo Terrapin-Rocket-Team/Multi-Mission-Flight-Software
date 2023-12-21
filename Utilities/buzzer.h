@@ -5,4 +5,6 @@
 
 void buzz(int buzzer_pin, int durationOfBuzz);
 
+//void buzz_better(int buzzer_pin, int durationOfBuzz, int amountOfBuzzes);
+
 #endif
