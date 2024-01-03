@@ -31,11 +31,11 @@ void runNEOM9Nbackground(){
 }
 
 double getNEOM9Nlongitude(){
-    return (double)myGNSS.getLongitude() / 10000000.0;
+    return (double)myGNSS.getLongitude();
 }
 
 double getNEOM9Nlatitude(){
-    return (double)myGNSS.getLatitude() / 10000000.0;
+    return (double)myGNSS.getLatitude();
 }
 
 double getNEOM9Naltitude(){
