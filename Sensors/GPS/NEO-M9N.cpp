@@ -25,17 +25,17 @@ void runNEOM9Nbackground(){
     int fixQuality = myGNSS.getFixType();
 
     if (!gpsFirstFixReceived && fixQuality != 0) {
-        gpsStartPos = imu::Vector<3>(getNEOM9Nlongitude(), getNEOM9Nlongitude(), getNEOM9Naltitude());
+        gpsStartPos = imu::Vector<3>(getNEOM9Nlongitude(), getNEOM9Nlatitude(), getNEOM9Naltitude());
         gpsFirstFixReceived = true;
     }
 }
 
 double getNEOM9Nlongitude(){
-    return (double)myGNSS.getLongitude();
+    return (double)myGNSS.getLongitude() / 10000000.0;;
 }
 
 double getNEOM9Nlatitude(){
-    return (double)myGNSS.getLatitude();
+    return (double)myGNSS.getLatitude() / 10000000.0;
 }
 
 double getNEOM9Naltitude(){
@@ -46,9 +46,6 @@ imu::Vector<3> getNEOM9NgpsPosition(double longitude, double latitude, double al
     // Serial.print("*");
     // https://stackoverflow.com/questions/15736995/how-can-i-quickly-estimate-the-distance-between-two-latitude-longitude-points
     // Gives vector in meters
-
-    longitude = longitude / 10000000.0;
-    latitude = latitude / 10000000.0;
 
     double lon1 = gpsStartPos.x();
     double lat1 = gpsStartPos.y();

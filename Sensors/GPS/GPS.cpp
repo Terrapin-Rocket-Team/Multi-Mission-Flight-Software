@@ -79,10 +79,10 @@ String GPS::getcsvHeader(){
 void GPS::setdataString(){
     dataString = "";
     if(longitudeFlag){
-        dataString += String(longitude); dataString += ",";
+        dataString += String(longitude * 10000000.0); dataString += ",";
     }
     if(latitudeFlag){
-        dataString += String(latitude); dataString += ",";
+        dataString += String(latitude * 10000000.0); dataString += ",";
     }
     if(altitudeFlag){
         dataString += String(altitude); dataString += ",";
