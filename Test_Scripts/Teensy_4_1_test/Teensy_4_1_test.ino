@@ -6,7 +6,7 @@ int BUZZER_PIN = 9;
 State STATE;
 
 void setup() {
-    buzz(BUZZER_PIN, 1000);
+    buzz(BUZZER_PIN, 1000, 1);
     Serial.begin(115200);
 
     Serial.print("Setting up PSRAM and SD Card...");
@@ -16,7 +16,7 @@ void setup() {
     Serial.println("Success!");
 
     Serial.print("Testing Buzzer...");
-    buzz(BUZZER_PIN, 3000);
+    buzz(BUZZER_PIN, 3000, 1);
     Serial.println("Success!");
 }
 
