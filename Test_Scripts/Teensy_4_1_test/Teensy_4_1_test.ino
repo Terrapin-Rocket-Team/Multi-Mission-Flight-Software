@@ -24,7 +24,9 @@ void loop() {
   STATE.settimeAbsolute();
 
   Serial.println("Testing Record Data");
-  recordData(STATE, "PreFlight");
+
+  STATE.setdataString();
+  recordData(STATE.getdataString(), "PreFlight");
 
   Serial.println("Basic Teensy Test was a Success!");
   while(1);

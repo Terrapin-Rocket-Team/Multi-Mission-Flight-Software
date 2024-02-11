@@ -6,6 +6,6 @@ void buzz(int buzzer_pin, int durationOfBuzz, int counter){
         digitalWrite(buzzer_pin, HIGH);
         delay(durationOfBuzz);
         digitalWrite(buzzer_pin, LOW);
-        delay(1000);
+        delay(durationOfBuzz);
     }
 }
