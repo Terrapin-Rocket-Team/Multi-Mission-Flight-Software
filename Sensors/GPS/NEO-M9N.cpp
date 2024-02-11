@@ -31,7 +31,7 @@ void runNEOM9Nbackground(){
 }
 
 double getNEOM9Nlongitude(){
-    return (double)myGNSS.getLongitude() / 10000000.0;;
+    return (double)myGNSS.getLongitude() / 10000000.0;
 }
 
 double getNEOM9Nlatitude(){
