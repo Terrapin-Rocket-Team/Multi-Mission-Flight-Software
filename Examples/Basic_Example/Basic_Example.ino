@@ -5,14 +5,25 @@
 Barometer frameBarometer("BMP280");
 ExampleState EXAMPLESTATE;
 
+int BUZZER_PIN = 1;
+
 void setup() {
+    buzz(BUZZER_PIN, 1000, 1);
+
     //add sensors
     EXAMPLESTATE.addBarometer(frameBarometer);
 
     //setup steps
     setupPSRAM(EXAMPLESTATE.csvHeader);
-    setupSDCard(EXAMPLESTATE.csvHeader);
+    bool sdSuccess = setupSDCard(EXAMPLESTATE.csvHeader);
     EXAMPLESTATE.stateBarometer.setupBarometer();
+
+    if(sdSuccess){
+        buzz(BUZZER_PIN, 3000, 1);
+    }
+    else{
+        buzz(BUZZER_PIN, 250, 5);
+    }
 }
 
 void loop() {
@@ -21,21 +32,6 @@ void loop() {
 
     EXAMPLESTATE.determineExampleStage();
 
-    recordData(EXAMPLESTATE, EXAMPLESTATE.getrecordDataState());
-}
-
-void ExampleState::determineExampleStage(){
-    //Stages: <List Stages here> ex. '"Pre Launch", "Powered Ascent", etc.'
-    determinetimeSincePreviousStage();
-    if(stage == "Pre Launch" && timeSincePreviousStage > 5){ // Change stage to powered ascent after 5 seconds
-        timeLaunch = millis();
-        timePreviousStage = millis();
-        stage = "Powered Ascent";
-        recordDataStage = "Flight";
-    }
-    else if(stage == "Powered Ascent" && timeSincePreviousStage > 2){
-        timePreviousStage = millis();
-        stage = "Coasting";
-    }
-    // continue else if's for every stage
+    EXAMPLESTATE.setdataString();
+    recordData(EXAMPLESTATE.getdataString(), EXAMPLESTATE.getrecordDataStage());
 }
