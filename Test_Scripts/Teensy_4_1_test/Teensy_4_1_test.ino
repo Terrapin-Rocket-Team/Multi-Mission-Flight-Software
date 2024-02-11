@@ -12,8 +12,14 @@ void setup() {
     Serial.print("Setting up PSRAM and SD Card...");
     STATE.setcsvHeader();
     setupPSRAM(STATE.csvHeader);
-    setupSDCard(STATE.csvHeader);
-    Serial.println("Success!");
+    bool sdSuccess = setupSDCard(STATE.csvHeader);
+    if(sdSuccess){
+        Serial.println("Success!");
+    }
+    else{
+        Serial.println("Failed! Try rebooting.");
+    }
+    
 
     Serial.print("Testing Buzzer...");
     buzz(BUZZER_PIN, 3000, 1);
