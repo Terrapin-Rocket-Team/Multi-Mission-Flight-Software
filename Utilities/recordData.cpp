@@ -25,6 +25,14 @@ void recordData(String data, String stage){
             PSRAMDumpToSD();
         }
     }
+    else if(stage == "Test"){
+        //If in a testing phase immediately dump to SD card
+        dataToPSRAM(data);
+        String dumped = PSRAMDumpToSD();
+            if(dumped == "Dumped"){
+            resetPSRAMDumpStatus();
+            }
+    }
     else{
         Serial.println("Flight Over Data Dumped");
        // TODO create error code here
