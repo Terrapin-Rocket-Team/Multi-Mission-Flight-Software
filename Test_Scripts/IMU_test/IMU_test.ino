@@ -13,7 +13,9 @@ void setup() {
 
     Serial.print("Setting up IMU...");
     STATE.stateIMU.setupIMU();
-    Serial.println("Success!");
+    if(STATE.successfulSetup()){
+        Serial.println("Success!");
+    }
 }
 
 void loop() {

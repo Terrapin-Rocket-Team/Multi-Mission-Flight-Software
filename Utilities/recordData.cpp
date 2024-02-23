@@ -25,7 +25,7 @@ void recordData(String data, String stage){
             PSRAMDumpToSD();
         }
     }
-    else if(stage == "Test"){
+    else if(stage == "Test"){ // TODO test this
         //If in a testing phase immediately dump to SD card
         dataToPSRAM(data);
         String dumped = PSRAMDumpToSD();

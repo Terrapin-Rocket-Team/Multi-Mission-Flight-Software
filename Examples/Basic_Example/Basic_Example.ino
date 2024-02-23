@@ -18,7 +18,7 @@ void setup() {
     bool sdSuccess = setupSDCard(EXAMPLESTATE.csvHeader);
     EXAMPLESTATE.stateBarometer.setupBarometer();
 
-    if(sdSuccess){
+    if(sdSuccess && EXAMPLESTATE.successfulSetup()){
         buzz(BUZZER_PIN, 3000, 1);
     }
     else{

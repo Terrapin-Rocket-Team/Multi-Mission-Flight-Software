@@ -13,7 +13,9 @@ void setup() {
 
     Serial.print("Setting up Barometer...");
     STATE.stateBarometer.setupBarometer();
-    Serial.println("Success!");
+    if(STATE.successfulSetup()){
+        Serial.println("Success!");
+    }
 }
 
 void loop() {

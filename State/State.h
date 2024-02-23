@@ -29,6 +29,7 @@ public:
     void setdataString();
     String getdataString();
     String getrecordDataStage();
+    bool successfulSetup();
 
     //add sensor functions
     void addBarometer(const Barometer& Barometer);
