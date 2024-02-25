@@ -2,6 +2,7 @@
 
 //SdFs sd;
 //FsFile logFile;  // File object to use for logging
+String dataFileName;  // Name of the log file
 String logFileName;  // Name of the log file
 bool sdReady = false;  // Whether the SD card has been initialized
 
@@ -48,6 +49,7 @@ SdExFat sd;
 ExFile logFile;
 #elif SD_FAT_TYPE == 3
 SdFs sd;
+FsFile dataFile;
 FsFile logFile;
 #else  // SD_FAT_TYPE
 #error Invalid SD_FAT_TYPE
@@ -55,32 +57,46 @@ FsFile logFile;
 
 // Initializes the sensor
 bool setupSDCard(String csvHeader){
+    
+    dataFileName.reserve(24);
     logFileName.reserve(24);
     if (sd.begin(SD_CONFIG)) {
         // Find file name
         int fileNo = 1;
         bool exists = true;
         while (exists) {
-            logFileName = "datalog_" + String(fileNo++) + ".csv";
-            exists = sd.exists(logFileName);
+            dataFileName = "datalog_" + String(fileNo++) + ".csv";
+            logFileName = "log_" + String(fileNo++) + ".txt";
+            exists = sd.exists(dataFileName);
         }
 
         // Setup file with CSV header
+        dataFile = sd.open(dataFileName, FILE_WRITE);
+        if (dataFile) {
+            dataFile.println(csvHeader);
+            dataFile.close(); // close the file
+            Serial.println("Data file created: " + dataFileName);
+            sdReady = true;
+        }else{
+            Serial.println(F("SD Card reader found, but data file was unable to be created"));
+            return false;
+        }
+
+        // Setup log file
         logFile = sd.open(logFileName, FILE_WRITE);
         if (logFile) {
-            logFile.println(csvHeader);
+            logFile.print("Log File for "); logFile.println(dataFileName);
             logFile.close(); // close the file
             Serial.println("Log file created: " + logFileName);
             sdReady = true;
         }else{
-            Serial.println(F("SD Card reader found, but file was unable to be created"));
+            Serial.println(F("SD Card reader found, but log file was unable to be created"));
             return false;
         }
     }else{
         Serial.println(F("SD Card Reader NOT found! Data will not be logged!"));
         return false;
     }
-
     return true;
 }
 

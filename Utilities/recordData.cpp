@@ -26,12 +26,7 @@ void recordData(String data, String stage){
         }
     }
     else if(stage == "Test"){ // TODO test this
-        //If in a testing phase immediately dump to SD card
-        dataToPSRAM(data);
-        String dumped = PSRAMDumpToSD();
-            if(dumped == "Dumped"){
-            resetPSRAMDumpStatus();
-            }
+        sdPrintln(data, dataFileName);
     }
     else{
         Serial.println("Flight Over Data Dumped");
