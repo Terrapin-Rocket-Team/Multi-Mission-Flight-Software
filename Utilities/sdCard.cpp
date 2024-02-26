@@ -65,7 +65,7 @@ bool setupSDCard(String csvHeader){
         int fileNo = 1;
         bool exists = true;
         while (exists) {
-            dataFileName = "datalog_" + String(fileNo++) + ".csv";
+            dataFileName = "datalog_" + String(fileNo) + ".csv";
             logFileName = "datalog_" + String(fileNo++) + ".log";
             exists = sd.exists(dataFileName);
         }
