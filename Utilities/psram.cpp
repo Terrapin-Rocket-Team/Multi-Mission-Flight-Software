@@ -47,10 +47,10 @@ String PSRAMDumpToSD(){
         char nextByte = *psram_memory_cur;
         curStr = curStr + nextByte;
         if(nextByte == '\n'){
-          logFile = sd.open(logFileName, FILE_WRITE);
-          if (logFile) {
-            logFile.print(curStr);
-            logFile.close(); // close the file
+          dataFile = sd.open(dataFileName, FILE_WRITE);
+          if (dataFile) {
+            dataFile.print(curStr);
+            dataFile.close(); // close the file
           }
           if(!isLaunchedPSRAM){
             if(previousRowsPSRAM.size() >= COMPACT_WALKBACK_COUNT){

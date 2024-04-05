@@ -12,7 +12,9 @@ void setup() {
 
     Serial.print("Setting up Light Sensor...");
     STATE.stateLightSensor.setupLightSensor();
-    Serial.println("Success!");
+    if(STATE.successfulSetup()){
+        Serial.println("Success!");
+    }
 }
 
 void loop() {

@@ -13,7 +13,9 @@ void setup() {
 
     Serial.print("Setting up IMU...");
     STATE.stateIMU.setupIMU();
-    Serial.println("Success!");
+    if(STATE.successfulSetup()){
+        Serial.println("Success!");
+    }
 }
 
 void loop() {
@@ -33,4 +35,16 @@ void loop() {
     Serial.print("Quat Orientation X: "); Serial.println(STATE.stateIMU.absoluteOrientation.x());
     Serial.print("Quat Orientation Y: "); Serial.println(STATE.stateIMU.absoluteOrientation.y());
     Serial.print("Quat Orientation Z: "); Serial.println(STATE.stateIMU.absoluteOrientation.z());
+    Serial.print("Euler Orientation Roll: "); Serial.println(STATE.stateIMU.absoluteOrientationEuler.x());
+    Serial.print("Euler Orientation Pitch: "); Serial.println(STATE.stateIMU.absoluteOrientationEuler.y());
+    Serial.print("Euler Orientation Yaw: "); Serial.println(STATE.stateIMU.absoluteOrientationEuler.z());
+
+    // Calibration for the BNO055 chip
+    // uint8_t bno_cal_system, bno_cal_gyro, bno_cal_accel, bno_cal_mag = 0;
+    // bno.getCalibration(&bno_cal_system, &bno_cal_gyro, &bno_cal_accel, &bno_cal_mag);
+
+    // Serial.print("BNO Calibration Sys: "); Serial.println(bno_cal_system);
+    // Serial.print("BNO Calibration Accel: "); Serial.println(bno_cal_accel);
+    // Serial.print("BNO Calibration Gyro: "); Serial.println(bno_cal_gyro);
+    // Serial.print("BNO Calibration Mag: "); Serial.println(bno_cal_mag);
 }

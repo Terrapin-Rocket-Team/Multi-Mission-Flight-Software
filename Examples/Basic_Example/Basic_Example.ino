@@ -13,12 +13,14 @@ void setup() {
     //add sensors
     EXAMPLESTATE.addBarometer(frameBarometer);
 
-    //setup steps
-    setupPSRAM(EXAMPLESTATE.csvHeader);
-    bool sdSuccess = setupSDCard(EXAMPLESTATE.csvHeader);
     EXAMPLESTATE.stateBarometer.setupBarometer();
 
-    if(sdSuccess){
+    //setup steps
+    EXAMPLESTATE.setcsvHeader();
+    setupPSRAM(EXAMPLESTATE.csvHeader);
+    bool sdSuccess = setupSDCard(EXAMPLESTATE.csvHeader);
+
+    if(sdSuccess && EXAMPLESTATE.successfulSetup()){
         buzz(BUZZER_PIN, 3000, 1);
     }
     else{

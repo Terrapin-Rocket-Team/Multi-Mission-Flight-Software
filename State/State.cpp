@@ -120,3 +120,27 @@ String State::getdataString(){
 String State::getrecordDataStage(){
     return recordDataStage;
 }
+
+bool State::successfulSetup(){
+    if(barometerFlag){
+        if(!stateBarometer.setupSuccessful){
+            return false;
+        }
+    }
+    if(imuFlag){
+        if(!stateIMU.setupSuccessful){
+            return false;
+        }
+    }
+    if(gpsFlag){
+        if(!stateGPS.setupSuccessful){
+            return false;
+        }
+    }
+    if(lightSensorFlag){
+        if(!stateLightSensor.setupSuccessful){
+            return false;
+        }
+    }
+    return true;
+}

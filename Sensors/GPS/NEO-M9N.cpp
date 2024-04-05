@@ -24,7 +24,7 @@ bool setupNEOM9N(){
 void runNEOM9Nbackground(){
     int fixQuality = myGNSS.getFixType();
 
-    if (!gpsFirstFixReceived && fixQuality != 0) {
+    if (!gpsFirstFixReceived && fixQuality != 0 && (int)myGNSS.getSIV() >= 4) {
         gpsStartPos = imu::Vector<3>(getNEOM9Nlongitude(), getNEOM9Nlatitude(), getNEOM9Naltitude());
         gpsFirstFixReceived = true;
     }

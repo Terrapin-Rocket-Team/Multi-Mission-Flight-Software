@@ -14,7 +14,9 @@ void setup() {
 
     Serial.print("Setting up GPS...");
     STATE.stateGPS.setupGPS();
-    Serial.println("Success!");
+    if(STATE.successfulSetup()){
+        Serial.println("Success!");
+    }
 }
 
 void loop() {
