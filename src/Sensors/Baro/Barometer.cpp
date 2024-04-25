@@ -36,7 +36,7 @@ const char *Barometer::getCsvHeader() const
     return "B-Pres (hPa),B-Temp (C),B-Alt (ft),"; // trailing commas are very important
 }
 
-char *Barometer::getDataString() const
+const char *Barometer::getDataString() const
 { // See State.cpp::setDataString() for comments on what these numbers mean
     // float x3
     const int size = 12 * 3 + 3;
@@ -45,7 +45,7 @@ char *Barometer::getDataString() const
     return data;
 }
 
-char *Barometer::getStaticDataString() const
+const char *Barometer::getStaticDataString() const
 { // See State.cpp::setDataString() for comments on what these numbers mean
     const int size = 25 + 12 * 1;
     char *data = new char[size];

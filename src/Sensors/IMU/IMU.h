@@ -16,8 +16,8 @@ public:
     virtual SensorType getType() const override { return IMU_; }
     virtual const char* getTypeString() const override { return "IMU"; }
     virtual const char *getCsvHeader() const override;
-    virtual char *getDataString() const override;
-    virtual char *getStaticDataString() const override;
+    virtual const char *getDataString() const override;
+    virtual const char *getStaticDataString() const override;
 
 protected:
     IMU() {};// Protected constructor to prevent instantiation

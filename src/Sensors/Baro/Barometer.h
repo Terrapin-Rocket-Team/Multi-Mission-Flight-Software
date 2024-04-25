@@ -15,8 +15,8 @@ public:
     virtual double getRelAltFt() const;
     virtual double getRelAltM() const;
     virtual const char *getCsvHeader() const override;
-    virtual char *getDataString() const override;
-    virtual char *getStaticDataString() const override;
+    virtual const char *getDataString() const override;
+    virtual const char *getStaticDataString() const override;
     virtual const char* getTypeString() const override { return "Barometer"; }
     virtual SensorType getType() const override { return BAROMETER_; }
 

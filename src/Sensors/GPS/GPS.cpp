@@ -93,7 +93,7 @@ const char *GPS::getCsvHeader() const
     return "G-Lat (deg),G-Lon (deg),G-Alt (m),G-Speed (m/s),G-DispX (m),G-DispY (m),G-DispZ (m),G-ToD (s),G-# of Sats,"; // trailing comma
 }
 
-char *GPS::getDataString() const
+const char *GPS::getDataString() const
 {
     // See State.cpp::setDataString() for comments on what these numbers mean. 15 for GPS.
     const int size = 15 * 2 + 12 * 4 + 10 * 1 + 10 + 8;
@@ -102,7 +102,7 @@ char *GPS::getDataString() const
     return data;
 }
 
-char *GPS::getStaticDataString() const
+const char *GPS::getStaticDataString() const
 {
     // See State.cpp::setDataString() for comments on what these numbers mean. 15 for GPS.
     const int size = 60 + 15 * 2 + 12 * 1;

@@ -34,7 +34,7 @@ const char *IMU::getCsvHeader() const
     return "I-AX (m/s/s),I-AY (m/s/s),I-AZ (m/s/s),I-ULRX,I-ULRY,I-ULRZ,I-QUATX,I-QUATY,I-QUATZ,I-QUATW,"; // trailing comma
 }
 
-char *IMU::getDataString() const
+const char *IMU::getDataString() const
 {
     // See State.cpp::setDataString() for comments on what these numbers mean
     const int size = 12 * 10 + 10;
@@ -43,7 +43,7 @@ char *IMU::getDataString() const
     return data;
 }
 
-char *IMU::getStaticDataString() const
+const char *IMU::getStaticDataString() const
 {
     // See State.cpp::setDataString() for comments on what these numbers mean
     const int size = 30 + 12 * 3;

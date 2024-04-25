@@ -17,9 +17,9 @@ public:
     virtual int getFixQual() const;
     virtual double getHeading() const;
     virtual bool getHasFirstFix() const;
-    const char *getCsvHeader() const override;
-    char *getDataString() const override;
-    char *getStaticDataString() const override;
+    virtual const char *getCsvHeader() const override;
+    virtual const char *getDataString() const override;
+    virtual const char *getStaticDataString() const override;
 
     virtual const char *getTypeString() const override { return "GPS"; }
     virtual SensorType getType() const override { return GPS_; }

@@ -22,9 +22,9 @@ public:
     // gives the names of the columns which transient data will be stored under, in a comma separated string
     virtual const char *getCsvHeader() const = 0;
     // gives the data values of the variables said to be stored by the header, in the same order, in a comma separated string
-    virtual char *getDataString() const = 0;
+    virtual const char *getDataString() const = 0;
     // gives a string which includes all the sensor's static/initialization data. This will be in the format of dataName:dataValue, with each pair separated by a newline (\n)
-    virtual char *getStaticDataString() const = 0;
+    virtual const char *getStaticDataString() const = 0;
 
     virtual SensorType getType() const = 0;              // Returns the type of the sensor
     virtual const char *getTypeString() const = 0;       // Returns the type of the sensor as a string
