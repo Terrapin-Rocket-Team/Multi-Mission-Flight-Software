@@ -53,5 +53,9 @@
         }
     ],
     "frameworks": "*",
-    "platforms": "*"
+    "platforms": "*",
+    "build":{
+        "libLDFMode": "deep+",
+        "libCompatMode": "strict"
+    }
 }
