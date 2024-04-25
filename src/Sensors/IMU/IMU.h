@@ -8,11 +8,11 @@
 
 class IMU : public Sensor{
 public:
-    virtual ~IMU();
-    virtual imu::Quaternion getOrientation() = 0;
-    virtual imu::Vector<3> getAcceleration() = 0;
-    virtual imu::Vector<3> getOrientationEuler() = 0;
-    virtual imu::Vector<3> getMagnetometer() = 0;
+    virtual ~IMU() {};
+    virtual imu::Quaternion getOrientation();
+    virtual imu::Vector<3> getAcceleration();
+    virtual imu::Vector<3> getOrientationEuler();
+    virtual imu::Vector<3> getMagnetometer();
     virtual SensorType getType() const override { return IMU_; }
     virtual const char* getTypeString() const override { return "IMU"; }
     virtual const char *getCsvHeader() const override;

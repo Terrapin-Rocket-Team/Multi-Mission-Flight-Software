@@ -10,9 +10,9 @@ private:
     Adafruit_BMP280 bmp;
 
 public:
+    BMP280();
     virtual bool initialize() override;
     virtual void update() override;
-    virtual char const *getName() const override;
 };
 
 #endif

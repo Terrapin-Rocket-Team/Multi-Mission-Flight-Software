@@ -1,5 +1,9 @@
 #include "BMP390.h"
 
+BMP390::BMP390()
+{
+    setName("BMP390");
+}
 
 bool BMP390::initialize()
 {
@@ -37,8 +41,4 @@ void BMP390::update()
     pressure = bmp.readPressure() / 100.0;       // hPa
     temp = bmp.readTemperature();                // C
     altitude = bmp.readAltitude(groundPressure); // m
-}
-const char *BMP390::getName() const
-{
-    return "BMP390";
 }

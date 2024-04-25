@@ -12,8 +12,8 @@ private:
     SFE_UBLOX_GNSS m10s;
 
 public:
+    MAX_M10S();
     bool initialize() override;
-    const char *getName() const override;
     void update() override;
 };
 

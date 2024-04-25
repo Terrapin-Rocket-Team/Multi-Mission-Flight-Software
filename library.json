@@ -3,11 +3,13 @@
     "version": "2.0.0",
     "description": "Terrapin Rocket Team's Multi-Mission Flight Software. Designed to be used with any FC and any sensor suite.",
     "keywords": "MMFS, TRT, Terrapin Rocket Team, Flight Software",
-    "repository": {
+    "repository": 
+    {
         "type": "git",
         "url": "https://github.com/DrewBrandt/Multi-Mission-Flight-Software.git"
     },
-    "authors": [
+    "authors": 
+    [
         {
             "name": "Michael Mallamaci",
             "url": "https://github.com/mallamacimj"
@@ -24,7 +26,8 @@
     ],
     "license": "MIT",
     "homepage": "https://github.com/Terrapin-Rocket-Team/Multi-Mission-Flight-Software",
-    "dependencies": [
+    "dependencies": 
+    [
         {
             "name": "Adafruit BMP280 Library",
             "version": "2.6.8"
@@ -54,8 +57,13 @@
     ],
     "frameworks": "*",
     "platforms": "*",
-    "build":{
+    "build":
+    {
         "libLDFMode": "deep+",
-        "libCompatMode": "strict"
+        "libCompatMode": "strict",
+        "srcFilter": 
+        [
+            "-<src/TestingImplementation/**>"
+        ]
     }
 }

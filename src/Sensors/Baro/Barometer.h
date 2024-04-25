@@ -7,7 +7,7 @@
 
 class Barometer: public Sensor{
 public:
-    virtual ~Barometer();
+    virtual ~Barometer() {};
     virtual double getPressure() const;
     virtual double getTemp() const;
     virtual double getTempF() const;
@@ -26,7 +26,6 @@ protected:
     double temp = 0;
     double altitude = 0;
     double groundPressure = 0;
-    char name[25];
 };
 
 

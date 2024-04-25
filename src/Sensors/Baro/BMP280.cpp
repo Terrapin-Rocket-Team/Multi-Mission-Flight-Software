@@ -1,5 +1,10 @@
 #include "BMP280.h"
 
+BMP280::BMP280() : bmp()
+{
+    setName("BMP280");
+}
+
 bool BMP280::initialize()
 {
     if (!bmp.begin())
@@ -30,8 +35,4 @@ void BMP280::update()
     pressure = bmp.readPressure() / 100.0;       // hPa
     temp = bmp.readTemperature();                // C
     altitude = bmp.readAltitude(groundPressure); // m
-}
-const char *BMP280::getName() const
-{
-    return "BMP280";
 }

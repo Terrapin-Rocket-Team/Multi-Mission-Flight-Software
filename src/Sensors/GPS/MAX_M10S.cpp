@@ -1,8 +1,10 @@
 #include "MAX_M10S.h"
 
 
-
-// need to update origin some how
+MAX_M10S::MAX_M10S() : m10s()
+{
+    setName("MAX_M10S");
+}
 
 bool MAX_M10S::initialize()
 {
@@ -70,9 +72,4 @@ void MAX_M10S::update()
     sec = m10s.getSecond();
 
     snprintf(gpsTime, 9, "%02d:%02d:%02d", hr, min, sec);
-}
-
-const char *MAX_M10S::getName() const
-{
-    return "MAX_M10S";
 }

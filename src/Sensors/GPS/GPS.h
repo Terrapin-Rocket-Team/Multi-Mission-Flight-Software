@@ -7,8 +7,7 @@
 class GPS : public Sensor
 {
 public:
-    GPS();
-    virtual ~GPS();
+    virtual ~GPS() {};
     virtual double getAlt() const;
     virtual imu::Vector<3> getVelocity() const;
     virtual imu::Vector<2> getPos() const;
@@ -26,6 +25,7 @@ public:
     virtual SensorType getType() const override { return GPS_; }
 
 protected:
+    GPS();
     imu::Vector<2> pos;          // latitude and longitude
     double altitude;             // alti in mm
     imu::Vector<3> velocity;     // m per s

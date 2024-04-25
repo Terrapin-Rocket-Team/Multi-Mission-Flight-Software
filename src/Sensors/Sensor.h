@@ -26,9 +26,16 @@ public:
     // gives a string which includes all the sensor's static/initialization data. This will be in the format of dataName:dataValue, with each pair separated by a newline (\n)
     virtual char *getStaticDataString() const = 0;
 
-    virtual SensorType getType() const = 0;        // Returns the type of the sensor
-    virtual const char *getTypeString() const = 0; // Returns the type of the sensor as a string
-    virtual const char *getName() const = 0;       // Returns the name of the sensor
+    virtual SensorType getType() const = 0;              // Returns the type of the sensor
+    virtual const char *getTypeString() const = 0;       // Returns the type of the sensor as a string
+    virtual const char *getName() const { return name; } // Returns the name of the sensor
+    virtual void setName(const char *n)                  // Sets the name of the sensor
+    {
+        delete[] name;
+        int len = strlen(n);
+        name = new char[len + 1];
+        snprintf(name, len + 1, "%s", n);
+    }
 
     virtual void update() = 0; // Updates the sensor's fields by querying the sensor for new data
 
@@ -40,6 +47,7 @@ public:
 protected:
     bool initialized = false;
     bool biasCorrectionMode = true;
+    char *name = nullptr;
 };
 
 #endif // SENSOR_H

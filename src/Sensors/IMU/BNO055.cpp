@@ -1,6 +1,9 @@
 #include "BNO055.h"
 
-
+BNO055::BNO055() : bno()
+{
+    setName("BNO055");
+}
 bool BNO055::initialize()
 {
     if (!bno.begin())

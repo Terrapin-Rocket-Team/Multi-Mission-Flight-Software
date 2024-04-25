@@ -1,8 +1,6 @@
 #include "Barometer.h"
 
 
-
-
 double Barometer::getPressure() const
 {
     return pressure;

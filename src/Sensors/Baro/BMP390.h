@@ -11,9 +11,9 @@ private:
     Adafruit_BMP3XX bmp;
 
 public:
+    BMP390();
     virtual bool initialize() override;
     virtual void update() override;
-    virtual char const *getName() const override;
 };
 
 #endif // BMP390_H

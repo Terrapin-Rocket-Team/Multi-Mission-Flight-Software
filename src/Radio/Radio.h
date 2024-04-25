@@ -3,6 +3,7 @@
 
 #if defined(ARDUINO)
 #include <Arduino.h>
+
 #elif defined(_WIN32) || defined(_WIN64) // Windows
 #include <cstdint>
 #include <string>
