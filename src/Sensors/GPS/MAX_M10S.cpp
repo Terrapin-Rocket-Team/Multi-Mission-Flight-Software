@@ -70,6 +70,9 @@ void MAX_M10S::update()
     hr = m10s.getHour();
     min = m10s.getMinute();
     sec = m10s.getSecond();
-
+    //ignore -Wformat-truncation
+    #pragma GCC diagnostic push
+    #pragma GCC diagnostic ignored "-Wformat-truncation"
     snprintf(gpsTime, 9, "%02d:%02d:%02d", hr, min, sec);
+    #pragma GCC diagnostic pop
 }

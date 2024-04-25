@@ -1,5 +1,4 @@
 #include "State.h"
-
 #pragma region Constructor and Destructor
 
 State::State(int maxNumSensors, SensorType *sensorOrder, KalmanInterface *kfilter, bool stateRecordsOwnFlightData)

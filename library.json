@@ -64,6 +64,7 @@
         "srcFilter": 
         [
             "-<src/TestingImplementation/**>"
-        ]
+        ],
+        "flags": "-Wno-unknown-pragmas"
     }
 }
