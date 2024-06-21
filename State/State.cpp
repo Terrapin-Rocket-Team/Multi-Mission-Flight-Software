@@ -189,7 +189,7 @@ void State::setDataString()
     // Assuming 12 char/float (2 dec precision, leaving min value of -9,999,999.99), 10 char/int, 30 char/string
     // float * 9, int * 0, string * 0, 11 commas and a null terminator
     // 108 + 12 = 120
-    const int dataStartSize = 12 * 9 + 12;
+    const int dataStartSize = MAX_DIGITS_FLOAT * 9 + 12;
     char csvDataStart[dataStartSize];
     snprintf(
         csvDataStart, dataStartSize,

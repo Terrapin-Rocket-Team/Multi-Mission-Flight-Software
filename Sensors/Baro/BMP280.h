@@ -6,7 +6,6 @@
 
 namespace mmfs
 {
-
     class BMP280 : public Barometer
     {
     private:

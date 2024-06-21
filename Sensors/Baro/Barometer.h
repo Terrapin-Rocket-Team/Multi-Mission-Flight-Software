@@ -26,8 +26,8 @@ namespace mmfs
     protected:
         Barometer()
         {                                       // Protected constructor to prevent instantiation
-            staticData = new char[25 + 12 * 1]; // 25 chars for the string, 12 chars for the float
-            data = new char[12 * 3 + 3];        // 12 chars for the 3 floats, 3 for the comma
+            staticData = new char[25 + MAX_DIGITS_FLOAT * 1]; // 25 chars for the string, 12 chars for the float
+            data = new char[MAX_DIGITS_FLOAT * 3 + 3];        // 12 chars for the 3 floats, 3 for the comma
         }
         double pressure = 0;
         double temp = 0;
