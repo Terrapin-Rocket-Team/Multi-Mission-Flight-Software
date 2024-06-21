@@ -31,10 +31,14 @@ SOFTWARE.
 #include <cstdint>
 #include <string>
 #include <cstring>
-#elif defined(__unix__)  // Linux
-// TODO
+#elif defined(__unix__) // Linux
+#include <cstdint>
+#include <string>
+#include <cstring>
 #elif defined(__APPLE__) // OSX
-// TODO
+#include <cstdint>
+#include <string>
+#include <cstring>
 #endif
 
 class APRSMessageType
@@ -122,7 +126,7 @@ public:
     }
 
 private:
-    Value value;
+    Value value = Error;
 };
 
 class APRSBody
@@ -139,7 +143,7 @@ public:
     virtual void toString(char *str);
 
 private:
-    char _data[80];
+    char _data[80]{0};
 };
 
 class APRSMsg
@@ -168,12 +172,17 @@ public:
     virtual void encode(char *message);
     virtual void toString(char *str);
 
+    static void formatLat(char *lat, bool hp);
+    static void formatLong(char *lng, bool hp);
+    static void formatDao(char *lat, char *lng, char *dao);
+    static void padding(unsigned int number, unsigned int width, char *output, int offset = 0);
+
 private:
-    char _source[8];
-    char _destination[8];
-    char _path[10];
+    char _source[8]{0};
+    char _destination[8]{0};
+    char _path[10]{0};
     APRSMessageType _type;
-    char _rawBody[80];
+    char _rawBody[80]{0};
     APRSBody _body;
 };
 
