@@ -12,7 +12,7 @@ public:
     virtual void println(const char *data) = 0;
     virtual char *read(char *data, int size) = 0;
     virtual char *readTo(char *data, char endChar) = 0;
-    virtual bool seek(int offset) = 0;
+    virtual bool seek(uint64_t offset) = 0;
 };
 
 #endif STORAGE_TYPE_H
