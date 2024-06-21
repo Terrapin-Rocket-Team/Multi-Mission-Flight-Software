@@ -1,5 +1,7 @@
 #include "BMP280.h"
 
+using namespace mmfs;
+
 BMP280::BMP280() : bmp()
 {
     setName("BMP280");

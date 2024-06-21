@@ -1,5 +1,7 @@
 #include "IMU.h"
 
+using namespace mmfs;
+
 imu::Quaternion IMU::getOrientation()
 {
     return orientation;
@@ -36,18 +38,12 @@ const char *IMU::getCsvHeader() const
 
 const char *IMU::getDataString() const
 {
-    // See State.cpp::setDataString() for comments on what these numbers mean
-    const int size = 12 * 10 + 10;
-    char *data = new char[size];
-    snprintf(data, size, "%.2f,%.2f,%.2f,%.2f,%.2f,%.2f,%.2f,%.2f,%.2f,%.2f,", accelerationVec.x(), accelerationVec.y(), accelerationVec.z(), orientationEuler.x(), orientationEuler.y(), orientationEuler.z(), orientation.x(), orientation.y(), orientation.z(), orientation.w()); // trailing comma"
+    sprintf(data, "%.2f,%.2f,%.2f,%.2f,%.2f,%.2f,%.2f,%.2f,%.2f,%.2f,", accelerationVec.x(), accelerationVec.y(), accelerationVec.z(), orientationEuler.x(), orientationEuler.y(), orientationEuler.z(), orientation.x(), orientation.y(), orientation.z(), orientation.w()); // trailing comma"
     return data;
 }
 
 const char *IMU::getStaticDataString() const
 {
-    // See State.cpp::setDataString() for comments on what these numbers mean
-    const int size = 30 + 12 * 3;
-    char *data = new char[size];
-    snprintf(data, size, "Initial Magnetic Field (uT): %.2f,%.2f,%.2f\n", initialMagField.x(), initialMagField.y(), initialMagField.z());
+    sprintf(data, "Initial Magnetic Field (uT): %.2f,%.2f,%.2f\n", initialMagField.x(), initialMagField.y(), initialMagField.z());
     return data;
 }

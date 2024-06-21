@@ -279,13 +279,9 @@ void State::setCsvString(char *dest, const char *start, int startSize, bool head
 
             dest[j] = str[i][k];
         }
-        if (i >= 1 && !header)
-        {
-            delete[] str[i]; // delete all the heap arrays.
-        }
     }
     delete[] str;
-    dest[j - 1] = '\0'; // all strings have ',' at end so this gets rid of that and terminates it a character early.
+    dest[j - 1] = '\0'; // all strings have ',' at end so this gets rid of that by terminating it a character early.
 }
 
 bool State::sensorOK(const Sensor *sensor) const

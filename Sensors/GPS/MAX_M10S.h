@@ -6,15 +6,18 @@
 #include <Arduino.h>
 #include "GPS.h"
 
-class MAX_M10S : public GPS
+namespace mmfs
 {
-private:
-    SFE_UBLOX_GNSS m10s;
 
-public:
-    MAX_M10S();
-    bool initialize() override;
-    void update() override;
-};
+    class MAX_M10S : public GPS
+    {
+    private:
+        SFE_UBLOX_GNSS m10s;
 
+    public:
+        MAX_M10S();
+        bool initialize() override;
+        void update() override;
+    };
+}
 #endif // MAX_M10S_H
