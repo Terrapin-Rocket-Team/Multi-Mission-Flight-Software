@@ -1,0 +1,70 @@
+{
+    "name": "TRT-MMFS",
+    "version": "2.0.0",
+    "description": "Terrapin Rocket Team's Multi-Mission Flight Software. Designed to be used with any FC and any sensor suite.",
+    "keywords": "MMFS, TRT, Terrapin Rocket Team, Flight Software",
+    "repository": 
+    {
+        "type": "git",
+        "url": "https://github.com/DrewBrandt/Multi-Mission-Flight-Software.git"
+    },
+    "authors": 
+    [
+        {
+            "name": "Michael Mallamaci",
+            "url": "https://github.com/mallamacimj"
+        },
+        {
+            "name": "Drew Brandt",
+            "url": "https://github.com/DrewBrandt",
+            "maintainer": true
+        },
+        {
+            "name": "Terrapin Rocket Team",
+            "url": "https://github.com/Terrapin-Rocket-Team"
+        }
+    ],
+    "license": "MIT",
+    "homepage": "https://github.com/Terrapin-Rocket-Team/Multi-Mission-Flight-Software",
+    "dependencies": 
+    [
+        {
+            "name": "Adafruit BMP280 Library",
+            "version": "2.6.8"
+        },
+        {
+            "name": "Adafruit BMP3XX Library",
+            "version": "2.1.4"
+        },
+        {
+            "name": "Adafruit BNO055"
+        },
+        {
+            "name": "SparkFun u-blox GNSS v3"
+        },
+        {
+            "name": "RTClib",
+            "owner": "adafruit"
+        },
+        {
+            "name": "BlinkBuzz",
+            "version": "https://github.com/DrewBrandt/BlinkBuzz.git"
+        },
+        {
+            "name": "RadioHead",
+            "version": "1.120"
+        }
+    ],
+    "frameworks": "*",
+    "platforms": "*",
+    "build":
+    {
+        "libLDFMode": "deep+",
+        "libCompatMode": "strict",
+        "srcFilter": 
+        [
+            "-<src/TestingImplementation/**>"
+        ],
+        "flags": "-Wno-unknown-pragmas"
+    }
+}
