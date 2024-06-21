@@ -2,14 +2,13 @@
 #define AVIONICSSTATE_H
 
 //Platformio is such a fucking pile of trash
-#include <State/State.h>
+#include "../State/State.h"
 #include <BlinkBuzz.h>
 
 class AvionicsState : public State
 {
     public:
-        // TODO: Change the SensorType enum to just an array of sensors, removing the addSensor() method.
-        AvionicsState(int numSensors, SensorType *sensorOrder, KalmanInterface *kfilter, bool recordData);
+        AvionicsState(Sensor** sensors, int numSensors, KalmanInterface *kfilter, bool recordData);
         void updateState(double newTime = -1) override;
 
     private:

@@ -1,6 +1,6 @@
 
 #include "AvionicsState.h"
-AvionicsState::AvionicsState(int numSensors, SensorType *sensorOrder, KalmanInterface *kfilter, bool recordData) : State(numSensors, sensorOrder, kfilter, recordData)
+AvionicsState::AvionicsState(Sensor **sensors, int numSensors, KalmanInterface *kfilter, bool recordData) : State(sensors, numSensors, kfilter, recordData)
 {
     stage = 0;
     timeOfLaunch = 0;

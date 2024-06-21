@@ -21,7 +21,7 @@ public:
     // SensorType sensorOrder[numSensors] = {BAROMETER_, GPS_, IMU_, BAROMETER_}; It doesn't what order they're in, as long as they're in the array.
     // useKalmanFilter: whether or not to use the Kalman Filter. If false, the state will use the raw sensor data.
     // stateRecordsOwnData: whether or not the state should call recordFlightData() itself. If false, other funcitons must call recordFlightData() to record the state's data.
-    State(int numSensors, SensorType *sensorOrder, KalmanInterface *kfilter, bool stateRecordsOwnData = true);
+    State( Sensor **sensors, int numSensors, KalmanInterface *kfilter, bool stateRecordsOwnData = true);
     virtual ~State();
 
     // to be called after all applicable sensors have been added.
@@ -32,7 +32,6 @@ public:
     virtual void updateState(double currentTime = -1);
 
     // sensor functions
-    virtual bool addSensor(Sensor *sensor, int sensorNum = 1);           // add more than one sensor of the same type, and specify which number this one is. 1 indexed. i.e. addSensor(gps, 2) adds the second GPS sensor.
     virtual Sensor *getSensor(SensorType type, int sensorNum = 1) const; // get a sensor of a certain type. 1 indexed. i.e. getSensor(GPS, 1) gets the first GPS sensor.
 
     virtual char *getDataString() const;
@@ -58,7 +57,6 @@ protected:
 
 
     int maxNumSensors;
-    SensorType *sensorOrder;
     Sensor **sensors;
     int numSensors; // how many sensors are actually enabled
 
