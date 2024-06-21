@@ -1,5 +1,7 @@
 #include "BNO055.h"
 
+using namespace mmfs;
+
 BNO055::BNO055() : bno()
 {
     setName("BNO055");

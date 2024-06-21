@@ -4,16 +4,18 @@
 #include <Adafruit_BMP3XX.h>
 #include "Barometer.h"
 
-
-class BMP390 : public Barometer
+namespace mmfs
 {
-private:
-    Adafruit_BMP3XX bmp;
+    class BMP390 : public Barometer
+    {
+    private:
+        Adafruit_BMP3XX bmp;
 
-public:
-    BMP390();
-    virtual bool initialize() override;
-    virtual void update() override;
-};
+    public:
+        BMP390();
+        virtual bool initialize() override;
+        virtual void update() override;
+    };
+}
 
 #endif // BMP390_H

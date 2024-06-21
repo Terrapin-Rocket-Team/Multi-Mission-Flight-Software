@@ -11,12 +11,18 @@ enum SensorType
     LIGHT_SENSOR_,
     RADIO_,
     RTC_,
+    ENCODER_,
     UNKNOWN_
 };
 class Sensor
 {
 public:
-    virtual ~Sensor(){};
+    virtual ~Sensor()
+    {
+        delete[] data;
+        delete[] staticData;
+        delete[] name;
+    };
     // Sets up the sensor and stores any critical parameters
     virtual bool initialize() = 0;
     // gives the names of the columns which transient data will be stored under, in a comma separated string
@@ -47,7 +53,9 @@ public:
 protected:
     bool initialized = false;
     bool biasCorrectionMode = true;
-    char *name = nullptr;
+    char *name = nullptr;       // Name of the sensor
+    char *staticData = nullptr; // Initial "power on" data
+    char *data = nullptr;       // Transient data
 };
 
 #endif // SENSOR_H

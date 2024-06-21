@@ -1,5 +1,6 @@
 #include "Barometer.h"
 
+using namespace mmfs;
 
 double Barometer::getPressure() const
 {
@@ -37,18 +38,13 @@ const char *Barometer::getCsvHeader() const
 }
 
 const char *Barometer::getDataString() const
-{ // See State.cpp::setDataString() for comments on what these numbers mean
-    // float x3
-    const int size = 12 * 3 + 3;
-    char *data = new char[size];
-    snprintf(data, size, "%.2f,%.2f,%.2f,", pressure, temp, getRelAltFt()); // trailing comma
+{
+    sprintf(data, "%.2f,%.2f,%.2f,", pressure, temp, getRelAltFt()); // trailing comma
     return data;
 }
 
 const char *Barometer::getStaticDataString() const
 { // See State.cpp::setDataString() for comments on what these numbers mean
-    const int size = 25 + 12 * 1;
-    char *data = new char[size];
-    snprintf(data, size, "Ground Pressure (hPa): %.2f\n", groundPressure);
-    return data;
+    sprintf(staticData, "Ground Pressure (hPa): %.2f\n", groundPressure);
+    return staticData;
 }
