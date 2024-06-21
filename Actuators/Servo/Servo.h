@@ -10,7 +10,6 @@ public:
     // Constructor to initialize staticData and data
     Servo(const char servoName[], int pin)
     {
-        name = new char[NAME_MAX_LENGTH + 1]; // +1 for the null terminator
         data = new char[DATA_SIZE + BUFFER_SIZE];
 
         setName(servoName);
