@@ -162,3 +162,5 @@ const void* getCallerAddress() {
 const void* getCallerAddress() {
     return nullptr; // Not supported
 }
+
+#endif
