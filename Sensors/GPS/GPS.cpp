@@ -20,8 +20,8 @@ GPS::GPS()
     time = 0;
     strcpy(gpsTime, "00:00:00");
 
-    staticData = new char[60 + 15 * 2 + 12 * 1];        // 60 chars for the string, 15 chars for the 2 floats, 12 chars for the float
-    data = new char[15 * 2 + 12 * 4 + 10 * 1 + 10 + 8]; // 15 chars for the 2 floats, 12 chars for the 4 floats, 10 chars for the string, 10 for the int, 8 for the comma
+    staticData = new char[60 + MAX_DIGITS_LAT_LON * 2 + MAX_DIGITS_FLOAT * 1];        // 60 chars for the string, 15 chars for the 2 floats, 12 chars for the float
+    data = new char[MAX_DIGITS_LAT_LON * 2 + MAX_DIGITS_FLOAT * 4 + MAX_DIGITS_INT * 1 + 10 + 8]; // 15 chars for the 2 floats, 12 chars for the 4 floats, 10 chars for the time of day string, 10 for the int, 8 for the comma
 }
 
 /*
