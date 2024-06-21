@@ -8,6 +8,7 @@
 class AvionicsState : public State
 {
     public:
+        // TODO: Change the SensorType enum to just an array of sensors, removing the addSensor() method.
         AvionicsState(int numSensors, SensorType *sensorOrder, KalmanInterface *kfilter, bool recordData);
         void updateState(double newTime = -1) override;
 

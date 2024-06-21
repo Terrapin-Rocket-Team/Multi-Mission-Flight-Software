@@ -9,7 +9,7 @@
 class LightSensor : public Sensor
 {
 public:
-    virtual ~LightSensor(){};
+    virtual ~LightSensor() {}
     virtual bool calibrate() = 0; // Virtual functions set equal to zero are "pure virtual functions". (like abstract functions in Java)
     virtual double getPressure() = 0;
     virtual double getTemp() = 0;

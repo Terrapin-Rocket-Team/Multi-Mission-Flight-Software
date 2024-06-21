@@ -44,7 +44,7 @@ public:
     virtual imu::Vector<3> getVelocity() const { return velocity; }
     virtual imu::Vector<3> getAcceleration() const { return acceleration; }
     virtual imu::Quaternion getOrientation() const { return orientation; }
-    virtual imu::Vector<2> getCoordinates() const { return coordinates; }
+    virtual imu::Vector<2> getCoordinates() const { return coordinates; } // lat long in decimal degrees
     virtual double getHeading() const { return heading; }
 
     // State Setters
