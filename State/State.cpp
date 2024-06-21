@@ -90,8 +90,8 @@ void State::setdataString(){
     dataString += String(position.y()); dataString += ",";
     dataString += String(position.z()); dataString += ",";
     dataString += String(velocity.x()); dataString += ",";
-    dataString += String(velocity.x()); dataString += ",";
-    dataString += String(velocity.x()); dataString += ",";
+    dataString += String(velocity.y()); dataString += ",";
+    dataString += String(velocity.z()); dataString += ",";
     dataString += String(acceleration.x()); dataString += ",";
     dataString += String(acceleration.y()); dataString += ",";
     dataString += String(acceleration.z()); dataString += ",";
