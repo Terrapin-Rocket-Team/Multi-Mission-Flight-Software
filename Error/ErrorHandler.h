@@ -58,7 +58,4 @@ public:
 
 extern ErrorHandler errorHandler;
 
-// Platform-independent way to get the caller address
-const void* getCallerAddress();
-
 #endif // ERROR_HANDLER_H
