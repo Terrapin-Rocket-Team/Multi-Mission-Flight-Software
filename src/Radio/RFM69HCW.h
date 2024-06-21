@@ -17,7 +17,7 @@
 #define SYNC2 0xff
 
 #include "Radio.h"
-#include "APRSMsg.h"
+#include "APRS/APRSMsg.h"
 #include "RH_RF69.h"
 
 class RFM69HCW : public Radio

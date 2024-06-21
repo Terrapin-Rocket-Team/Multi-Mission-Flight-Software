@@ -401,9 +401,9 @@ Encodes the message into a format selected by type
 char *message is the message to be encoded
 sets this->msgLen to the encoded length of message
 - Telemetry:
-    message - input: latitude,longitude,altitude,speed,heading,precision,stage,t0 -> output: APRS message
-- Video:
-    message - input: char* filled with raw bytes -> output: char* filled with raw bytes + error checking
+    message - input: latitude,longitude,altitude,speed,heading,rot_x,rot_y,rot_z,stage,pi_on,pi_recording,data_recording -> output: APRS Telem message
+- Command:
+    message - input: minutesUntilPowerOn,minutesUntilVideoStart,minutesUntilDataRecording,launch -> APRS Command message
 - Ground Station: TODO
     message - input: Source:Value,Destination:Value,Path:Value,Type:Value,Body:Value -> output: APRS message
 */
@@ -417,9 +417,10 @@ bool RFM69HCW::encode(char *message, EncodingType type, int len)
             return false;
 
         // holds the data to be assembled into the aprs body
-        APRSData data;
+        APRSTelemMsg m(this->cfg);
+        APRSTelemData data;
 
-        // find each value separated in order by a comma and put in the APRSData array
+        // find each value separated in order by a comma and put in the APRSTelemData array
         {
             char *currentVal = new char[this->msgLen];
             int currentValIndex = 0;
@@ -436,21 +437,29 @@ bool RFM69HCW::encode(char *message, EncodingType type, int len)
                     currentVal[currentValIndex] = '\0';
 
                     if (currentValCount == 0 && strlen(currentVal) < 16)
-                        strcpy(data.lat, currentVal);
+                        sscanf(currentVal, "%lf", &data.lat);
                     if (currentValCount == 1 && strlen(currentVal) < 16)
-                        strcpy(data.lng, currentVal);
+                        sscanf(currentVal, "%lf", &data.lng);
                     if (currentValCount == 2 && strlen(currentVal) < 10)
-                        strcpy(data.alt, currentVal);
+                        data.alt = atoi(currentVal);
                     if (currentValCount == 3 && strlen(currentVal) < 4)
-                        strcpy(data.spd, currentVal);
+                        data.spd = atoi(currentVal);
                     if (currentValCount == 4 && strlen(currentVal) < 4)
-                        strcpy(data.hdg, currentVal);
-                    if (currentValCount == 5)
-                        data.precision = currentVal[0];
-                    if (currentValCount == 6 && strlen(currentVal) < 3)
-                        strcpy(data.stage, currentVal);
-                    if (currentValCount == 7 && strlen(currentVal) < 9)
-                        strcpy(data.t0, currentVal);
+                        data.hdg = atoi(currentVal);
+                    if (currentValCount == 5 && strlen(currentVal) < 4)
+                        data.orientation.x() = atoi(currentVal);
+                    if (currentValCount == 6 && strlen(currentVal) < 4)
+                        data.orientation.y() = atoi(currentVal);
+                    if (currentValCount == 7 && strlen(currentVal) < 4)
+                        data.orientation.z() = atoi(currentVal);
+                    if (currentValCount == 8 && strlen(currentVal) < 3)
+                        data.stage = atoi(currentVal);
+                    if (currentValCount == 9 && strlen(currentVal) < 3)
+                        data.statusFlags |= (bool)atoi(currentVal) << 2;
+                    if (currentValCount == 10 && strlen(currentVal) < 3)
+                        data.statusFlags |= (bool)atoi(currentVal) << 1;
+                    if (currentValCount == 11 && strlen(currentVal) < 3)
+                        data.statusFlags |= (bool)atoi(currentVal);
 
                     currentValIndex = 0;
                     currentValCount++;
@@ -459,54 +468,61 @@ bool RFM69HCW::encode(char *message, EncodingType type, int len)
 
             delete[] currentVal;
         }
-        // get lat and long string for low or high precision
-        if (data.precision == 'L')
+
+        m.data = data;
+        m.encode();
+        strcpy(message, (const char *)m.getArr());
+
+        return true;
+    }
+    if (type == ENCT_COMMAND)
+    {
+        if (len > 0)
+            this->msgLen = len > MSG_LEN ? MSG_LEN : len;
+        else if (this->msgLen == -1)
+            return false;
+
+        // holds the data to be assembled into the aprs body
+        APRSCmdMsg m(this->cfg);
+        APRSCmdData data;
+
+        // find each value separated in order by a comma and put in the APRSCmdData array
         {
-            strcpy(data.dao, "");
-            APRSMsg::formatLat(data.lat, 0);
-            APRSMsg::formatLong(data.lng, 0);
-        }
-        else if (data.precision == 'H')
-        {
-            APRSMsg::formatDao(data.lat, data.lng, data.dao);
-            APRSMsg::formatLat(data.lat, 1);
-            APRSMsg::formatLong(data.lng, 1);
-        }
-        // get alt string
-        int altInt = max(-99999, min(999999, atoi(data.alt)));
-        if (altInt < 0)
-        {
-            strcpy(data.alt, "/A=-");
-            APRSMsg::padding(altInt * -1, 5, data.alt, 4);
-        }
-        else
-        {
-            strcpy(data.alt, "/A=");
-            APRSMsg::padding(altInt, 6, data.alt, 3);
+            char *currentVal = new char[this->msgLen];
+            int currentValIndex = 0;
+            int currentValCount = 0;
+            for (int i = 0; i < msgLen; i++)
+            {
+                if (message[i] != ',')
+                {
+                    currentVal[currentValIndex] = message[i];
+                    currentValIndex++;
+                }
+                if (message[i] == ',' || (currentValCount == 7 && i == msgLen - 1))
+                {
+                    currentVal[currentValIndex] = '\0';
+
+                    if (currentValCount == 0 && strlen(currentVal) < 4)
+                        data.minutesUntilPowerOn = atoi(currentVal);
+                    if (currentValCount == 1 && strlen(currentVal) < 4)
+                        data.minutesUntilVideoStart = atoi(currentVal);
+                    if (currentValCount == 2 && strlen(currentVal) < 4)
+                        data.minutesUntilDataRecording = atoi(currentVal);
+                    if (currentValCount == 3 && strlen(currentVal) < 2)
+                        data.launch = (bool)atoi(currentVal);
+
+                    currentValIndex = 0;
+                    currentValCount++;
+                }
+            }
+
+            delete[] currentVal;
         }
 
-        // get course/speed strings
-        // TODO add speed zero counter (makes decoding more complex)
-        int spd_int = max(0, min(999, atoi(data.spd)));
-        int hdg_int = max(0, min(360, atoi(data.hdg)));
-        if (hdg_int == 0)
-            hdg_int = 360;
-        APRSMsg::padding(spd_int, 3, data.spd);
-        APRSMsg::padding(hdg_int, 3, data.hdg);
+        m.data = data;
+        m.encode();
+        strcpy(message, (const char *)m.getArr());
 
-        // generate the aprs message
-        APRSMsg aprs;
-
-        aprs.setSource(this->cfg.CALLSIGN);
-        aprs.setPath(this->cfg.PATH);
-        aprs.setDestination(this->cfg.TOCALL);
-
-        char body[80];
-        sprintf(body, "%c%s%c%s%c%s%c%s%s%s%s%c%s%c%s", '!', data.lat, this->cfg.OVERLAY, data.lng, this->cfg.SYMBOL,
-                data.hdg, '/', data.spd, data.alt, "/S", data.stage, '/',
-                data.t0, ' ', data.dao);
-        aprs.getBody()->setData(body);
-        aprs.encode(message);
         return true;
     }
     if (type == ENCT_NONE)
@@ -520,9 +536,9 @@ Decodes the message into a format selected by type
 char *message is the message to be decoded
 sets this->msgLen to the length of the decoded message
 - Telemetry: TODO: fix
-    message - output: latitude,longitude,altitude,speed,heading,precision,stage,t0 <- input: APRS message
-- Video: TODO
-    message - output: char* filled with raw bytes <- input: Raw byte array
+    message - output: latitude,longitude,altitude,speed,heading,rot_x,rot_y,rot_z,stage,pi_on,pi_recording,data_recording <- input: APRS message
+- Command:
+    message - minutesUntilPowerOn,minutesUntilVideoStart,minutesUntilDataRecording,launch <- APRS Command message
 - Ground Station:
     message - output: Source:Value,Destination:Value,Path:Value,Type:Value,Body:Value <- input: APRS message
 */
@@ -538,185 +554,11 @@ bool RFM69HCW::decode(char *message, EncodingType type, int len)
         // make sure message is null terminated
         message[this->msgLen] = 0;
 
-        APRSMsg aprs;
-        aprs.decode(message);
+        APRSTelemMsg m(this->cfg);
+        m.setArr((uint8_t *)message, this->msgLen);
+        m.decode();
 
-        char body[80];
-        char *bodyptr = body;
-        strcpy(body, aprs.getBody()->getData());
-        // decode body
-        APRSData data;
-        int i = 0;
-        int len = strlen(body);
-
-        // TODO this could probably be shortened
-        // body should start with '!'
-        if (body[0] != '!')
-            return false;
-        i++;
-        bodyptr = body + i;
-
-        // find latitude
-        while (body[i] != '/' && i != len)
-            i++;
-        if (i == len)
-            return false;
-        strncpy(data.lat, bodyptr, i - (bodyptr - body));
-        data.lat[i - (bodyptr - body)] = 0;
-        i++;
-        bodyptr = body + i;
-
-        // find longitude
-        while (body[i] != '[' && i != len)
-            i++;
-        if (i == len)
-            return false;
-        strncpy(data.lng, bodyptr, i - (bodyptr - body));
-        data.lng[i - (bodyptr - body)] = 0;
-        i++;
-        bodyptr = body + i;
-
-        // find heading
-        while (body[i] != '/' && i != len)
-            i++;
-        if (i == len)
-            return false;
-        strncpy(data.hdg, bodyptr, i - (bodyptr - body));
-        data.hdg[i - (bodyptr - body)] = 0;
-        i++;
-        bodyptr = body + i;
-
-        // find speed
-        while (body[i] != '/' && i != len)
-            i++;
-        if (i == len)
-            return false;
-        strncpy(data.spd, bodyptr, i - (bodyptr - body));
-        data.spd[i - (bodyptr - body)] = 0;
-        i++;
-        bodyptr = body + i;
-
-        // find altitude
-        if (body[i] != 'A' && body[i + 1] != '=')
-            return false;
-        i += 2;
-        bodyptr = body + i;
-        while (body[i] != '/' && i != len)
-            i++;
-        if (i == len)
-            return false;
-        strncpy(data.alt, bodyptr, i - (bodyptr - body));
-        data.alt[i - (bodyptr - body)] = 0;
-        i++;
-        bodyptr = body + i;
-
-        // find stage
-        if (body[i] != 'S')
-            return false;
-        i++;
-        bodyptr = body + i;
-        while (body[i] != '/' && i != len)
-            i++;
-        if (i == len)
-            return false;
-        strncpy(data.stage, bodyptr, i - (bodyptr - body));
-        data.stage[i - (bodyptr - body)] = 0;
-        i++;
-        bodyptr = body + i;
-
-        // find t0
-        while (body[i] != ' ' && i != len)
-            i++;
-        if (i == len)
-            return false;
-        strncpy(data.t0, bodyptr, i - (bodyptr - body));
-        data.t0[i - (bodyptr - body)] = 0;
-        i++;
-        bodyptr = body + i;
-
-        // find dao
-        strncpy(data.dao, bodyptr, len - (bodyptr - body));
-        data.dao[len - (bodyptr - body)] = '\0';
-
-        // convert lat and lng to degrees
-
-        int latMult = (data.lat[strlen(data.lat) - 1] == 'N') ? 1 : -1;
-        int lngMult = (data.lat[strlen(data.lat) - 1] == 'E') ? 1 : -1;
-
-        int lenLat = strlen(data.lat);
-        int decimalPosLat = 0;
-        // use for loop in case there is no decimal
-        for (int i = 0; i < lenLat; i++)
-        {
-            if (data.lat[i] == '.')
-            {
-                decimalPosLat = i;
-                break;
-            }
-        }
-
-        int lenLng = strlen(data.lng);
-        int decimalPosLng = 0;
-        // use for loop in case there is no decimal
-        for (int i = 0; i < lenLng; i++)
-        {
-            if (data.lng[i] == '.')
-            {
-                decimalPosLng = i;
-                break;
-            }
-        }
-
-        double lat = 0;
-        for (int i = decimalPosLat - 3; i >= 0; i--)
-        {
-            int t = data.lat[i];
-            for (int j = 0; j < i; j++)
-                t *= 10;
-            lat += t;
-        }
-
-        double latMins = 0;
-        for (int i = lenLat - 2; i > decimalPosLat - 3; i--)
-        {
-            if (data.lat[i] == '.')
-                continue;
-            double t = data.lat[i];
-            for (int j = (lenLat - 2 - decimalPosLat) * -1; j < i - 2; j++)
-                t *= j < 0 ? 1 / 10 : 10;
-            latMins += t;
-        }
-        latMins /= 60;
-
-        lat += latMins;
-
-        double lng = 0;
-        for (int i = decimalPosLng - 3; i >= 0; i--)
-        {
-            int t = data.lng[i];
-            for (int j = 0; j < i; j++)
-                t *= 10;
-            lat += t;
-        }
-
-        double lngMins = 0;
-        for (int i = lenLng - 2; i > decimalPosLng - 3; i--)
-        {
-            if (data.lng[i] == '.')
-                continue;
-            double t = data.lng[i];
-            for (int j = (lenLng - 2 - decimalPosLng) * -1; j < i - 2; j++)
-                t *= j < 0 ? 1 / 10 : 10;
-            lngMins += t;
-        }
-        lngMins /= 60;
-
-        lng += lngMins;
-
-        lat *= latMult;
-        lng *= lngMult;
-
-        sprintf(message, "%f,%f,%s,%s,%s,%c,%s,%s", lat, lng, data.alt, data.spd, data.hdg, strlen(data.dao) > 0 ? 'H' : 'L', data.stage, data.t0);
+        sprintf(message, "%lf,%lf,%d,%d,%d,%lf,%lf,%lf,%d,%d,%d,%d", m.data.lat, m.data.lng, m.data.alt, m.data.spd, m.data.hdg, m.data.orientation.x(), m.data.orientation.y(), m.data.orientation.z(), m.data.stage, m.data.statusFlags & 0b100, m.data.statusFlags & 0b010, m.data.statusFlags & 0b001);
 
         this->msgLen = strlen(message);
         return true;
@@ -732,15 +574,33 @@ bool RFM69HCW::decode(char *message, EncodingType type, int len)
         message[this->msgLen] = 0;
 
         // put the message into a APRSMessage object to decode it
-        APRSMsg aprs;
-        aprs.decode(message);
-        aprs.toString(message);
+        APRSTelemMsg m(this->cfg);
+        m.setArr((uint8_t *)message, this->msgLen);
+        m.decode();
 
         // add RSSI to the end of message
         this->RSSI();
-        sprintf(message + strlen(message), "%s%d", ",RSSI:", this->rssi);
+        sprintf(message, "Source:%s,Destination:%s,Path:%s,Type:%s,Data:%lf/%lf/%d/%d/%d/%lf/%lf/%lf/%d/%d/%d/%d,RSSI:%d", m.header.CALLSIGN, m.header.TOCALL, m.header.PATH, m.type, m.data.lat, m.data.lng, m.data.alt, m.data.spd, m.data.hdg, m.data.orientation.x(), m.data.orientation.y(), m.data.orientation.z(), m.data.stage, m.data.statusFlags & 0b100, m.data.statusFlags & 0b010, m.data.statusFlags & 0b001, this->rssi);
 
         this->msgLen = strlen(message);
+        return true;
+    }
+    if (type == ENCT_COMMAND)
+    {
+        if (len > 0)
+            this->msgLen = len > MSG_LEN ? MSG_LEN : len;
+        else if (this->msgLen == -1)
+            return false;
+
+        // make sure message is null terminated
+        message[this->msgLen] = 0;
+
+        APRSCmdMsg m(this->cfg);
+        APRSCmdData data;
+        m.setArr((uint8_t *)message, this->msgLen);
+        m.decode();
+
+        sprintf(message, "%d,%d,%d,%d", m.data.minutesUntilPowerOn, m.data.minutesUntilVideoStart, m.data.minutesUntilDataRecording, m.data.launch);
         return true;
     }
     if (type == ENCT_NONE)

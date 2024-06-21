@@ -24,7 +24,6 @@ Types:
 - ENCT_GROUNDSTATION: Source:Value,Destination:Value,Path:Value,Type:Value,Body:Value <-> APRS message
 - ENCT_NONE: no encoding is applied, same as using tx()
 */
-
 class Radio
 {
 public:
@@ -33,6 +32,7 @@ public:
     {
         ENCT_TELEMETRY,
         ENCT_GROUNDSTATION,
+        ENCT_COMMAND,
         ENCT_NONE
     };
     enum RadioMode
