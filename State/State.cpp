@@ -1,6 +1,8 @@
 #include "State.h"
 #pragma region Constructor and Destructor
 
+using namespace mmfs;
+
 State::State(Sensor **sensors, int numSensors, KalmanInterface *kfilter, bool stateRecordsOwnData)
 {
     baroOldAltitude = 0;
