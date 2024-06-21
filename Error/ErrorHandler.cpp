@@ -87,6 +87,22 @@ void ErrorHandler::addError(ErrorType type, const char *message, int errorLocati
 {
     // Create a new error
     Error *error = new Error(type, message, errorLocation);
+    
+    // Add the error to the list
+    addError(error);
+}
+
+void ErrorHandler::addError(ErrorType type, const char *message)
+{
+
+    int calledAddress = *(int *)getCallerAddress();
+
+    // Add an error with no location
+    addError(type, message, -1);
+}
+
+void ErrorHandler::addError(Error *error)
+{
     // If there are no errors, make this error the head
     if (errorHead == nullptr) {
         errorHead = error;
@@ -119,4 +135,30 @@ void ErrorHandler::printErrors()
         printf("%s\n", current->toString());
         current = current->getNext();
     }
+}
+
+// Platform-independent way to get the caller address
+#if defined(__arm__) && defined(__thumb__)
+__attribute__((naked)) const void* getCallerAddress() {
+    __asm volatile (
+        "mov r0, lr \n"
+        "bx lr \n"
+    );
+}
+#elif defined(__arm__)
+__attribute__((naked)) const void* getCallerAddress() {
+    __asm volatile (
+        "mov r0, lr \n"
+        "bx lr \n"
+    );
+}
+#elif defined(__x86_64__) || defined(_M_X64) || defined(__i386) || defined(_M_IX86)
+const void* getCallerAddress() {
+    void *address;
+    asm volatile ("mov %0, %%rbp" : "=r"(address));
+    return address;
+}
+#else
+const void* getCallerAddress() {
+    return nullptr; // Not supported
 }
