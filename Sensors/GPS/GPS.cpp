@@ -1,5 +1,6 @@
 #include "GPS.h"
 
+using namespace mmfs;
 
 GPS::GPS()
 {
@@ -18,6 +19,9 @@ GPS::GPS()
     sec = 0;
     time = 0;
     strcpy(gpsTime, "00:00:00");
+
+    staticData = new char[60 + 15 * 2 + 12 * 1];        // 60 chars for the string, 15 chars for the 2 floats, 12 chars for the float
+    data = new char[15 * 2 + 12 * 4 + 10 * 1 + 10 + 8]; // 15 chars for the 2 floats, 12 chars for the 4 floats, 10 chars for the string, 10 for the int, 8 for the comma
 }
 
 /*
@@ -95,18 +99,12 @@ const char *GPS::getCsvHeader() const
 
 const char *GPS::getDataString() const
 {
-    // See State.cpp::setDataString() for comments on what these numbers mean. 15 for GPS.
-    const int size = 15 * 2 + 12 * 4 + 10 * 1 + 10 + 8;
-    char *data = new char[size];
-    snprintf(data, size, "%.10f,%.10f,%.2f,%.2f,%.2f,%.2f,%.2f,%s,%d,", pos.x(), pos.y(), altitude, velocity.magnitude(), displacement.x(), displacement.y(), displacement.z(), gpsTime, fixQual); // trailing comma
+    sprintf(data, "%.10f,%.10f,%.2f,%.2f,%.2f,%.2f,%.2f,%s,%d,", pos.x(), pos.y(), altitude, velocity.magnitude(), displacement.x(), displacement.y(), displacement.z(), gpsTime, fixQual); // trailing comma
     return data;
 }
 
 const char *GPS::getStaticDataString() const
 {
-    // See State.cpp::setDataString() for comments on what these numbers mean. 15 for GPS.
-    const int size = 60 + 15 * 2 + 12 * 1;
-    char *data = new char[size];
-    snprintf(data, size, "Original Latitude (m): %.10f\nOriginal Longitude (m): %.10f\nOriginal Altitude (m): %.2f\n", origin.x(), origin.y(), origin.z());
-    return data;
+    sprintf(staticData, "Original Latitude (m): %.10f\nOriginal Longitude (m): %.10f\nOriginal Altitude (m): %.2f\n", origin.x(), origin.y(), origin.z());
+    return staticData;
 }

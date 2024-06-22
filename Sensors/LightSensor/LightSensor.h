@@ -1,23 +1,29 @@
-// Placeholder file for the LightSensor class
-
 #ifndef LIGHT_SENSOR_H
 #define LIGHT_SENSOR_H
 
 #include "../Sensor.h"
 
-// NOT READY FOR IMPLEMENTATION. NNEDS TO BE REWORKED TO MATCH OTHER SENSORS LIKE BARO, IMU, OR GPS
-class LightSensor : public Sensor
+namespace mmfs
 {
-public:
-    virtual ~LightSensor() {}
-    virtual bool calibrate() = 0; // Virtual functions set equal to zero are "pure virtual functions". (like abstract functions in Java)
-    virtual double getPressure() = 0;
-    virtual double getTemp() = 0;
-    virtual double getTempF() = 0;
-    virtual double getPressureAtm() = 0;
-    virtual double getRelAltFt() = 0;
-    virtual SensorType getType() const override { return LIGHT_SENSOR_; }
-    virtual const char *getTypeString() const override { return "Light Sensor"; }
-};
+    class LightSensor : public Sensor
+    {
+    public:
+        virtual ~LightSensor() {}
+        virtual const char *getCsvHeader() const override;
+        virtual const char *getDataString() const override;
+        virtual const char *getStaticDataString() const override;
+        virtual const double getLux() const;
+        virtual SensorType getType() const override { return LIGHT_SENSOR_; }
+        virtual const char *getTypeString() const override { return "Light Sensor"; }
 
+    protected:
+        LightSensor()
+        {
+            staticData = new char[25 + 12 * 1]; // 25 chars for the string, 12 chars for the float
+            data = new char[12 * 1 + 1];        // 12 chars for the 1 float, 1 for the comma
+        }; // Protected constructor to prevent instantiation
+        double lux;
+        double initialLux;
+    };
+}
 #endif

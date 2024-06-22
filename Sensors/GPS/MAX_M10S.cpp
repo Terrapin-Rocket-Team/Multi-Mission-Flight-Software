@@ -1,5 +1,6 @@
 #include "MAX_M10S.h"
 
+using namespace mmfs;
 
 MAX_M10S::MAX_M10S() : m10s()
 {
@@ -47,7 +48,7 @@ void MAX_M10S::update()
     if (!hasFirstFix && fixQual >= 3)
     {
         recordLogData(INFO, "GPS has first fix.");
-        
+
         digitalWrite(33, HIGH);
         delay(1000);
         digitalWrite(33, LOW);
@@ -70,9 +71,9 @@ void MAX_M10S::update()
     hr = m10s.getHour();
     min = m10s.getMinute();
     sec = m10s.getSecond();
-    //ignore -Wformat-truncation
-    #pragma GCC diagnostic push
-    #pragma GCC diagnostic ignored "-Wformat-truncation"
+// ignore -Wformat-truncation
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wformat-truncation"
     snprintf(gpsTime, 9, "%02d:%02d:%02d", hr, min, sec);
-    #pragma GCC diagnostic pop
+#pragma GCC diagnostic pop
 }

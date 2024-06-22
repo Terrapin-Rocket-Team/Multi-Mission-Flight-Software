@@ -1,5 +1,7 @@
 #include "BMP390.h"
 
+using namespace mmfs;
+
 BMP390::BMP390()
 {
     setName("BMP390");
