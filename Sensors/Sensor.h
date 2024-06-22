@@ -2,6 +2,7 @@
 #define SENSOR_H
 
 #include "../RecordData/RecordData.h"
+#include "../Constants.h"
 
 enum SensorType
 {

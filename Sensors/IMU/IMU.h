@@ -3,6 +3,7 @@
 
 #include "../Sensor.h"
 #include <imumaths.h>
+#include "../../Constants.h"
 
 namespace mmfs
 {
@@ -23,8 +24,8 @@ namespace mmfs
     protected:
         IMU()
         {                                       // Protected constructor to prevent instantiation
-            staticData = new char[30 + 12 * 3]; // 30 chars for the string, 12 chars for the 3 floats
-            data = new char[12 * 10 + 10];      // 10x floats + buffer space
+            staticData = new char[30 + MAX_DIGITS_FLOAT * 3]; // 30 chars for the string, 12 chars for the 3 floats
+            data = new char[MAX_DIGITS_FLOAT * 10 + 10];      // 10x floats + buffer space
         };
         imu::Vector<3> accelerationVec = imu::Vector<3>(0, 0, 0);
         imu::Vector<3> orientationEuler = imu::Vector<3>(0, 0, 0);

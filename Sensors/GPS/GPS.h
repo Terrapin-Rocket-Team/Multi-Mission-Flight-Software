@@ -3,6 +3,7 @@
 
 #include <imumaths.h>
 #include "../Sensor.h"
+#include "../../Constants.h"
 
 namespace mmfs
 {

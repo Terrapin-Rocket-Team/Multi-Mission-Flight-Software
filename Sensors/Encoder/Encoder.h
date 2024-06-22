@@ -2,6 +2,7 @@
 #define ENCODER_H
 
 #include "../Sensor.h"
+#include "../../Constants.h"
 
 namespace mmfs
 {
@@ -19,8 +20,8 @@ namespace mmfs
     protected:
         Encoder()
         {                                       // Protected constructor to prevent instantiation
-            staticData = new char[25 + 12 * 1]; // 25 chars for the string, 12 chars for the float
-            data = new char[12 * 1 + 3];        // 12 chars for the float, 3 for the comma
+            staticData = new char[25 + MAX_DIGITS_FLOAT * 1]; // 25 chars for the string, 12 chars for the float
+            data = new char[MAX_DIGITS_FLOAT * 1 + 3];        // 12 chars for the float, 3 for the comma
         }
         int currentRelativeSteps;
         int initialSteps;
