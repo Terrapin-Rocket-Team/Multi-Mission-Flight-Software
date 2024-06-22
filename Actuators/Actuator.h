@@ -3,6 +3,9 @@
 
 #include "../RecordData/RecordData.h"
 
+namespace mmfs
+{
+
 enum ActuatorType
 {
     SERVO_,
@@ -11,7 +14,9 @@ enum ActuatorType
 class Actuator
 {
 public:
-    virtual ~Actuator(){};
+    virtual ~Actuator(){
+        delete[] name;
+    };
     // Sets up the actuator and stores any critical parameters
     virtual bool initialize() = 0;
     // gives the names of the columns which transient data will be stored under, in a comma separated string
@@ -38,5 +43,7 @@ protected:
     bool initialized = false;
     char *name = nullptr;
 };
+
+}
 
 #endif // ACTUATOR_H

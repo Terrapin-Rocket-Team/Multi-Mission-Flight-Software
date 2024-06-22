@@ -4,6 +4,9 @@
 #include "../Actuator.h"
 #include <PWMServo.h>
 
+namespace mmfs
+{
+
 class Servo : public Actuator
 {
 public:
@@ -22,8 +25,8 @@ public:
     {
         delete[] data;
     }
-
-    void initializeServo();
+    
+    virtual bool initialize() override;
     void setSignalPin(int pin);
     const char *getName() const;
     virtual void setAngle(double servoAngle); // Angle in degrees
@@ -44,5 +47,7 @@ private:
     static const int DATA_SIZE = 12; // Assuming 12 bytes for the floats
     static const int BUFFER_SIZE = 10;
 };
+
+}
 
 #endif // SERVO_H

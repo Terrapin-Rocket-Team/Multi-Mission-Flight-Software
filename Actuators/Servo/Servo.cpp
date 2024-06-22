@@ -1,5 +1,13 @@
 #include "Servo.h"
 
+using namespace mmfs;
+
+bool Servo::initialize()
+{
+    initialize = true;
+    return true
+}
+
 void Servo::setAngle(double servoAngle)
 {
     // Angle must be in degrees from [0:180]
@@ -31,10 +39,7 @@ const char *Servo::getCsvHeader() const
 }
 
 const char *Servo::getDataString() const
-{ // See State.cpp::setDataString() for comments on what these numbers mean
-    // float x1
-    const int size = 12 * 1 + 3;
-    char *data = new char[size];
-    snprintf(data, size, "%.2f,", angle); // trailing comma
+{
+    snprintf(data, (DATA_SIZE+BUFFER_SIZE), "%.2f,", angle); // trailing comma
     return data;
 }
