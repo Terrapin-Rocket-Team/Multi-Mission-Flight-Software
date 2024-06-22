@@ -40,6 +40,6 @@ const char *Servo::getCsvHeader() const
 
 const char *Servo::getDataString() const
 {
-    snprintf(data, (DATA_SIZE+BUFFER_SIZE), "%.2f,", angle); // trailing comma
+    snprintf(data, (MAX_DIGITS_FLOAT+BUFFER_SIZE), "%.2f,", angle); // trailing comma
     return data;
 }

@@ -13,7 +13,7 @@ public:
     // Constructor to initialize staticData and data
     Servo(const char servoName[], int pin)
     {
-        data = new char[DATA_SIZE + BUFFER_SIZE];
+        data = new char[MAX_DIGITS_FLOAT + BUFFER_SIZE];
 
         setName(servoName);
         setSignalPin(pin);
@@ -44,7 +44,6 @@ protected:
 
 private:
     char *data;
-    static const int DATA_SIZE = 12; // Assuming 12 bytes for the floats
     static const int BUFFER_SIZE = 10;
 };
 
