@@ -54,10 +54,6 @@
             "owner": "adafruit"
         },
         {
-            "name": "BlinkBuzz",
-            "version": "https://github.com/DrewBrandt/BlinkBuzz.git"
-        },
-        {
             "name": "Kalman-Filter",
             "version": "https://github.com/Terrapin-Rocket-Team/Kalman-Filter.git"
         },

@@ -4,8 +4,8 @@ using namespace mmfs;
 
 bool Servo::initialize()
 {
-    initialize = true;
-    return true
+    initialized = true;
+    return true;
 }
 
 void Servo::setAngle(double servoAngle)

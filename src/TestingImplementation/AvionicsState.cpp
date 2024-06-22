@@ -1,5 +1,8 @@
 
 #include "AvionicsState.h"
+
+using namespace mmfs;
+
 AvionicsState::AvionicsState(Sensor **sensors, int numSensors, KalmanInterface *kfilter, bool recordData) : State(sensors, numSensors, kfilter, recordData)
 {
     stage = 0;
