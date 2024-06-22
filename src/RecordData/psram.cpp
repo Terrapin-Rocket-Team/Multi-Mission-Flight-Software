@@ -1,4 +1,4 @@
-#include "psram.h"
+#include "Psram.h"
 
 PSRAM::PSRAM()
 {
@@ -7,8 +7,6 @@ PSRAM::PSRAM()
 
     cursorStart = nullptr;
     cursorEnd = nullptr;
-    memBegin = nullptr;
-    memEnd = nullptr;
 }
 
 bool PSRAM::init()
@@ -24,22 +22,22 @@ bool PSRAM::init()
 
     return ready;
 }
-void PSRAM::println(const char *data, bool isFlightData)
+void PSRAM::println(const char *data, bool writeToTop = true)
 {
     if (ready)
     {
-        print(data, isFlightData);
-        print("\n", isFlightData);
+        print(data, writeToTop);
+        print("\n", writeToTop);
     }
 }
 
 // Write string to FRAM
-void PSRAM::print(const char *data, bool isFlightData)
+void PSRAM::print(const char *data, bool writeToTop = true)
 {
-    if (ready)
+    if (ready) {
         for (int i = 0; data[i] != '\0'; i++)
         {
-            if (isFlightData)
+            if (writeToTop)
             {
                 *cursorStart = data[i];
                 cursorStart++;
@@ -50,86 +48,7 @@ void PSRAM::print(const char *data, bool isFlightData)
                 cursorEnd--;
             }
         }
-}
-
-// Dump FRAM to SD Card. Only to be called after flight has landed or timeout is reached.
-bool PSRAM::dumpFlightData()
-{
-    if (isSDReady() && ready)
-    {
-        flightDataFile = sd.open(flightDataFileName, FILE_WRITE);
-        if (flightDataFile)
-        {
-            flightDataFile.write(memBegin, cursorStart - memBegin);
-            flightDataFile.close();
-        }
-        else return false;
-    } else return false;
-
-    cursorStart = memBegin;
-    return true;
-}
-
-bool PSRAM::dumpLogData()
-{ // more complicated because data is stored in reverse order
-    if (!isSDReady() || !ready){
-        digitalWrite(33, HIGH);
-        delay(200);
-        digitalWrite(33, LOW);
-        delay(200);
-        return false;
     }
-
-    char buffer[2048]; // large buffer but the Teensy should be able to handle it. Buffer should be a multiple of 512 for SD card efficiency.
-    char *writeCursor = memEnd;
-    int i;
-    logFile = sd.open(logFileName, FILE_WRITE);
-
-    if (!logFile){
-        digitalWrite(33, HIGH);
-        delay(200);
-        digitalWrite(33, LOW);
-        delay(200);
-        digitalWrite(33, HIGH);
-        delay(200);
-        digitalWrite(33, LOW);
-        delay(200);
-        return false;
-    }
-    
-    while (writeCursor >= cursorEnd)
-    {
-
-        for (i = 0; i < 2048; i++)
-        {
-            if (writeCursor <= cursorEnd)
-            {
-                buffer[i] = '\0';
-                writeCursor--;
-                break;
-            }
-            buffer[i] = *writeCursor--;
-        }
-        logFile.write(buffer, i);
-    }
-
-    logFile.close();
-    cursorEnd = memEnd;
-    dumped = true;
-        digitalWrite(33, HIGH);
-        delay(200);
-        digitalWrite(33, LOW);
-        delay(200);
-        digitalWrite(33, HIGH);
-        delay(200);
-        digitalWrite(33, LOW);
-        delay(200);
-        digitalWrite(33, HIGH);
-        delay(200);
-        digitalWrite(33, LOW);
-        delay(200);
-    
-    return true;
 }
 
 // Returns whether the FRAM is initialized
@@ -141,4 +60,99 @@ bool PSRAM::isReady()
 int PSRAM::getFreeSpace()
 {
     return cursorEnd - cursorStart;
+}
+
+char *PSRAM::read(char *data, int size)
+{
+    if (ready)
+    {
+        for (int i = 0; i < size; i++)
+        {
+            data[i] = *cursorStart;
+            cursorStart++;
+        }
+    }
+    return data;
+}
+
+char *PSRAM::read(char *data)
+{
+    if (ready)
+    {
+        char *mem = memBegin;
+        while (mem != cursorStart)
+        {
+            *data = *mem;
+            mem++;
+            data++;
+        }
+    }
+    return data;
+}
+
+char *PSRAM::readTo(char *data, char endChar)
+{
+    if (ready)
+    {
+        char *mem = memBegin;
+        while (*mem != endChar && mem != cursorStart)
+        {
+            *data = *mem;
+            mem++;
+            data++;
+        }
+    }
+    return data;
+}
+
+char *PSRAM::readFromBottom(char *data, int size)
+{
+    if (ready)
+    {
+        char *mem = memEnd;
+        int i = 0;
+        while (i < size && mem != cursorEnd) {
+            *data = *mem;
+            mem--;
+            data++;
+        }
+    }
+
+    return data;
+}
+
+char *PSRAM::readFromBottom(char *data)
+{
+    if (ready)
+    {
+        char *mem = memEnd;
+        while (mem != cursorEnd)
+        {
+            *data = *mem;
+            mem--;
+            data++;
+        }
+    }
+
+    return data;
+}
+
+bool PSRAM::seek(int offset)
+{
+    if (ready)
+    {
+        cursorStart += offset;
+        return true;
+    }
+    return false;
+}
+
+bool PSRAM::seekFromBottom(int offset)
+{
+    if (ready)
+    {
+        cursorEnd -= offset;
+        return true;
+    }
+    return false;
 }
