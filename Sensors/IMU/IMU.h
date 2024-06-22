@@ -32,7 +32,7 @@ namespace mmfs
         imu::Vector<3> magnetometer = imu::Vector<3>(0, 0, 0);
         imu::Vector<3> initialMagField = imu::Vector<3>(0, 0, 0);
     };
-
+  
     imu::Vector<3> convertToEuler(const imu::Quaternion &orientation);
 }
 #endif
