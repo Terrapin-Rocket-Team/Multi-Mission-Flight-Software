@@ -1,5 +1,7 @@
 #include "KalmanInterface.h"
 
+using namespace mmfs;
+
 KalmanInterface::KalmanInterface(double inputSize, double measurementSize, double stateSize)
 {
   this->inputSize = inputSize;

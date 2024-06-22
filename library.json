@@ -13,11 +13,18 @@
         {
             "name": "Michael Mallamaci",
             "url": "https://github.com/mallamacimj"
+        },        
+        {
+            "name": "Varun Unnithan",
+            "url": "https://github.com/varun-un"
+        },
+        {
+            "name": "Joseph Hauerstein",
+            "url": "https://github.com/jhauerst"
         },
         {
             "name": "Drew Brandt",
-            "url": "https://github.com/DrewBrandt",
-            "maintainer": true
+            "url": "https://github.com/DrewBrandt"
         },
         {
             "name": "Terrapin Rocket Team",
@@ -49,6 +56,10 @@
         {
             "name": "BlinkBuzz",
             "version": "https://github.com/DrewBrandt/BlinkBuzz.git"
+        },
+        {
+            "name": "Kalman-Filter",
+            "version": "https://github.com/Terrapin-Rocket-Team/Kalman-Filter.git"
         },
         {
             "name": "RadioHead",
