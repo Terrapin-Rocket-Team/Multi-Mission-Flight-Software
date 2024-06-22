@@ -1,7 +1,9 @@
 #include "State.h"
 #pragma region Constructor and Destructor
 
-State::State(int maxNumSensors, SensorType *sensorOrder, KalmanInterface *kfilter, bool stateRecordsOwnFlightData)
+using namespace mmfs;
+
+State::State(Sensor **sensors, int numSensors, KalmanInterface *kfilter, bool stateRecordsOwnData)
 {
     baroOldAltitude = 0;
     baroVelocity = 0;
@@ -10,16 +12,9 @@ State::State(int maxNumSensors, SensorType *sensorOrder, KalmanInterface *kfilte
     dataString = nullptr;
     csvHeader = nullptr;
     numSensors = 0;
-    this->maxNumSensors = maxNumSensors;
-    sensors = new Sensor *[maxNumSensors];
-    this->sensorOrder = new SensorType[maxNumSensors];
-    for (int i = 0; i < maxNumSensors; i++)
-    {
-        sensors[i] = nullptr;
-        this->sensorOrder[i] = sensorOrder[i];
-    }
-
-    recordOwnFlightData = stateRecordsOwnFlightData;
+    this->maxNumSensors = numSensors;
+    this->sensors = sensors;
+    recordOwnFlightData = stateRecordsOwnData;
     this->kfilter = kfilter;
 }
 
@@ -28,12 +23,6 @@ State::~State()
     delete[] csvHeader;
     delete[] stateString;
     delete kfilter;
-    for (int i = 0; i < maxNumSensors; i++)
-    {
-        delete sensors[i];
-    }
-    delete[] sensors;
-    delete[] sensorOrder;
 }
 
 #pragma endregion
@@ -61,7 +50,7 @@ bool State::init()
         }
         else
         {
-            snprintf(logData, 100, "A sensor was not added via addSensor!");
+            snprintf(logData, 100, "A sensor in the array was null!");
             recordLogData(ERROR, logData);
         }
     }
@@ -222,24 +211,10 @@ char *State::getCsvHeader() const { return csvHeader; }
 
 #pragma region Getters and Setters for Sensors
 
-bool State::addSensor(Sensor *sensor, int sensorNum)
-{
-    int modifiedNum = sensorNum;
-    for (int i = 0; i < maxNumSensors; i++)
-    {
-        if (sensorOrder[i] == sensor->getType() && --modifiedNum == 0)
-        {
-            sensors[i] = sensor;
-            return true;
-        }
-    }
-    return false;
-}
-
 Sensor *State::getSensor(SensorType type, int sensorNum) const
 {
     for (int i = 0; i < maxNumSensors; i++)
-        if (sensorOrder[i] == sensors[i]->getType() && --sensorNum == 0)
+        if (sensors[i] && type == sensors[i]->getType() && --sensorNum == 0)
             return sensors[i];
     return nullptr;
 }
