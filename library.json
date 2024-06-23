@@ -36,9 +36,6 @@
     "dependencies": 
     [
         {
-            "name": "SPI"
-        },
-        {
             "name": "Adafruit BMP280 Library",
             "version": "2.6.8"
         },
@@ -63,7 +60,7 @@
         },
         {
             "name": "RadioHead",
-            "version": "1.120"
+            "version": "https://github.com/Awbmilne/Patched-RadioHead.git"
         }
     ],
     "frameworks": "*",
