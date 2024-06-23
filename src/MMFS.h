@@ -1,7 +1,7 @@
 #include "BlinkBuzz/BlinkBuzz.h"
 #include "Actuators/Servo/Servo.h"
 #include "RecordData/RecordData.h"
-#include "Sensors/Baro/BMP280.h"
+#include "Sensors/Baro/BMP390.h"
 #include "Sensors/IMU/BNO055.h"
 #include "Sensors/GPS/MAX_M10S.h"
 #include "Sensors/LightSensor/LightSensor.h"
