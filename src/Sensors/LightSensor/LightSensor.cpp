@@ -1,25 +1,27 @@
 #include "LightSensor.h"
 
-using namespace mmfs;
-
-const double LightSensor::getLux() const
+namespace mmfs
 {
-    return lux;
-}
 
-const char *LightSensor::getCsvHeader() const
-{
-    return "L-Light (lux),";
-}
+    const double LightSensor::getLux() const
+    {
+        return lux;
+    }
 
-const char *LightSensor::getDataString() const
-{
-    sprintf(data, "%.2f,", lux); // trailing comma
-    return data;
-}
+    const char *LightSensor::getCsvHeader() const
+    {
+        return "L-Light (lux),";
+    }
 
-const char *LightSensor::getStaticDataString() const
-{
-    sprintf(staticData, "Initial Light (lux): %.2f\n", initialLux);
-    return staticData;
+    const char *LightSensor::getDataString() const
+    {
+        sprintf(data, "%.2f,", lux); // trailing comma
+        return data;
+    }
+
+    const char *LightSensor::getStaticDataString() const
+    {
+        sprintf(staticData, "Initial Light (lux): %.2f\n", initialLux);
+        return staticData;
+    }
 }

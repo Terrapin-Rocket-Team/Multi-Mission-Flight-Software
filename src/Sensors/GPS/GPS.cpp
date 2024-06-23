@@ -1,110 +1,112 @@
 #include "GPS.h"
 
-using namespace mmfs;
-
-GPS::GPS()
+namespace mmfs
 {
-    hasFirstFix = false;
-    origin = imu::Vector<3>(0, 0, 0);
-    pos = imu::Vector<2>(0, 0);
-    velocity = imu::Vector<3>(0, 0, 0);
-    displacement = imu::Vector<3>(0, 0, 0);
-    irlTime = imu::Vector<3>(0, 0, 0);
 
-    altitude = 0;
-    fixQual = 0;
-    heading = 0;
-    hr = 0;
-    min = 0;
-    sec = 0;
-    time = 0;
-    strcpy(gpsTime, "00:00:00");
+    GPS::GPS()
+    {
+        hasFirstFix = false;
+        origin = imu::Vector<3>(0, 0, 0);
+        pos = imu::Vector<2>(0, 0);
+        velocity = imu::Vector<3>(0, 0, 0);
+        displacement = imu::Vector<3>(0, 0, 0);
+        irlTime = imu::Vector<3>(0, 0, 0);
 
-    staticData = new char[60 + MAX_DIGITS_LAT_LON * 2 + MAX_DIGITS_FLOAT * 1];        // 60 chars for the string, 15 chars for the 2 floats, 12 chars for the float
-    data = new char[MAX_DIGITS_LAT_LON * 2 + MAX_DIGITS_FLOAT * 4 + MAX_DIGITS_INT * 1 + 10 + 8]; // 15 chars for the 2 floats, 12 chars for the 4 floats, 10 chars for the time of day string, 10 for the int, 8 for the comma
-}
+        altitude = 0;
+        fixQual = 0;
+        heading = 0;
+        hr = 0;
+        min = 0;
+        sec = 0;
+        time = 0;
+        strcpy(gpsTime, "00:00:00");
 
-/*
-return altitude in m
-*/
-double GPS::getAlt() const
-{
-    return altitude;
-}
+        staticData = new char[60 + MAX_DIGITS_LAT_LON * 2 + MAX_DIGITS_FLOAT * 1];                    // 60 chars for the string, 15 chars for the 2 floats, 12 chars for the float
+        data = new char[MAX_DIGITS_LAT_LON * 2 + MAX_DIGITS_FLOAT * 4 + MAX_DIGITS_INT * 1 + 10 + 8]; // 15 chars for the 2 floats, 12 chars for the 4 floats, 10 chars for the time of day string, 10 for the int, 8 for the comma
+    }
 
-/*
-returns the lat and long of the rocket to the 7th sig fig
-*/
-imu::Vector<2> GPS::getPos() const
-{
-    return pos;
-}
+    /*
+    return altitude in m
+    */
+    double GPS::getAlt() const
+    {
+        return altitude;
+    }
 
-double GPS::getHeading() const
-{
-    return heading;
-}
+    /*
+    returns the lat and long of the rocket to the 7th sig fig
+    */
+    imu::Vector<2> GPS::getPos() const
+    {
+        return pos;
+    }
 
-/*
-return the velocity (meters per second)
-there probably issues with floating points
-*/
-imu::Vector<3> GPS::getVelocity() const
-{
-    return velocity;
-}
+    double GPS::getHeading() const
+    {
+        return heading;
+    }
 
-/*
-retern the displacement since the origin
-there is probably issues with floating point arithmetic
-*/
-imu::Vector<3> GPS::getDisplacement() const
-{
-    return displacement;
-}
+    /*
+    return the velocity (meters per second)
+    there probably issues with floating points
+    */
+    imu::Vector<3> GPS::getVelocity() const
+    {
+        return velocity;
+    }
 
-/*
-returns vector of orginal position in lat(deg), lat(deg), and alti(m)
-*/
-imu::Vector<3> GPS::getOriginPos() const
-{
-    return origin;
-}
+    /*
+    retern the displacement since the origin
+    there is probably issues with floating point arithmetic
+    */
+    imu::Vector<3> GPS::getDisplacement() const
+    {
+        return displacement;
+    }
 
-bool GPS::getHasFirstFix() const
-{
-    return hasFirstFix;
-}
+    /*
+    returns vector of orginal position in lat(deg), lat(deg), and alti(m)
+    */
+    imu::Vector<3> GPS::getOriginPos() const
+    {
+        return origin;
+    }
 
-/*
-time since in initialization in seconds
-*/
-const char *GPS::getTimeOfDay() const
-{
-    return gpsTime;
-}
+    bool GPS::getHasFirstFix() const
+    {
+        return hasFirstFix;
+    }
 
-/*
-return the number of satellites to indicate quality of data
-*/
-int GPS::getFixQual() const
-{
-    return fixQual;
-}
+    /*
+    time since in initialization in seconds
+    */
+    const char *GPS::getTimeOfDay() const
+    {
+        return gpsTime;
+    }
 
-const char *GPS::getCsvHeader() const
-{                                                                                                                        // incl G- for GPS
-    return "G-Lat (deg),G-Lon (deg),G-Alt (m),G-Speed (m/s),G-DispX (m),G-DispY (m),G-DispZ (m),G-ToD (s),G-# of Sats,"; // trailing comma
-}
+    /*
+    return the number of satellites to indicate quality of data
+    */
+    int GPS::getFixQual() const
+    {
+        return fixQual;
+    }
 
-const char *GPS::getDataString() const
-{
-    sprintf(data, "%.10f,%.10f,%.2f,%.2f,%.2f,%.2f,%.2f,%s,%d,", pos.x(), pos.y(), altitude, velocity.magnitude(), displacement.x(), displacement.y(), displacement.z(), gpsTime, fixQual); // trailing comma
-    return data;
-}
+    const char *GPS::getCsvHeader() const
+    {                                                                                                                        // incl G- for GPS
+        return "G-Lat (deg),G-Lon (deg),G-Alt (m),G-Speed (m/s),G-DispX (m),G-DispY (m),G-DispZ (m),G-ToD (s),G-# of Sats,"; // trailing comma
+    }
 
-const char *GPS::getStaticDataString() const
-{
-    sprintf(staticData, "Original Latitude (m): %.10f\nOriginal Longitude (m): %.10f\nOriginal Altitude (m): %.2f\n", origin.x(), origin.y(), origin.z());
-    return staticData;
+    const char *GPS::getDataString() const
+    {
+        sprintf(data, "%.10f,%.10f,%.2f,%.2f,%.2f,%.2f,%.2f,%s,%d,", pos.x(), pos.y(), altitude, velocity.magnitude(), displacement.x(), displacement.y(), displacement.z(), gpsTime, fixQual); // trailing comma
+        return data;
+    }
+
+    const char *GPS::getStaticDataString() const
+    {
+        sprintf(staticData, "Original Latitude (m): %.10f\nOriginal Longitude (m): %.10f\nOriginal Altitude (m): %.2f\n", origin.x(), origin.y(), origin.z());
+        return staticData;
+    }
 }
