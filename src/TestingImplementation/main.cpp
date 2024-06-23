@@ -22,19 +22,19 @@ void setup()
 
     ram = new PSRAM();
     if (!setupSDCard())
-        bb.onoff(BUZZER, 200, 3);
+        bb.onoff(BUZZER_PIN, 200, 3);
     else
-        bb.onoff(BUZZER, 1000, 1);
+        bb.onoff(BUZZER_PIN, 1000, 1);
 
     if (!ram->init())
-        bb.onoff(BUZZER, 200, 3);
+        bb.onoff(BUZZER_PIN, 200, 3);
     else
-        bb.onoff(BUZZER, 1000, 1);
+        bb.onoff(BUZZER_PIN, 1000, 1);
     
     if(!avionicsState.init())
-        bb.onoff(BUZZER, 200, 3);
+        bb.onoff(BUZZER_PIN, 200, 3);
     else
-        bb.onoff(BUZZER, 1000, 1);
+        bb.onoff(BUZZER_PIN, 1000, 1);
 }
 
 void loop()
