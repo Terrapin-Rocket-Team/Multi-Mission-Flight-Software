@@ -47,7 +47,8 @@
             "name": "Adafruit BNO055"
         },
         {
-            "name": "SparkFun u-blox GNSS v3"
+            "name": "SparkFun u-blox GNSS v3",
+            "version": "https://github.com/sparkfun/SparkFun_u-blox_GNSS_v3.git"
         },
         {
             "name": "RTClib",
