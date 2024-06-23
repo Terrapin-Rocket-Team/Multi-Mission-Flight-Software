@@ -1,3 +1,4 @@
+#include <SPI.h>
 #include "BlinkBuzz/BlinkBuzz.h"
 #include "Actuators/Servo/Servo.h"
 #include "RecordData/RecordData.h"
