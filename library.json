@@ -48,7 +48,7 @@
         },
         {
             "name": "SparkFun u-blox GNSS v3",
-            "version": "https://github.com/sparkfun/SparkFun_u-blox_GNSS_v3.git#v3.1.4"
+            "version": "https://github.com/sparkfun/SparkFun_u-blox_GNSS_v3.git#v3.1.1"
         },
         {
             "name": "RTClib",
