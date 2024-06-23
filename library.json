@@ -36,6 +36,9 @@
     "dependencies": 
     [
         {
+            "name": "SPI"
+        },
+        {
             "name": "Adafruit BMP280 Library",
             "version": "2.6.8"
         },
