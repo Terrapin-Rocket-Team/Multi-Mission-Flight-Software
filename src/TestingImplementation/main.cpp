@@ -7,8 +7,8 @@
 
 using namespace mmfs;
 PSRAM *ram;
-int BUZZER_PIN = 33;
-int BUILTIN_LED_PIN = LED_BUILTIN;
+const int BUZZER_PIN = 33;
+const int BUILTIN_LED_PIN = LED_BUILTIN;
 int allowedPins[] = {BUILTIN_LED_PIN, BUZZER_PIN};
 BlinkBuzz bb(allowedPins, 2, true);
 void setup()

@@ -71,7 +71,7 @@
         "libCompatMode": "strict",
         "srcFilter": 
         [
-            "+<*> -<src/TestingImplementation/**>"
+            "+<*> -<TestingImplementation/**>"
         ],
         "flags": "-Wno-unknown-pragmas"
     }

@@ -14,8 +14,8 @@ constexpr int MAX_DIGITS_LAT_LON = 12; // 180.0000000
 
 // ------------------ Sensor Constants ------------------
 
-extern int BUZZER_PIN;
-extern int BUILTIN_LED_PIN;
+extern const int BUZZER_PIN;
+extern const int BUILTIN_LED_PIN;
 
 // ------------------------------------------------------
 
