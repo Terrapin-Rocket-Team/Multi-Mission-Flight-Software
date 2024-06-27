@@ -47,15 +47,12 @@
             "name": "Adafruit BNO055"
         },
         {
-            "name": "SparkFun u-blox GNSS v3"
+            "name": "SparkFun u-blox GNSS v3",
+            "version": "https://github.com/sparkfun/SparkFun_u-blox_GNSS_v3.git#v3.1.1"
         },
         {
             "name": "RTClib",
             "owner": "adafruit"
-        },
-        {
-            "name": "BlinkBuzz",
-            "version": "https://github.com/DrewBrandt/BlinkBuzz.git"
         },
         {
             "name": "Kalman-Filter",
@@ -63,7 +60,7 @@
         },
         {
             "name": "RadioHead",
-            "version": "1.120"
+            "version": "https://github.com/Awbmilne/Patched-RadioHead.git"
         }
     ],
     "frameworks": "*",
@@ -74,7 +71,7 @@
         "libCompatMode": "strict",
         "srcFilter": 
         [
-            "-<src/TestingImplementation/**>"
+            "+<*> -<TestingImplementation/**>"
         ],
         "flags": "-Wno-unknown-pragmas"
     }
