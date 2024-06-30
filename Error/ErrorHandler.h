@@ -3,11 +3,12 @@
 
 #include <stdio.h>
 #include <cstring>
+#include "../RecordData/Logger.h"
 
 // Enum for the different types of errors
 enum ErrorType {
-    ERROR,
-    WARNING,
+    GENERIC_ERROR,
+    NONCRITICAL_WARNING,
     SOFTWARE_ERROR,
     HARDWARE_ERROR,
     CRITICAL_ERROR
