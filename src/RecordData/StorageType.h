@@ -7,11 +7,10 @@ class StorageType
 public:
     virtual ~StorageType() {};
     virtual bool init() = 0;
-    virtual bool isReady() = 0;
-    virtual void print(const char *data) = 0;
-    virtual void println(const char *data) = 0;
-    virtual char *read(char *data, int size) = 0;
-    virtual char *readTo(char *data, char endChar) = 0;
+    virtual bool isReady() const = 0;
+    virtual void write(char *data, int size) = 0;
+    virtual int read(char *data, int size) = 0;
+    virtual int readTo(char *data, char endChar) = 0;
     virtual bool seek(uint64_t offset) = 0;
 };
 

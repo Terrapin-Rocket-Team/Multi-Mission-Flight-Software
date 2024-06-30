@@ -7,6 +7,11 @@ SdCardFile::SdCardFile()
 
 bool SdCardFile::init()
 {
+    init("FlightData.csv");
+}
+
+bool SdCardFile::init(const char *fileSuffix)
+{
     int rdy = 0;
     sdReady = false;
     if (sd.begin(SD_CONFIG) || sd.restart())
@@ -19,7 +24,7 @@ bool SdCardFile::init()
 #pragma GCC diagnostic ignored "-Wformat-truncation"
         while (exists)
         {
-            snprintf(fileName, NAME_SIZE, "%d_Log.txt", ++fileNo);
+            snprintf(fileName, NAME_SIZE, "%d_%s", ++fileNo, fileSuffix);
             exists = sd.exists(fileName);
         }
 #pragma GCC diagnostic pop
@@ -37,9 +42,19 @@ bool SdCardFile::init()
     return sdReady;
 }
 
-bool SdCardFile::isReady()
+bool SdCardFile::isReady() const
 {
     return sdReady;
+}
+
+void SdCardFile::write(char *data, int size)
+{
+    if (sdReady)
+    {
+        file.open(fileName, FILE_WRITE);
+        file.write(data, size);
+        file.close();
+    }
 }
 
 void SdCardFile::print(const char *data)
@@ -62,32 +77,37 @@ void SdCardFile::println(const char *data)
     }
 }
 
-char *SdCardFile::read(char *data, int size)
+int SdCardFile::read(char *data, int size)
 {
+    int i;
     if (sdReady)
     {
         file.open(fileName, FILE_READ);
-        file.read(data, size);
+        i = file.read(data, size);
         file.close();
     }
-    return data;
+    return i;
 }
 
-char *SdCardFile::readTo(char *data, char endChar)
+int SdCardFile::readTo(char *data, char endChar)
 {
+    int i = -1;
     if (sdReady)
     {
         file.open(fileName, FILE_READ);
+
+        i = 0;
         
         while (file.available() && file.peek() != endChar)
         {
             *data = file.read();
             data++;
+            i++;
         }
         
         file.close();
     }
-    return data;
+    return i;
 }
 
 bool SdCardFile::seek(uint64_t offset)
