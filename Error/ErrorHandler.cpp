@@ -16,8 +16,8 @@ Error::~Error()
 const char *Error::getTypeString() const
 {
     switch (type) {
-        case ERROR: return "ERROR";
-        case WARNING: return "WARNING";
+        case GENERIC_ERROR: return "GENERIC_ERROR";
+        case NONCRITICAL_WARNING: return "NONCRITICAL_WARNING";
         case SOFTWARE_ERROR: return "SOFTWARE_ERROR";
         case HARDWARE_ERROR: return "HARDWARE_ERROR";
         case CRITICAL_ERROR: return "CRITICAL_ERROR";
@@ -112,7 +112,7 @@ void ErrorHandler::addError(Error *error)
         errorTail = error;
     }
     // Log the error
-    logger->logError(error);
+    logger->recordLogData(error->type == NONCRITICAL_WARNING ? WARNING : ERROR, error->toString());
 }
 
 Error *ErrorHandler::getFirstError()
