@@ -73,12 +73,14 @@ public:
 
     SdCardFile();
     bool init();
-    bool isReady();
+    bool init(const char *fileSuffix);
+    bool isReady() const override;
+    void write(char *data, int size) override;
     void print(const char *data);
     void println(const char *data);
-    char *read(char *data, int size);
-    char *readTo(char *data, char endChar);
-    bool seek(uint64_t offset);
+    int read(char *data, int size) override;
+    int readTo(char *data, char endChar) override;
+    bool seek(uint64_t offset) override;
 };
 
 

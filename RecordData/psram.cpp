@@ -7,13 +7,15 @@ PSRAM::PSRAM()
 
     cursorStart = nullptr;
     cursorEnd = nullptr;
+    memBegin = nullptr;
+    memEnd = nullptr;
 }
 
 bool PSRAM::init()
 {
     uint8_t size = external_psram_size;
     memBegin = cursorStart = reinterpret_cast<char *>(0x70000000);
-    memEnd = cursorEnd = memBegin + (size * 1048576);
+    memEnd = cursorEnd = cursorStart + (size * 1048576);
 
     if (size > 0)
     {
@@ -22,7 +24,36 @@ bool PSRAM::init()
 
     return ready;
 }
-void PSRAM::println(const char *data, bool writeToTop = true)
+
+void PSRAM::write(char *data, int size)
+{
+    write(data, size, true);
+}
+
+void PSRAM::write(char *data, int size, bool writeToTop)
+{
+    if (ready)
+    {
+        if (writeToTop)
+        {
+            for (int i = 0; i < size; i++)
+            {
+                *cursorStart = data[i];
+                cursorStart++;
+            }
+        }
+        else
+        {
+            for (int i = 0; i < size; i++)
+            {
+                *cursorEnd = data[i];
+                cursorEnd--;
+            }
+        }
+    }
+}
+
+void PSRAM::println(const char *data, bool writeToTop)
 {
     if (ready)
     {
@@ -32,7 +63,7 @@ void PSRAM::println(const char *data, bool writeToTop = true)
 }
 
 // Write string to FRAM
-void PSRAM::print(const char *data, bool writeToTop = true)
+void PSRAM::print(const char *data, bool writeToTop)
 {
     if (ready) {
         for (int i = 0; data[i] != '\0'; i++)
@@ -52,92 +83,118 @@ void PSRAM::print(const char *data, bool writeToTop = true)
 }
 
 // Returns whether the FRAM is initialized
-bool PSRAM::isReady()
+bool PSRAM::isReady() const
 {
     return ready;
 }
 
-int PSRAM::getFreeSpace()
+int PSRAM::getFreeSpace() const
 {
     return cursorEnd - cursorStart;
 }
 
-char *PSRAM::read(char *data, int size)
+int PSRAM::getDataSpace() const
 {
-    if (ready)
-    {
-        for (int i = 0; i < size; i++)
-        {
-            data[i] = *cursorStart;
-            cursorStart++;
-        }
-    }
-    return data;
+    return cursorStart - memBegin;
 }
 
-char *PSRAM::read(char *data)
+int PSRAM::getLogSpace() const
 {
+    return memEnd - cursorEnd;
+}
+
+int PSRAM::read(char *data, int size)
+{
+    int i = -1;
     if (ready)
     {
+        char *mem = memBegin;
+        i = 0;
+        while (mem != cursorStart && i < size)
+        {
+            *data = *mem;
+            mem++;
+            data++;
+            i++;
+        }
+    }
+    return i;
+}
+
+int PSRAM::read(char *data)
+{
+    int i = -1;
+    if (ready)
+    {
+        i = 0;
         char *mem = memBegin;
         while (mem != cursorStart)
         {
             *data = *mem;
             mem++;
             data++;
+            i++;
         }
     }
-    return data;
+    return i;
 }
 
-char *PSRAM::readTo(char *data, char endChar)
+int PSRAM::readTo(char *data, char endChar)
 {
+    int i = -1;
     if (ready)
     {
+        i = 0;
         char *mem = memBegin;
         while (*mem != endChar && mem != cursorStart)
         {
             *data = *mem;
             mem++;
             data++;
+            i++;
         }
     }
-    return data;
+    return i;
 }
 
-char *PSRAM::readFromBottom(char *data, int size)
+int PSRAM::readFromBottom(char *data, int size)
 {
+    int i = -1;
     if (ready)
     {
         char *mem = memEnd;
-        int i = 0;
+        i = 0;
         while (i < size && mem != cursorEnd) {
             *data = *mem;
             mem--;
             data++;
+            i++;
         }
     }
 
-    return data;
+    return i;
 }
 
-char *PSRAM::readFromBottom(char *data)
+int PSRAM::readFromBottom(char *data)
 {
+    int i = -1;
     if (ready)
     {
+        i = 0;
         char *mem = memEnd;
         while (mem != cursorEnd)
         {
             *data = *mem;
             mem--;
             data++;
+            i++;
         }
     }
 
-    return data;
+    return i;
 }
 
-bool PSRAM::seek(int offset)
+bool PSRAM::seek(uint64_t offset)
 {
     if (ready)
     {
@@ -147,7 +204,7 @@ bool PSRAM::seek(int offset)
     return false;
 }
 
-bool PSRAM::seekFromBottom(int offset)
+bool PSRAM::seekFromBottom(uint64_t offset)
 {
     if (ready)
     {
