@@ -1,5 +1,7 @@
 #include "SdCardFile.h"
 
+using namespace mmfs;
+
 SdCardFile::SdCardFile()
 {
     sdReady = false;

@@ -1,5 +1,7 @@
 #include "Logger.h"
 
+using namespace mmfs;
+
 static const char *logTypeStrings[] = {"LOG", "ERROR", "WARNING", "INFO"};
 static Mode mode = GROUND;
 
@@ -67,12 +69,20 @@ void Logger::recordLogData(double timeStamp, LogType type, const char *data, Des
 void Logger::setRecordMode(Mode m) {
     if (mode == FLIGHT && m == GROUND) {
         if (ram->isReady()) {
-            // Dump PSRAM to SD card by reading from the PSRAM and writing to the SD card
+            // Dump PSRAM to SD card by reading from the PSRAM and writing to the SD card in 512 byte chunks (SD card block size)
             char buffer[512];
             int bytesRead = 0;
             while ((bytesRead = ram->read(buffer, 512)) > 0) {
                 dataFile->write(buffer, bytesRead);
             }
+
+            // clear the PSRAM
+            dumped = true;
+            ram->init();
+
+            // Close the log and data files and open new ones
+            dataFile->init("Data.csv");
+            logFile->init("Log.txt");
         }
     }
     mode = m;

@@ -1,5 +1,8 @@
 #include "Psram.h"
 
+using namespace mmfs;
+
+
 PSRAM::PSRAM()
 {
     ready = false;
