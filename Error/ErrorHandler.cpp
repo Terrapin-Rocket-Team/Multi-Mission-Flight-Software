@@ -1,5 +1,7 @@
 #include "ErrorHandler.h"
 
+using namespace mmfs;
+
 // Implementation of Error class
 Error::Error(ErrorType type, const char *message, int errorLocation)
 {
