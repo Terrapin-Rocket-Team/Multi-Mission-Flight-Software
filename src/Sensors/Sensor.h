@@ -6,7 +6,7 @@
 
 namespace mmfs
 {
-    enum SensorType
+    enum SensorType // These have trailing underscores to avoid conflicts with the same names in other libraries *cough* IMU *cough*
     {
         BAROMETER_,
         GPS_,
