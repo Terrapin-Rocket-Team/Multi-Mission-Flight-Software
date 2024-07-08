@@ -8,8 +8,7 @@ namespace mmfs
 
 enum ActuatorType
 {
-    SERVO_,
-    UNKNOWN_
+    SERVO_
 };
 class Actuator
 {
