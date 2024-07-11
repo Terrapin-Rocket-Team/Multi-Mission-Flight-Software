@@ -21,10 +21,12 @@ Logger::Logger()
 
 void Logger::recordFlightData(char *data)
 {
+    // don't bother doing PSRAM if dataFile don't work
     if (!(dataFile->isReady()))
     {
         return;
     }
+
     if (mode == GROUND)
     {
         dataFile->println(data);
@@ -32,6 +34,10 @@ void Logger::recordFlightData(char *data)
     else if (ram->isReady())
     {
         ram->println(data);
+    }
+    else if (dataFile->isReady())
+    {
+        dataFile->println(data);
     }
 }
 
@@ -63,27 +69,50 @@ void Logger::recordLogData(double timeStamp, LogType type, const char *data, Des
             ram->print(logPrefix, false);
             ram->println(data, false);
         }
+        else if (logFile->isReady())
+        {
+            logFile->print(logPrefix);
+            logFile->println(data);
+        }
     }
 }
 
 void Logger::setRecordMode(Mode m) {
     if (mode == FLIGHT && m == GROUND) {
-        if (ram->isReady()) {
-            // Dump PSRAM to SD card by reading from the PSRAM and writing to the SD card in 512 byte chunks (SD card block size)
-            char buffer[512];
-            int bytesRead = 0;
-            while ((bytesRead = ram->read(buffer, 512)) > 0) {
-                dataFile->write(buffer, bytesRead);
-            }
+            
+        // Dump the PSRAM to the SD card
+        dumpData();
 
-            // clear the PSRAM
-            dumped = true;
+        if (ram->isReady())
             ram->init();
 
-            // Close the log and data files and open new ones
-            dataFile->init("Data.csv");
+        // Close the log and data files and open new ones
+        if (dataFile->isReady())
+            dataFile->init("FlightData.csv");
+        if (logFile->isReady())
             logFile->init("Log.txt");
-        }
     }
     mode = m;
+}
+
+void Logger::dumpData() {
+
+    char buffer[512];
+    int bytesRead = 0;
+    if (ram->isReady() && dataFile->isReady()) {
+        // Dump PSRAM to SD card by reading from the PSRAM and writing to the SD card in 512 byte chunks (SD card block size)
+        while ((bytesRead = ram->read(buffer, 512)) > 0) {
+            dataFile->write(buffer, bytesRead);
+        }
+    }
+
+    if (ram->isReady() && logFile->isReady()) {
+        // do the same but from the bottom of the PSRAM for the log file
+        ram->seekFromBottom(0);
+        while ((bytesRead = ram->readFromBottom(buffer, 512)) > 0) {
+            logFile->write(buffer, bytesRead);
+        }
+
+        dumped = true;
+    }
 }

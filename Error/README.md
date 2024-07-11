@@ -65,7 +65,7 @@ mmfs::Logger logger;
 mmfs::ErrorHandler errorHandler(&logger);
 ```
 
-Since the `ErrorHandler` class is a singleton, only once instance of it exists and needs to be created. This instance is declared as an extern in the header file, so it can be accessed from any file that includes the header, however, it must be initialized in the main file.
+Since the `ErrorHandler` class is a singleton, only one instance of it exists and needs to be created. This instance is declared as an extern in the header file, so it can be accessed from any file that includes the header, however, it must be initialized in the main file.
 
 ### Adding Errors
 
