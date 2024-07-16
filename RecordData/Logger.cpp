@@ -5,7 +5,7 @@ using namespace mmfs;
 static const char *logTypeStrings[] = {"LOG", "ERROR", "WARNING", "INFO"};
 static Mode mode = GROUND;
 
-Logger::Logger()
+Logger::Logger(GroundDest groundDest = ALTERNATING_BOTH, uint16_t bufferSize = 25000, int bufferInterval = 300) 
 {
     ram = new PSRAM();
     dataFile = new SdCardFile();
@@ -17,7 +17,15 @@ Logger::Logger()
     {
         ready = true;
     }
+
+    // initialize the buffer stuff
+    this->groundDest = groundDest;
+    this->bufferSize = bufferSize;
+    this->interval = bufferInterval;
+    bufIdx = 0;
+    bufCount = 0;
 }
+
 
 void Logger::recordFlightData(char *data)
 {
@@ -29,7 +37,30 @@ void Logger::recordFlightData(char *data)
 
     if (mode == GROUND)
     {
-        dataFile->println(data);
+
+        // determine if we printing to buffer or what
+        if ((groundDest == BUFFER || groundDest == ALTERNATING_BOTH) && ram->isReady())
+        {
+            // the buffer is the first buffSize bytes of the PSRAM, use it as a circular buffer to store data
+            if (bufIdx + strlen(data) + 1 >= bufferSize)
+            {
+                bufIdx = 0;
+                ram->seek(0);       // only seek if we are going to overwrite the buffer (complete messages only)
+            }
+            ram->println(data);
+            bufIdx += strlen(data) + 1;
+            bufCount++;
+
+            if (groundDest == ALTERNATING_BOTH && bufCount >= interval)
+            {
+                dataFile->println(data);
+                bufCount = 0;
+            }
+        }
+        else
+        {
+            dataFile->println(data);
+        }
     }
     else if (ram->isReady())
     {

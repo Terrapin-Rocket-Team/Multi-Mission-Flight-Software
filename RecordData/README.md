@@ -139,9 +139,17 @@ Determines the mode, or more generally, the data storage approach being taken by
 
 Switching from `FLIGHT` to `GROUND` mode is what dumps all data from the PSRAM to the SD card. Thus, in order to have persistent data storage, it is important to **always switch the `Logger` mode upon landing**.
 
+#### `GroundDest`
+This enum is used to determine where the data is being sent to when the `Logger` is in `GROUND` mode. This enum configures if there is a circular buffer to be used, or if the data is to be written directly to the SD card while on the ground. Enabling a circular buffer will allow for the data to be stored in the PSRAM, and then written to the SD card upon landing, while disabling it will write the data directly to the SD card, with the latter being safer, but the former being more space efficient. This behavior can be enabled using the `BUFFER` and `FILE` enums respectively. A third option, `ALTERNATING_BOTH` will keep this buffer, writing to the PSRAM, but at a given interval, indicated by certain number of 
+writes to the PSRAM, will write to the SD card. This is useful for ensuring that the the buffer is used and not useless ground data is stored, but also that the data is not lost in the event of a failure of some sort.
+
+Choosing the right `GroundDest` is important, as it will determine how the data is stored and how it is accessed. Using an option that enables the on-the-ground buffer means that parameters should also be passed in for the buffer size and the interval at which the data is written to the SD card. This is done via the constructor of the `Logger` class, and is important to ensure that the buffer is used correctly. The `bufferSize` parameter is the size of the buffer in bytes, while the `bufferInterval` parameter is the number of writes to the buffer before the data is written to the SD card.
+
+By default, the `Logger` class is set to `ALTERNATING_BOTH`, with a buffer size of 25000 bytes and a buffer interval of 300 writes. This is a good default for most use cases, but can be changed if necessary.
+
 ### Methods
 
--   `Logger()`: Constructor that initializes the logger.
+-   `Logger(GroundDest groundDest = ALTERNATING_BOTH, uint16_t bufferSize = 25000, int bufferInterval = 300)`: Constructor that initializes the logger.
 -   `void recordFlightData(char *data)`: Record flight data.
 -   `void recordLogData(LogType type, const char *data, Dest dest = BOTH)`: Record log data.
 -   `void recordLogData(double timeStamp, LogType type, const char *data, Dest dest = BOTH)`: Record log data with a timestamp.
