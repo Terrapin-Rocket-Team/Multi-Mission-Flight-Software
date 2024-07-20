@@ -62,12 +62,13 @@ public:
     char msg[MSG_LEN + 1];
     // length of msg for recieving binary messages
     uint16_t msgLen = 0;
-    int bytesToSR = 0;
-    int bytesSR = 0;
+    int bytesToSR = 0; // bytes to Send/Receive
+    int bytesSR = 0;   // bytes Sent/Received
 
     RH_RF69 radio;
 
 private:
+    // interrupt methods
     static void i0();
     static void i1();
     static void i2();
@@ -77,6 +78,7 @@ private:
     static void ifl2();
     static void ifl3();
 
+    // read interrupt pins
     bool FifoFull();
     bool FifoNotEmpty();
     bool FifoLevel();

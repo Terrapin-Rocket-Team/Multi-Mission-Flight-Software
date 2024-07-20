@@ -108,7 +108,7 @@ bool RFM69HCW::begin()
 }
 
 /*
-Most basic transmission method, simply transmits the string without modification
+Most basic transmission method, starts transmission of the string without modification
     \param message is the message to be transmitted, set to nullptr if this->msg already contains the message
     \param len [optional] is the length of the message, if not used it is assumed this->msgLen is already set to the length
 */
@@ -123,7 +123,7 @@ bool RFM69HCW::tx(const char *message, int len)
     if (message != nullptr)
         memcpy(this->msg, message, len);
 
-    if (!this->busy && this->mode == RM_TRANSMIT && this->modeReady)
+    if (!this->busy)
     {
         this->busy = true;
         this->bytesToSR = this->msgLen;
@@ -166,6 +166,9 @@ bool RFM69HCW::tx(const char *message, int len)
     return false;
 }
 
+/*
+Transmit interrupt (txI), called by the iflX series of methods when in transmit mode to refill the radio fifo
+*/
 void RFM69HCW::txI()
 {
     if (this->busy && this->mode == RM_TRANSMIT && this->bytesToSR > 0 && !this->FifoFull())
@@ -194,6 +197,9 @@ void RFM69HCW::txI()
     }
 }
 
+/*
+Transmit end (txE), should be called by the iX handler after the full message has been received
+*/
 void RFM69HCW::txE()
 {
     this->bytesSR = 0;
@@ -201,6 +207,9 @@ void RFM69HCW::txE()
     this->setMode(RM_IDLE);
 }
 
+/*
+Basic receive method, usually called by available(), but can be called manually. Puts the radio in receive mode and gets message data if available
+*/
 const char *RFM69HCW::rx()
 {
     if (this->mode != RM_RECEIVE)
@@ -248,6 +257,9 @@ const char *RFM69HCW::rx()
     }
 }
 
+/*
+Receive interrupt (rxI), called by the iflX series of methods when in receive mode to empty the radio fifo
+*/
 void RFM69HCW::rxI()
 {
     if (this->FifoNotEmpty() && this->busy && this->mode == RM_RECEIVE)
@@ -337,6 +349,7 @@ bool RFM69HCW::available()
 {
     if (!this->busy)
     {
+        this->checkModeReady();
         this->rx();
     }
     else
@@ -345,12 +358,15 @@ bool RFM69HCW::available()
     }
 }
 
+/*
+Sets the radio mode, options are transmit, receive, and idle. this->modeReady will be true once the radio has successfully switched modes
+*/
 bool RFM69HCW::setMode(RadioMode mode)
 {
     this->mode = mode;
     if (this->mode == RM_TRANSMIT)
     {
-        modeReady = false;
+        this->modeReady = false;
         this->radio.spiWrite(RH_RF69_REG_5A_TESTPA1, RH_RF69_TESTPA1_BOOST);
         this->radio.spiWrite(RH_RF69_REG_5C_TESTPA2, RH_RF69_TESTPA2_BOOST);
         this->radio.spiWrite(RH_RF69_REG_25_DIOMAPPING1, RH_RF69_DIOMAPPING1_DIO0MAPPING_00); // Set interrupt line 0 PacketSent
@@ -386,6 +402,9 @@ bool RFM69HCW::setMode(RadioMode mode)
     return false;
 }
 
+/*
+Reads the modeReady register on the radio and sets this->modeReady to true if the radio has switched modes
+*/
 bool RFM69HCW::checkModeReady()
 {
     if (this->radio.spiRead(RH_RF69_REG_27_IRQFLAGS1) & RH_RF69_IRQFLAGS1_MODEREADY)
@@ -535,7 +554,7 @@ Multi-purpose decoder function
 Decodes the message into a format selected by type
 char *message is the message to be decoded
 sets this->msgLen to the length of the decoded message
-- Telemetry: TODO: fix
+- Telemetry:
     message - output: latitude,longitude,altitude,speed,heading,rot_x,rot_y,rot_z,stage,pi_on,pi_recording,data_recording <- input: APRS message
 - Command:
     message - minutesUntilPowerOn,minutesUntilVideoStart,minutesUntilDataRecording,launch <- APRS Command message
@@ -608,7 +627,7 @@ bool RFM69HCW::decode(char *message, EncodingType type, int len)
     return false;
 }
 
-// maybe broken, needs to be called at a particular time
+// needs to be called at a particular time to work properly
 int RFM69HCW::RSSI()
 {
     return this->rssi = -((int8_t)(this->radio.spiRead(RH_RF69_REG_24_RSSIVALUE) >> 1));
@@ -627,6 +646,7 @@ void RFM69HCW::set300KBPS()
                                             //                ^^->DC: 00=none, 01=manchester, 10=whitening
 }
 
+// interrupt functions for FifoLevel, behavior changes based on radio mode
 void RFM69HCW::ifl0()
 {
     if (devices[0] && devices[0]->mode == RM_TRANSMIT)
@@ -659,6 +679,7 @@ void RFM69HCW::ifl3()
         devices[3]->rxI();
 }
 
+// Interrupt functions for g0 pin
 void RFM69HCW::i0()
 {
     if (devices[0] && devices[0]->mode == RM_TRANSMIT)
