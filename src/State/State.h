@@ -12,6 +12,8 @@
 #include "../Radio/Radio.h"
 #include "../RecordData/RecordData.h"
 #include "../Constants.h"
+#include "../Math/Vector.h"
+#include "../Math/Quaternion.h"
 
 namespace mmfs
 {
@@ -43,11 +45,11 @@ namespace mmfs
         virtual char *getStateString(); // This contains only the portions that define what the state thinks the rocket looks like, not full sensor data.
 
         // State Getters
-        virtual imu::Vector<3> getPosition() const { return position; }
-        virtual imu::Vector<3> getVelocity() const { return velocity; }
-        virtual imu::Vector<3> getAcceleration() const { return acceleration; }
-        virtual imu::Quaternion getOrientation() const { return orientation; }
-        virtual imu::Vector<2> getCoordinates() const { return coordinates; } // lat long in decimal degrees
+        virtual Vector<3> getPosition() const { return position; }
+        virtual Vector<3> getVelocity() const { return velocity; }
+        virtual Vector<3> getAcceleration() const { return acceleration; }
+        virtual Quaternion getOrientation() const { return orientation; }
+        virtual Vector<2> getCoordinates() const { return coordinates; } // lat long in decimal degrees
         virtual double getHeading() const { return heading; }
 
         // State Setters
@@ -79,11 +81,11 @@ namespace mmfs
         bool sensorOK(const Sensor *sensor) const;
 
         // State variables
-        imu::Vector<3> position;     // in m from start position
-        imu::Vector<3> velocity;     // in m/s
-        imu::Vector<3> acceleration; // in m/s^2
-        imu::Quaternion orientation; // in quaternion
-        imu::Vector<2> coordinates;  // in lat, lon
+        Vector<3> position;     // in m from start position
+        Vector<3> velocity;     // in m/s
+        Vector<3> acceleration; // in m/s^2
+        Quaternion orientation; // in quaternion
+        Vector<2> coordinates;  // in lat, lon
         double heading;              // in degrees
 
         // These two only exist because of bugs in the KF. They will be removed when the KF is fixed.

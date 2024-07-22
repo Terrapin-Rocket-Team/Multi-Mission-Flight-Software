@@ -15,16 +15,16 @@ namespace mmfs
         }
         bno.setExtCrystalUse(true);
 
-        initialMagField = bno.getVector(Adafruit_BNO055::VECTOR_MAGNETOMETER);
+        initialMagField = convertIMUtoMMFS(bno.getVector(Adafruit_BNO055::VECTOR_MAGNETOMETER));
         return initialized = true;
     }
 
     void BNO055::update()
     {
-        orientation = bno.getQuat();
-        accelerationVec = bno.getVector(Adafruit_BNO055::VECTOR_LINEARACCEL);
-        orientationEuler = bno.getVector(Adafruit_BNO055::VECTOR_EULER);
-        magnetometer = bno.getVector(Adafruit_BNO055::VECTOR_MAGNETOMETER);
+        orientation = convertIMUtoMMFS(bno.getQuat());
+        accelerationVec = convertIMUtoMMFS(bno.getVector(Adafruit_BNO055::VECTOR_LINEARACCEL));
+        orientationEuler = convertIMUtoMMFS(bno.getVector(Adafruit_BNO055::VECTOR_EULER));
+        magnetometer = convertIMUtoMMFS(bno.getVector(Adafruit_BNO055::VECTOR_MAGNETOMETER));
     }
 
     void BNO055::calibrateBno()
