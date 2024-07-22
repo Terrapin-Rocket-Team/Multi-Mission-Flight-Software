@@ -6,7 +6,7 @@
     "repository": 
     {
         "type": "git",
-        "url": "https://github.com/DrewBrandt/Multi-Mission-Flight-Software.git"
+        "url": "https://github.com/Terrapin-Rocket-Team/Multi-Mission-Flight-Software.git"
     },
     "authors": 
     [
@@ -21,6 +21,14 @@
         {
             "name": "Joseph Hauerstein",
             "url": "https://github.com/jhauerst"
+        },
+        {
+            "name": "Abhi Senthilkumar",
+            "url": "https://github.com/abhi-senthilkumar"
+        },
+        {
+            "name": "Avi Komarlingam",
+            "url": "https://github.com/avikomarlingam"
         },
         {
             "name": "Drew Brandt",
@@ -44,7 +52,8 @@
             "version": "2.1.4"
         },
         {
-            "name": "Adafruit BNO055"
+            "name": "Adafruit BNO055",
+            "version": "1.6.3"
         },
         {
             "name": "SparkFun u-blox GNSS v3",
