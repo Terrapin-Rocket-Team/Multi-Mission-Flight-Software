@@ -55,10 +55,6 @@
             "owner": "adafruit"
         },
         {
-            "name": "Kalman-Filter",
-            "version": "https://github.com/Terrapin-Rocket-Team/Kalman-Filter.git"
-        },
-        {
             "name": "RadioHead",
             "version": "https://github.com/Awbmilne/Patched-RadioHead.git"
         }
