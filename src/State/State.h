@@ -3,7 +3,7 @@
 
 #include <Wire.h>
 
-#include "KalmanInterface.h"
+#include "../Filters/KalmanInterface.h"
 
 // Include all the sensor classes
 #include "../Sensors/Baro/Barometer.h"

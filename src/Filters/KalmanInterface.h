@@ -1,7 +1,8 @@
 #ifndef KALMANINTERFACE_H
 #define KALMANINTERFACE_H
 
-#include "../Filters/LinearKalmanFilter.h"
+#include "LinearKalmanFilter.h"
+
 namespace mmfs
 {
     class KalmanInterface

@@ -1,10 +1,11 @@
+#include "../Math/Matrix.h"
+
 #ifndef LINEARKALMANFILTER_H
 #define LINEARKALMANFILTER_H
 
-#include "../Math/Matrix.h"
-
 namespace mmfs
 {
+
     typedef struct
     {
         Matrix F; // State Transition Matrix
@@ -21,7 +22,7 @@ namespace mmfs
     class LinearKalmanFilter
     {
     public:
-        LinearKalmanFilter(Matrix X, Matrix U, Matrix P, Matrix F, Matrix G, Matrix R);
+        LinearKalmanFilter(Matrix X, Matrix U, Matrix P, Matrix F, Matrix G, Matrix R, Matrix Q);
         void predict_state();
         void estimate_state(Matrix measurement);
         void calculate_kalman_gain();
@@ -33,5 +34,6 @@ namespace mmfs
     private:
         KFState state;
     };
+
 } // namespace mmfs
 #endif

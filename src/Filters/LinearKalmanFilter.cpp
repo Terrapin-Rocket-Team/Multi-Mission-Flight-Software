@@ -2,7 +2,7 @@
 
 namespace mmfs
 {
-    LinearKalmanFilter::LinearKalmanFilter(Matrix X, Matrix U, Matrix P, Matrix F, Matrix G, Matrix R)
+    LinearKalmanFilter::LinearKalmanFilter(Matrix X, Matrix U, Matrix P, Matrix F, Matrix G, Matrix R, Matrix Q)
     {
         state.X = X;
         state.U = U;
@@ -10,7 +10,9 @@ namespace mmfs
         state.F = F;
         state.G = G;
         state.R = R;
-        calculate_initial_values();
+        state.Q = Q;
+        predict_state();
+        covariance_extrapolate();
     }
 
     void LinearKalmanFilter::predict_state()
@@ -42,8 +44,6 @@ namespace mmfs
     void LinearKalmanFilter::calculate_initial_values()
     {
         state.Q = (state.G * 0.2 * 0.2) * state.G.T();
-        predict_state();
-        covariance_extrapolate();
     }
 
     Matrix LinearKalmanFilter::iterate(Matrix measurement, Matrix control, Matrix F, Matrix G, Matrix H)

@@ -6,10 +6,8 @@
 
 namespace mmfs
 {
-
     class Matrix
     {
-
     public:
         Matrix();
         Matrix(int rows, int cols, double *array);
