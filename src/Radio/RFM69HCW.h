@@ -7,6 +7,8 @@
 #define MSG_LEN 10 * 1024
 #elif defined(RASPBERRY_PI)
 #define MSG_LEN 10 * 1024
+#else
+#define MSG_LEN 200
 #endif
 
 #include "Radio.h"

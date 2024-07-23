@@ -2,7 +2,10 @@
 #define MAX_M10S_H
 
 #include <Wire.h>
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wall"
 #include <SparkFun_u-blox_GNSS_v3.h>
+#pragma GCC diagnostic pop
 #include <Arduino.h>
 #include "GPS.h"
 

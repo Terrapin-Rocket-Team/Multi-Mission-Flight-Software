@@ -2,8 +2,8 @@
 #define AVIONICSSTATE_H
 
 // Platformio is such a fucking pile of trash
-#include "../State/State.h"
-#include "../BlinkBuzz/BlinkBuzz.h"
+#include "../src/State/State.h"
+#include "../src/BlinkBuzz/BlinkBuzz.h"
 
 namespace mmfs
 {
