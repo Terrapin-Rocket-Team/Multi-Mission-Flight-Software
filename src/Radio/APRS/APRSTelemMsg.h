@@ -32,7 +32,7 @@ private:
     void encodeData(int cursor) override;
 
     // Scale factors for encoding/decoding ignoring lat/long
-    const double ALT_SCALE = (pow(91, 2) / 36000.0);       // (91^2/36000) scale to fit in 2 base91 characters
+    const double ALT_SCALE = (pow(91, 3) / 36000.0);       // (91^3/36000) scale to fit in 3 base91 characters
     const double SPD_SCALE = (pow(91, 2) / 1000.0);        // (91^2/1000) scale to fit in 2 base91 characters
     const double HDG_SCALE = (pow(91, 2) / 360.0);         // (91^2/360) scale to fit in 2 base91 characters
     const double ORIENTATION_SCALE = (pow(91, 2) / 360.0); // same as course

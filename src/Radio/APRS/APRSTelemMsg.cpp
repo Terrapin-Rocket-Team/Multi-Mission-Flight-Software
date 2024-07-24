@@ -43,7 +43,7 @@ void APRSTelemMsg::encodeData(int cursor)
     string[cursor++] = ' ';                                          // space to start 'Comment' section
 
     // course, speed, altitude
-    encodeBase91(string, cursor, (int)(data.hdg * HDG_SCALE), 2);                // (91^2/360) scale to fit in 2 base91 characters
+    encodeBase91(string, cursor, (int)(data.hdg * HDG_SCALE), 3);                // (91^3/360) scale to fit in 3 base91 characters
     encodeBase91(string, cursor, (int)(data.spd * SPD_SCALE), 2);                // (91^2/1000) scale to fit in 2 base91 characters. 1000 knots is the assumed max speed.
     encodeBase91(string, cursor, (int)((data.alt + ALT_OFFSET) * ALT_SCALE), 2); // (91^2/35000) scale to fit in 2 base91 characters. 35000 feet is the assumed max altitude.
 
