@@ -5,78 +5,102 @@
 #define MSG_LEN 200
 #elif defined(TEENSYDUINO)
 #define MSG_LEN 10 * 1024
-#elif defined(RASPBERRY_PI)
+#elif defined(RASPBERRY_PI) || defined(__unix__)
 #define MSG_LEN 10 * 1024
 #endif
 
-#include "Radio.h"
-#include "APRSMsg.h"
-#include "RH_RF69.h"
-#include "APRSEncodeFunctions.h"
+#ifndef MSG_LEN
+#define MSG_LEN 1000
+#endif
 
-/*
-Settings:
-- double frequency in Mhz
-- bool transmitter
-- bool highBitrate
-- RHGenericSPI *spi pointer to radiohead SPI object
-- uint8_t cs CS pin
-- uint8_t irq IRQ pin
-- uint8_t rst RST pin
-*/
-struct RadioSettings
-{
-    double frequency;
-    bool transmitter;
-    bool highBitrate;
-    RHGenericSPI *spi;
-    uint8_t cs;
-    uint8_t irq;
-    uint8_t rst;
-};
+#define SYNC1 0x00
+#define SYNC2 0xff
+
+#include "Radio.h"
+#include "APRS/APRSMsg.h"
+#include "RH_RF69.h"
 
 class RFM69HCW : public Radio
 {
+    struct RadioSettings
+    {
+        double frequency;
+        RH_RF69::ModemConfigChoice bitrate;
+        int txPower;
+        uint8_t addr;
+        uint8_t toAddr;
+        bool useInterrupts;
+        bool highBitrate;
+        RHGenericSPI *spi;
+        uint8_t cs;
+        uint8_t irq;
+        uint8_t rst;
+        uint8_t ff;
+        uint8_t fne;
+        uint8_t fl;
+    };
+
 public:
-    RFM69HCW(const RadioSettings s, const APRSConfig config);
+    RFM69HCW(const RadioSettings *s, const APRSConfig *config);
     bool begin() override;
-    bool tx(const char *message, int len) override;
-    bool sendBuffer();
-    void endtx();
+    bool tx(const char *message, int len = -1) override;
+    void txI();
+    void txE();
     const char *rx() override;
-    bool encode(char *message, EncodingType type) override;
-    bool decode(char *message, EncodingType type) override;
-    bool send(const char *message, EncodingType type) override;
+    void rxI();
+    bool encode(char *message, EncodingType type, int len = -1) override;
+    bool decode(char *message, EncodingType type, int len = -1) override;
+    bool send(const char *message, EncodingType type, int len = -1) override;
     const char *receive(EncodingType type) override;
     int RSSI() override;
     bool available();
     void set300KBPS();
-    RHGenericDriver::RHMode mode();
+    bool setMode(RadioMode mode);
+    bool checkModeReady();
 
     // stores full messages, max length determined by platform
     char msg[MSG_LEN + 1];
     // length of msg for recieving binary messages
-    int msgLen = 0;
+    uint16_t msgLen = 0;
+    int bytesToSR = 0; // bytes to Send/Receive
+    int bytesSR = 0;   // bytes Sent/Received
+
+    RH_RF69 radio;
 
 private:
-    RH_RF69 radio;
+    // interrupt methods
+    static void i0();
+    static void i1();
+    static void i2();
+    static void i3();
+    static void ifl0();
+    static void ifl1();
+    static void ifl2();
+    static void ifl3();
+
+    // read interrupt pins
+    bool FifoFull();
+    bool FifoNotEmpty();
+    bool FifoLevel();
+
     // all radios should have the same networkID
     const uint8_t networkID = 0x01;
-    // default to the highest transmit power
-    const int txPower = 20;
+    const uint8_t sw[4] = {0xff, 0x00, 0x2d, 0xd4};
+
     // set by constructor
-    uint8_t addr;
-    uint8_t toAddr;
     uint8_t id;
     RadioSettings settings;
-    // for sending/receiving data
-    // stores messages sent to radio, length determined by max radio message length
-    uint8_t buf[RH_RF69_MAX_MESSAGE_LEN + 1];
-    uint8_t bufSize = RH_RF69_MAX_MESSAGE_LEN;
+
     APRSConfig cfg;
     bool avail;
+    bool busy;
+    bool modeReady;
+    RadioMode mode;
     int rssi;
-    int totalPackets;
+
+    // interrupt vars
+    static RFM69HCW *devices[];
+    static int numInts;
 };
 
 #endif // RFM69HCW_H
