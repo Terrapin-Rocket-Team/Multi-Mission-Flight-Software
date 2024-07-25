@@ -14,35 +14,36 @@
 #endif
 
 #include "../RadioMessage.h"
-
-struct APRSConfig
+namespace mmfs
 {
-    char CALLSIGN[8];
-    char TOCALL[8];
-    char PATH[10];
-    char SYMBOL;
-    char OVERLAY;
-};
+    struct APRSConfig
+    {
+        char CALLSIGN[8];
+        char TOCALL[8];
+        char PATH[10];
+        char SYMBOL;
+        char OVERLAY;
+    };
 
-class APRSMsgBase : public RadioMessage
-{
-public:
-    APRSMsgBase(APRSConfig header);
-    virtual ~APRSMsgBase(){};
+    class APRSMsgBase : public RadioMessage
+    {
+    public:
+        APRSMsgBase(APRSConfig header);
+        virtual ~APRSMsgBase() {};
 
-    virtual bool decode() override;
-    virtual bool encode() override;
-    APRSConfig header;
-    char *type;
+        virtual bool decode() override;
+        virtual bool encode() override;
+        APRSConfig header;
+        char *type;
 
-protected:
-    int encodeHeader();
-    int decodeHeader();
-    virtual void encodeData(int cursor) = 0;
-    virtual void decodeData(int cursor) = 0;
-    void encodeBase91(uint8_t *message, int &cursor, int value, int precision);
-    void decodeBase91(const uint8_t *message, int &cursor, double &value, int precision);
-    void decodeBase91(const uint8_t *message, int &cursor, int &value, int precision);
-};
-
+    protected:
+        int encodeHeader();
+        int decodeHeader();
+        virtual void encodeData(int cursor) = 0;
+        virtual void decodeData(int cursor) = 0;
+        void encodeBase91(uint8_t *message, int &cursor, int value, int precision);
+        void decodeBase91(const uint8_t *message, int &cursor, double &value, int precision);
+        void decodeBase91(const uint8_t *message, int &cursor, int &value, int precision);
+    };
+} // namespace mmfs
 #endif // RADIO_H
