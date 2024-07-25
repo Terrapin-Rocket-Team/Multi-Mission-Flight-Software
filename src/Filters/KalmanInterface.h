@@ -1,7 +1,8 @@
 #ifndef KALMANINTERFACE_H
 #define KALMANINTERFACE_H
 
-#include <Kalman_Filter.h>
+#include "LinearKalmanFilter.h"
+
 namespace mmfs
 {
     class KalmanInterface
@@ -15,12 +16,12 @@ namespace mmfs
         virtual int getInputSize() const { return inputSize; }
         virtual int getMeasurementSize() const { return measurementSize; }
         virtual int getStateSize() const { return stateSize; }
-        virtual ::Matrix setF(double dt);
-        virtual ::Matrix setG(double dt);
-        virtual ::Matrix setH();
+        virtual Matrix setF(double dt);
+        virtual Matrix setG(double dt);
+        virtual Matrix setH();
 
     protected:
-        ::LinearKalmanFilter *kf;
+        LinearKalmanFilter *kf;
         double inputSize;
         double measurementSize;
         double stateSize;

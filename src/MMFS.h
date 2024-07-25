@@ -10,3 +10,7 @@
 #include "State/KalmanInterface.h"
 #include "State/State.h"
 #include "Constants.h"
+#include "Filters/LinearKalmanFilter.h"
+#include "Math/Matrix.h"
+#include "Math/Vector.h"
+#include "Math/Quaternion.h"
