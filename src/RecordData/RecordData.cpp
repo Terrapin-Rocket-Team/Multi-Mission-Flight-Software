@@ -4,7 +4,7 @@ static const char *logTypeStrings[] = {"LOG", "ERROR", "WARNING", "INFO"};
 static Mode mode = GROUND;
 void recordFlightData(char *data)
 {
-    if(!isSDReady())
+    if (!isSDReady())
         return;
     if (mode == GROUND)
     {
@@ -15,7 +15,7 @@ void recordFlightData(char *data)
             flightDataFile.close();
         }
     }
-    else if(ram->isReady())
+    else if (ram->isReady())
         ram->println(data); // while in flight, print to PSRAM for later dumping to SD card.
 }
 
@@ -60,7 +60,8 @@ void recordLogData(double timeStamp, LogType type, const char *data, Dest dest)
 
 void setRecordMode(Mode m)
 {
-    if(mode == FLIGHT && m == GROUND){
+    if (mode == FLIGHT && m == GROUND)
+    {
         ram->dumpFlightData();
         ram->dumpLogData();
         digitalWrite(LED_BUILTIN, HIGH);

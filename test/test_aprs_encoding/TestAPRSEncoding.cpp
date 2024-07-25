@@ -1,5 +1,7 @@
 #include "../../src/Radio/APRS/APRSMsg.h"
 #include <unity.h>
+#include "../NativeTestMocks/NativeTestHelper.h"
+
 
 using namespace mmfs;
 
@@ -10,7 +12,7 @@ APRSConfig con1 =
         "WIDE1-1",
         '/',
         'O'};
-APRSTelemData data1 =
+APRSTelemData data1 = //If you change htis data, you will have to reverify the encoded values in test_telem_encode
     {
         .lat = 39.123456,
         .lng = -105.123456,
@@ -19,7 +21,7 @@ APRSTelemData data1 =
         .hdg = 90.0,
         .stage = 1,
         .orientation = {90, 0.0, 180.0},
-        .statusFlags = PI_ON | RECORDING_DATA};
+        .statusFlags = PI_ON | RECORDING_DATA}; // 00000101
 
 APRSCmdData cmd1 =
     {

@@ -73,17 +73,17 @@ namespace mmfs
             if (sensorOK(sensors[i]))
             { // not nullptr and initialized
                 sensors[i]->update();
-                Wire.beginTransmission(0x42); // random address for testing the i2c bus
-                byte b = Wire.endTransmission();
-                if (b != 0x00)
-                {
-                    Wire.end();
-                    Wire.begin();
-                    recordLogData(ERROR, "I2C Error");
-                    sensors[i]->update();
-                    delay(10);
-                    sensors[i]->update();
-                }
+                // Wire.beginTransmission(0x42); // random address for testing the i2c bus
+                // byte b = Wire.endTransmission();
+                // if (b != 0x00)
+                // {
+                //     Wire.end();
+                //     Wire.begin();
+                //     recordLogData(ERROR, "I2C Error");
+                //     sensors[i]->update();
+                //     delay(10);
+                //     sensors[i]->update();
+                // }
             }
         }
     }

@@ -2,7 +2,6 @@
 #define IMU_H
 
 #include "../Sensor.h"
-#include <imumaths.h>
 #include "../../Math/Vector.h"
 #include "../../Math/Quaternion.h"
 #include "../../Constants.h"
