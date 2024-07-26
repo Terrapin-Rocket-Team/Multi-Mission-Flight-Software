@@ -12,7 +12,6 @@
 // Set up and global variables or mocks for testing here
 
 
-
 // ---
 
 
@@ -42,8 +41,6 @@ void tearDown(void)
 // This is the main function that runs all the tests. It should be the last thing in the file.
 int main(int argc, char **argv)
 {
-    ram = new PSRAM();
-
     UNITY_BEGIN();
 
     // Add your tests here

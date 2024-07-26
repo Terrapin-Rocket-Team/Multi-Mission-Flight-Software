@@ -48,4 +48,8 @@ namespace mmfs
         sprintf(data, "Initial Magnetic Field (uT): %.2f,%.2f,%.2f\n", initialMagField.x(), initialMagField.y(), initialMagField.z());
         return data;
     }
+    void IMU::update()
+    {
+        read();
+    }
 }

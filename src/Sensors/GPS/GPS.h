@@ -23,6 +23,7 @@ namespace mmfs
         virtual const char *getCsvHeader() const override;
         virtual const char *getDataString() const override;
         virtual const char *getStaticDataString() const override;
+        virtual void update() override;
 
         virtual const char *getTypeString() const override { return "GPS"; }
         virtual SensorType getType() const override { return GPS_; }

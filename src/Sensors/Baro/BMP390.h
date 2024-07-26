@@ -12,9 +12,9 @@ namespace mmfs
         Adafruit_BMP3XX bmp;
 
     public:
-        BMP390();
-        virtual bool initialize() override;
-        virtual void update() override;
+        BMP390(const char *name = "BMP390");
+        virtual bool init() override;
+        virtual void read() override;
     };
 }
 

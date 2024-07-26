@@ -109,4 +109,9 @@ namespace mmfs
         sprintf(staticData, "Original Latitude (m): %.10f\nOriginal Longitude (m): %.10f\nOriginal Altitude (m): %.2f\n", origin.x(), origin.y(), origin.z());
         return staticData;
     }
+
+    void GPS::update()
+    {
+        read();
+    }
 }

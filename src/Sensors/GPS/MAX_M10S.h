@@ -19,7 +19,7 @@ namespace mmfs
 
     public:
         MAX_M10S();
-        bool initialize() override;
+        bool init(bool useBiasCorrection = true) override;
         void update() override;
     };
 }

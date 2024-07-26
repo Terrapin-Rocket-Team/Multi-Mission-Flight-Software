@@ -9,7 +9,7 @@ namespace mmfs
         setName("MAX_M10S");
     }
 
-    bool MAX_M10S::initialize()
+    bool MAX_M10S::init(bool useBiasCorrection)
     {
 
         // myGNSS.enableDebugging(); // Uncomment this line to enable helpful debug messages on Serial

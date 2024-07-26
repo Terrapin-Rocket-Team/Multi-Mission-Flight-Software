@@ -7,7 +7,7 @@ namespace mmfs
     {
         setName("BNO055");
     }
-    bool BNO055::initialize()
+    bool BNO055::init(bool useBiasCorrection)
     {
         if (!bno.begin())
         {

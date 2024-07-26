@@ -11,7 +11,7 @@ namespace mmfs
     class Servo : public Actuator
     {
     public:
-        // Constructor to initialize staticData and data
+        // Constructor to init staticData and data
         Servo(const char servoName[], int pin)
         {
             data = new char[MAX_DIGITS_FLOAT + BUFFER_SIZE];
@@ -26,7 +26,7 @@ namespace mmfs
             delete[] data;
         }
 
-        virtual bool initialize() override;
+        virtual bool init() override;
         void setSignalPin(int pin);
         const char *getName() const;
         virtual void setAngle(double servoAngle); // Angle in degrees

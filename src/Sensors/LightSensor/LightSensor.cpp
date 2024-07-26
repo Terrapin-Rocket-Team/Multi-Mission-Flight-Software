@@ -24,4 +24,8 @@ namespace mmfs
         sprintf(staticData, "Initial Light (lux): %.2f\n", initialLux);
         return staticData;
     }
+    void LightSensor::update()
+    {
+        read();
+    }
 }

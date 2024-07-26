@@ -12,9 +12,9 @@ namespace mmfs
         Adafruit_BMP280 bmp;
 
     public:
-        BMP280();
-        virtual bool initialize() override;
-        virtual void update() override;
+        BMP280(const char *name = "BMP280");
+        virtual bool init() override;
+        virtual void read() override;
     };
 } // namespace mmfs
 

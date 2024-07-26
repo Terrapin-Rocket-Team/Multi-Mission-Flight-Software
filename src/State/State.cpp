@@ -37,7 +37,7 @@ namespace mmfs
             if (sensors[i])
             {
                 tryNumSensors++;
-                if (sensors[i]->initialize())
+                if (sensors[i]->init())
                 {
                     good++;
                     snprintf(logData, 100, "%s [%s] initialized.", sensors[i]->getTypeString(), sensors[i]->getName());
