@@ -5,8 +5,13 @@
 #include "../Math/CircBuffer.h"
 #include <string.h>
 #include <stdio.h>
-#include <Arduino.h>
 
+#ifdef ARDUINO
+#include <Arduino.h>
+#elif defined(WIN32)
+#include "../../test/NativeTestMocks/Arduino.h"
+
+#endif
 namespace mmfs
 {
     enum SensorType // These have trailing underscores to avoid conflicts with the same names in other libraries *cough* IMU *cough*

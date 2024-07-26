@@ -49,7 +49,7 @@ namespace mmfs
 
     const char *Barometer::getDataString() const
     {
-        sprintf(data, "%.2f,%.2f,%.2f,%.2f,", pressure, temp, getASLAltFt(), getAGLAltFt); // trailing comma
+        sprintf(data, "%.2f,%.2f,%.2f,%.2f,", pressure, temp, getASLAltFt(), getAGLAltFt()); // trailing comma
         return data;
     }
 

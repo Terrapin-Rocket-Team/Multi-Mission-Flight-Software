@@ -109,7 +109,7 @@ namespace mmfs
             // gps x y barometer z
             measurements[0] = sensorOK(gps) ? gps->getDisplacement().x() : 0;
             measurements[1] = sensorOK(gps) ? gps->getDisplacement().y() : 0;
-            measurements[2] = baro->getRelAltM();
+            measurements[2] = baro->getAGLAltM();
 
             // imu x y z
             inputs[0] = acceleration.x() = imu->getAcceleration().x();
@@ -127,8 +127,8 @@ namespace mmfs
 
             if (sensorOK(baro))
             {
-                baroVelocity = (baro->getRelAltM() - baroOldAltitude) / (currentTime - lastTime);
-                baroOldAltitude = baro->getRelAltM();
+                baroVelocity = (baro->getAGLAltM() - baroOldAltitude) / (currentTime - lastTime);
+                baroOldAltitude = baro->getAGLAltM();
             }
 
             delete[] predictions;
@@ -142,8 +142,8 @@ namespace mmfs
             }
             if (sensorOK(baro))
             {
-                baroVelocity = velocity.z() = (baro->getRelAltM() - baroOldAltitude) / (currentTime - lastTime);
-                baroOldAltitude = position.z() = baro->getRelAltM();
+                baroVelocity = velocity.z() = (baro->getAGLAltM() - baroOldAltitude) / (currentTime - lastTime);
+                baroOldAltitude = position.z() = baro->getAGLAltM();
             }
             if (sensorOK(imu))
             {
