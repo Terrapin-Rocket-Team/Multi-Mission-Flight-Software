@@ -29,17 +29,20 @@ namespace mmfs
         Barometer()
         {                                                     // Protected constructor to prevent instantiation
             staticData = new char[25 + MAX_DIGITS_FLOAT * 1]; // 25 chars for the string, 12 chars for 1x float
-            data = new char[MAX_DIGITS_FLOAT * 3 + 5];        // 12 chars for the 3x floats, 5 for the comma/null/buffer
+            data = new char[MAX_DIGITS_FLOAT * 4 + 5];        // 12 chars for the 4x floats, 5 for the comma/null/buffer
         }
 
+        // Hardware data
         double pressure = 0;       // hPa
         double temp = 0;           // C
+
+        // Barometer data
         double altitudeASL = 0;    // m
         double altitudeAGL = 0;    // m
         double groundPressure = 0; // hPa
         double groundAltitude = 0; // m
 
-        CircBuffer<double> pressureBuffer = CircBuffer<double>(UPDATE_RATE * SENSOR_BIAS_CORRECTION_DATA_LENGTH);
+        CircBuffer<double> pressureBuffer = CircBuffer<double>(UPDATE_RATE * SENSOR_BIAS_CORRECTION_DATA_LENGTH); // number of entries to give SBCDL length average
 
         double calcAltitude(double pressure);
     };
