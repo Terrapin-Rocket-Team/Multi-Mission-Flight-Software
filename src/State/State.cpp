@@ -137,7 +137,7 @@ namespace mmfs
         {
             if (sensorOK(gps))
             {
-                position = imu::Vector<3>(gps->getDisplacement().x(), gps->getDisplacement().y(), gps->getAlt());
+                position = Vector<3>(gps->getDisplacement().x(), gps->getDisplacement().y(), gps->getAlt());
                 velocity = gps->getVelocity();
             }
             if (sensorOK(baro))
@@ -152,16 +152,16 @@ namespace mmfs
         }
         if (sensorOK(gps))
         {
-            coordinates = gps->getHasFirstFix() ? imu::Vector<2>(gps->getPos().x(), gps->getPos().y()) : imu::Vector<2>(0, 0);
+            coordinates = gps->getHasFirstFix() ? Vector<2>(gps->getPos().x(), gps->getPos().y()) : Vector<2>(0, 0);
             heading = gps->getHeading();
         }
         else
         {
-            coordinates = imu::Vector<2>(0, 0);
+            coordinates = Vector<2>(0, 0);
             heading = 0;
         }
 
-        orientation = sensorOK(imu) ? imu->getOrientation() : imu::Quaternion(0, 0, 0, 1);
+        orientation = sensorOK(imu) ? imu->getOrientation() : Quaternion(0, 0, 0, 1);
 
         setDataString();
         if (recordOwnFlightData)

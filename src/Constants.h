@@ -19,4 +19,12 @@ extern const int BUILTIN_LED_PIN;
 
 // ------------------------------------------------------
 
+// -------- Kalman Filter Constants (Unused) ------------
+
+extern const int NUM_INPUTS;
+extern const int NUM_MEASUREMENTS;
+extern const int NUM_STATES;
+
+// ------------------------------------------------------
+
 #endif // CONSTANTS_H

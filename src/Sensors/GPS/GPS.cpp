@@ -6,11 +6,11 @@ namespace mmfs
     GPS::GPS()
     {
         hasFirstFix = false;
-        origin = imu::Vector<3>(0, 0, 0);
-        pos = imu::Vector<2>(0, 0);
-        velocity = imu::Vector<3>(0, 0, 0);
-        displacement = imu::Vector<3>(0, 0, 0);
-        irlTime = imu::Vector<3>(0, 0, 0);
+        origin = Vector<3>(0, 0, 0);
+        pos = Vector<2>(0, 0);
+        velocity = Vector<3>(0, 0, 0);
+        displacement = Vector<3>(0, 0, 0);
+        irlTime = Vector<3>(0, 0, 0);
 
         altitude = 0;
         fixQual = 0;
@@ -36,7 +36,7 @@ namespace mmfs
     /*
     returns the lat and long of the rocket to the 7th sig fig
     */
-    imu::Vector<2> GPS::getPos() const
+    Vector<2> GPS::getPos() const
     {
         return pos;
     }
@@ -50,7 +50,7 @@ namespace mmfs
     return the velocity (meters per second)
     there probably issues with floating points
     */
-    imu::Vector<3> GPS::getVelocity() const
+    Vector<3> GPS::getVelocity() const
     {
         return velocity;
     }
@@ -59,7 +59,7 @@ namespace mmfs
     retern the displacement since the origin
     there is probably issues with floating point arithmetic
     */
-    imu::Vector<3> GPS::getDisplacement() const
+    Vector<3> GPS::getDisplacement() const
     {
         return displacement;
     }
@@ -67,7 +67,7 @@ namespace mmfs
     /*
     returns vector of orginal position in lat(deg), lat(deg), and alti(m)
     */
-    imu::Vector<3> GPS::getOriginPos() const
+    Vector<3> GPS::getOriginPos() const
     {
         return origin;
     }

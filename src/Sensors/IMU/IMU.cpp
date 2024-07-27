@@ -3,32 +3,32 @@
 namespace mmfs
 {
 
-    imu::Quaternion IMU::getOrientation()
+    Quaternion IMU::getOrientation()
     {
         return orientation;
     }
 
-    imu::Vector<3> IMU::getAcceleration()
+    Vector<3> IMU::getAcceleration()
     {
         return accelerationVec;
     }
 
-    imu::Vector<3> IMU::getOrientationEuler()
+    Vector<3> IMU::getOrientationEuler()
     {
         return orientationEuler;
     }
 
-    imu::Vector<3> IMU::getMagnetometer()
+    Vector<3> IMU::getMagnetometer()
     {
         return magnetometer;
     }
 
-    imu::Vector<3> convertToEuler(const imu::Quaternion &orientation)
+    Vector<3> convertToEuler(const Quaternion &orientation)
 
     {
-        imu::Vector<3> euler = orientation.toEuler();
+        Vector<3> euler = orientation.toEuler();
         // reverse the vector, since it returns in z, y, x
-        euler = imu::Vector<3>(euler.x(), euler.y(), euler.z());
+        euler = Vector<3>(euler.x(), euler.y(), euler.z());
         return euler;
     }
 
