@@ -5,7 +5,7 @@ namespace mmfs
 
     GPS::GPS()
     {
-        staticData = new char[60 + MAX_DIGITS_LAT_LON * 2 + MAX_DIGITS_FLOAT * 1];                    // 60 chars for the string, 15 chars for the 2 floats, 12 chars for the float
+        staticData = new char[60 + MAX_DIGITS_LAT_LON * 2 + MAX_DIGITS_FLOAT * 1];               // 60 chars for the string, 15 chars for the 2 floats, 12 chars for the float
         data = new char[MAX_DIGITS_LAT_LON * 2 + MAX_DIGITS_FLOAT * 4 + MAX_DIGITS_INT * 1 + 8]; // 15 chars for the 2 floats, 12 chars for the 4 floats, 10 chars for the time of day string, 10 for the int, 8 for the comma
     }
 
@@ -81,12 +81,12 @@ namespace mmfs
             origin.x() = pos.x();
             origin.y() = pos.y();
             origin.z() = pos.z();
+
+            calcInitialValuesForDistance();
         }
         if (hasFirstFix)
         {
-            // flat earth approximation TODO: use haversine formula
-            displacement.x() = (pos.x() - origin.x()) * 111319.0;
-            displacement.y() = (pos.y() - origin.y()) * 111319.0 * cos(pos.x() * 3.14159265 / 180.0);
+            calcDistance();
             displacement.z() = (pos.z() - origin.z());
         }
     }
@@ -99,5 +99,43 @@ namespace mmfs
         fixQual = 0;
         hasFirstFix = false;
         heading = 0;
+    }
+
+    // Taken from this article and repo. As I understand it, it's an accurate approximation of the Vincenty formulae to find the distance between two points on the earth
+    //  https://github.com/mapbox/cheap-ruler/blob/main/index.js#L475
+    //  https://blog.mapbox.com/fast-geodesic-approximations-with-cheap-ruler-106f229ad016
+    void GPS::calcInitialValuesForDistance()
+    {
+        constexpr auto EARTH_RAD = 6378.137e3; // meters
+        constexpr auto RAD = 3.14159265358979323846 / 180.0;
+
+        constexpr auto EARTH_FLAT = 1.0 / 298.257223563; // flattening of the earth. IDK what this means
+
+        constexpr auto ECC_SQRD = EARTH_FLAT * (2.0 - EARTH_FLAT); // eccentricity squared. IDK what this means
+
+        constexpr auto m = RAD * EARTH_RAD;
+        const auto coslat = cos(pos.x() * RAD);
+        const auto w2 = 1.0 / (1.0 - ECC_SQRD * (1.0 - coslat * coslat)); // IDK what this means
+        const auto w = sqrt(w2);                                          // IDK what this means
+
+        ky = m * w * coslat;                // IDK what this means
+        kx = m * w * w2 * (1.0 - ECC_SQRD); // IDK what this means
+    }
+
+    void GPS::calcDistance()
+    {
+        double dy = wrapLongitude(pos.y() - origin.y()) * ky;
+        double dx = (pos.x() - origin.x()) * kx;
+        displacement.x() = dx;
+        displacement.y() = dy;
+    }
+
+    double GPS::wrapLongitude(double val)
+    {
+        while (val > 180)
+            val -= 360;
+        while (val < -180)
+            val += 360;
+        return val;
     }
 }

@@ -34,6 +34,12 @@ namespace mmfs
         int fixQual;                 // num of connections to satellites
         bool hasFirstFix;            // whether or not gps has reached at least 3 satellites since restart
         double heading;
+
+        // distance finding
+        void calcInitialValuesForDistance();
+        double kx, ky;
+        void calcDistance();
+        double wrapLongitude(double val);
     };
 }
 

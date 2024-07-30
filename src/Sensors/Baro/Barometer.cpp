@@ -43,7 +43,7 @@ namespace mmfs
         return altitudeASL * 3.28084;
     }
     const char *Barometer::getCsvHeader() const
-    {  // incl  B- to indicate Barometer data  vvvv Why is this in ft and not m?
+    {                                                                  // incl  B- to indicate Barometer data  vvvv Why is this in ft and not m?
         return "B-Pres (hPa),B-Temp (C),B-AltASL (ft),B-AltAGL (ft),"; // trailing commas are very important
     }
 
@@ -88,27 +88,36 @@ namespace mmfs
         altitudeAGL = 0;
         groundPressure = 0;
         pressureBuffer.clear();
-        init();
         biasCorrectionMode = useBiasCorrection;
-
-        if (!biasCorrectionMode)
+        if (init())
         {
-            double startPressure = 0;
 
-            for (int i = 0; i < 100; i++)
+            if (!biasCorrectionMode)
             {
-                read();
-                startPressure += pressure;
-                delay(25);
+                double startPressure = 0;
+
+                for (int i = 0; i < 100; i++)
+                {
+                    read();
+                    startPressure += pressure;
+#ifndef UNIT_TEST
+                    delay(25);
+#endif
+                }
+                groundPressure = (startPressure / 100.0); // hPa
+                groundAltitude = calcAltitude(groundPressure);
+                printf("Ground Pressure: %.2f hPa\n", groundPressure);
+                printf("Ground Altitude: %.2f m\n", groundAltitude);
+                altitudeASL = groundAltitude;
             }
-            groundPressure = (startPressure / 100.0) / 100.0; // hPa
-            groundAltitude = calcAltitude(groundPressure);
+            return true;
         }
+        return false;
     }
 
     double Barometer::calcAltitude(double pressure)
     {
         // Equation from NOAA, but for meters: https://www.weather.gov/media/epz/wxcalc/pressureAltitude.pdf
-        return 44330.0 * (1.0 - pow(pressure / MEAN_SEA_LEVEL_PRESSURE_HPA, 0.190284));
+        return 44307.69 * (1.0 - pow(pressure / MEAN_SEA_LEVEL_PRESSURE_HPA, 0.190284));
     }
 }
