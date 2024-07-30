@@ -19,4 +19,15 @@ namespace mmfs
         sprintf(staticData, "Initial Steps: %d\n", initialSteps);
         return staticData;
     }
+
+    void Encoder::update()
+    {
+        read();
+    }
+
+    bool Encoder::begin(bool useBiasCorrection)
+    {
+        biasCorrectionMode = useBiasCorrection;
+        return init();
+    }
 }

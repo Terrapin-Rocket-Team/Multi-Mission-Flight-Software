@@ -68,7 +68,7 @@ namespace mmfs
             pressureBuffer.push(pressure);
 
             double sum = 0;
-            int valsToCount = pressureBuffer.getSize() - UPDATE_RATE * SENSOR_BIAS_CORRECTION_DATA_IGNORE;
+            int valsToCount = CIRC_BUFFER_LENGTH - CIRC_BUFFER_IGNORE;
             for (int i = 0; i < valsToCount; i++)
             {
                 sum += pressureBuffer[i];
@@ -80,7 +80,7 @@ namespace mmfs
         altitudeAGL = altitudeASL - groundAltitude;
     }
 
-    void Barometer::begin(bool useBiasCorrection)
+    bool Barometer::begin(bool useBiasCorrection)
     {
         pressure = 0;
         temp = 0;

@@ -37,7 +37,7 @@ namespace mmfs
             if (sensors[i])
             {
                 tryNumSensors++;
-                if (sensors[i]->init())
+                if (sensors[i]->begin())
                 {
                     good++;
                     snprintf(logData, 100, "%s [%s] initialized.", sensors[i]->getTypeString(), sensors[i]->getName());
@@ -46,13 +46,13 @@ namespace mmfs
                 else
                 {
                     snprintf(logData, 100, "%s [%s] failed to initialize.", sensors[i]->getTypeString(), sensors[i]->getName());
-                    recordLogData(ERROR, logData);
+                    recordLogData(ERROR_, logData);
                 }
             }
             else
             {
                 snprintf(logData, 100, "A sensor in the array was null!");
-                recordLogData(ERROR, logData);
+                recordLogData(ERROR_, logData);
             }
         }
         if (useKF)
@@ -79,7 +79,7 @@ namespace mmfs
                 // {
                 //     Wire.end();
                 //     Wire.begin();
-                //     recordLogData(ERROR, "I2C Error");
+                //     recordLogData(ERROR_, "I2C Error");
                 //     sensors[i]->update();
                 //     delay(10);
                 //     sensors[i]->update();
@@ -112,9 +112,9 @@ namespace mmfs
             measurements[2] = baro->getAGLAltM();
 
             // imu x y z
-            inputs[0] = acceleration.x() = imu->getAcceleration().x();
-            inputs[1] = acceleration.y() = imu->getAcceleration().y();
-            inputs[2] = acceleration.z() = imu->getAcceleration().z();
+            inputs[0] = acceleration.x() = imu->getAccelerationGlobal().x();
+            inputs[1] = acceleration.y() = imu->getAccelerationGlobal().y();
+            inputs[2] = acceleration.z() = imu->getAccelerationGlobal().z();
 
             double *predictions = kfilter->iterate(currentTime - lastTime, inputs, measurements);
             // pos x, y, z, vel x, y, z
@@ -137,8 +137,7 @@ namespace mmfs
         {
             if (sensorOK(gps))
             {
-                position = Vector<3>(gps->getDisplacement().x(), gps->getDisplacement().y(), gps->getAlt());
-                velocity = gps->getVelocity();
+                position = gps->getDisplacement();
             }
             if (sensorOK(baro))
             {
@@ -147,7 +146,7 @@ namespace mmfs
             }
             if (sensorOK(imu))
             {
-                acceleration = imu->getAcceleration();
+                acceleration = imu->getAccelerationGlobal();
             }
         }
         if (sensorOK(gps))
@@ -161,7 +160,7 @@ namespace mmfs
             heading = 0;
         }
 
-        orientation = sensorOK(imu) ? imu->getOrientation() : Quaternion(0, 0, 0, 1);
+        orientation = sensorOK(imu) ? imu->getOrientationGlobal() : Quaternion(1, 0, 0, 0);
 
         setDataString();
         if (recordOwnFlightData)

@@ -2,43 +2,7 @@
 #define BLINKBUZZ_H
 
 #ifndef ARDUINO
-#include <chrono>
-#include <cstdint>
-#include <cstdio>
-#include <Windows.h>
-
-const uint64_t start = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
-enum val
-{
-    LOW,
-    HIGH
-};
-inline uint64_t millis() { return (std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count() - start); }
-inline void digitalWrite(int pin, val value)
-{
-    int color;
-    switch (pin)
-    {
-    case 13:
-        color = 36;
-        break;
-    case 33:
-        color = 33;
-        break;
-    case 32:
-        color = 95;
-        break;
-    default:
-        color = 0;
-        break;
-    }
-    printf("\x1B[%dm%.3f - %d to \x1B[%dm%s\x1B[0m\n", color, millis() / 1000.0, pin, value == LOW ? 91 : 92, value == LOW ? "LOW" : "HIGH");
-}
-inline void delay(uint64_t ms)
-{
-    Sleep(ms);
-}
-
+#include "../NativeTestMocks/Arduino.h"
 #else
 
 #include <Arduino.h>

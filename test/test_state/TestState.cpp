@@ -1,5 +1,5 @@
 #include <unity.h>
-#include "../NativeTestMocks/NativeTestHelper.h"
+#include "../../src/NativeTestMocks/NativeTestHelper.h"
 
 // include other headers you need to test here
 

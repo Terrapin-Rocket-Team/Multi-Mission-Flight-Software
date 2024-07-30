@@ -5,8 +5,8 @@
 #include <Arduino.h>
 #include <SdFat.h>
 #else
-#include "../../test/NativeTestMocks/SdFat.h"
-#include "../../test/NativeTestMocks/Arduino.h"
+#include "../NativeTestMocks/Arduino.h"
+#include "../NativeTestMocks/SdFat.h"
 #endif
 
 extern SdFs sd;

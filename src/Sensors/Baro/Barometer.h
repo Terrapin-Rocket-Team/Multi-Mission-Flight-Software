@@ -23,7 +23,7 @@ namespace mmfs
         virtual const char *getTypeString() const override { return "Barometer"; }
         virtual SensorType getType() const override { return BAROMETER_; }
         virtual void update() override;
-        virtual void begin(bool useBiasCorrection = true) override;
+        virtual bool begin(bool useBiasCorrection = true) override;
 
     protected:
         Barometer()
@@ -42,7 +42,7 @@ namespace mmfs
         double groundPressure = 0; // hPa
         double groundAltitude = 0; // m
 
-        CircBuffer<double> pressureBuffer = CircBuffer<double>(UPDATE_RATE * SENSOR_BIAS_CORRECTION_DATA_LENGTH); // number of entries to give SBCDL length average
+        CircBuffer<double> pressureBuffer = CircBuffer<double>(CIRC_BUFFER_LENGTH); // number of entries to give SBCDL length average
 
         double calcAltitude(double pressure);
     };

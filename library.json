@@ -76,7 +76,7 @@
         "libCompatMode": "strict",
         "srcFilter": 
         [
-            "+<*> -<TestingImplementation/**>"
+            "+<*> -<NativeTestMocks/**>"
         ],
         "flags": "-Wno-unknown-pragmas"
     }

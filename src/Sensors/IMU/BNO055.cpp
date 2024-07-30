@@ -3,11 +3,11 @@
 namespace mmfs
 {
 
-    BNO055::BNO055() : bno()
+    BNO055::BNO055(const char *name) : bno()
     {
-        setName("BNO055");
+        setName(name);
     }
-    bool BNO055::init(bool useBiasCorrection)
+    bool BNO055::init()
     {
         if (!bno.begin())
         {
@@ -21,10 +21,9 @@ namespace mmfs
 
     void BNO055::update()
     {
-        orientation = convertIMUtoMMFS(bno.getQuat());
-        accelerationVec = convertIMUtoMMFS(bno.getVector(Adafruit_BNO055::VECTOR_LINEARACCEL));
-        orientationEuler = convertIMUtoMMFS(bno.getVector(Adafruit_BNO055::VECTOR_EULER));
-        magnetometer = convertIMUtoMMFS(bno.getVector(Adafruit_BNO055::VECTOR_MAGNETOMETER));
+        measuredAcc = convertIMUtoMMFS(bno.getVector(Adafruit_BNO055::VECTOR_LINEARACCEL));
+        measuredGyro = convertIMUtoMMFS(bno.getVector(Adafruit_BNO055::VECTOR_GYROSCOPE));
+        measuredMag = convertIMUtoMMFS(bno.getVector(Adafruit_BNO055::VECTOR_MAGNETOMETER));
     }
 
     void BNO055::calibrateBno()

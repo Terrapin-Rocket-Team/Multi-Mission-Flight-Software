@@ -8,20 +8,34 @@
 
 namespace mmfs
 {
+
+    // TODO:
+    // - Implement Global and Local orientations
+    // - Implement Global and Local accelerations
+    // - Implement Magnetometer reading fusion
+    // - Revist naming conventions
+    // - Revisit necessary funcitons/variables
+
     class IMU : public Sensor
     {
     public:
         virtual ~IMU(){};
-        virtual Quaternion getOrientation();
-        virtual Vector<3> getAcceleration();
-        virtual Vector<3> getOrientationEuler();
-        virtual Vector<3> getMagnetometer();
+
+        //local represents the orientation off of the intial angle. Global represents the orientation with repesct to gravity
+        virtual Quaternion getOrientationLocal();
+        virtual Quaternion getOrientationGlobal();
+        virtual Vector<3> getAccelerationLocal();
+        virtual Vector<3> getAccelerationGlobal();
+        virtual Vector<3> getMagnetometerReading();
+        virtual Vector<3> getGyroReading();
+        virtual Vector<3> getAccReading();
         virtual SensorType getType() const override { return IMU_; }
         virtual const char *getTypeString() const override { return "IMU"; }
         virtual const char *getCsvHeader() const override;
         virtual const char *getDataString() const override;
         virtual const char *getStaticDataString() const override;
         virtual void update() override;
+        virtual bool begin(bool useBiasCorrection = true) override;
 
     protected:
         IMU()
@@ -29,13 +43,23 @@ namespace mmfs
             staticData = new char[30 + MAX_DIGITS_FLOAT * 3]; // 30 chars for the string, 12 chars for the 3 floats
             data = new char[MAX_DIGITS_FLOAT * 10 + 10];      // 10x floats + buffer space
         };
-        Vector<3> accelerationVec = Vector<3>(0, 0, 0);
-        Vector<3> orientationEuler = Vector<3>(0, 0, 0);
-        Quaternion orientation = Quaternion(1, 0, 0, 0);
-        Vector<3> magnetometer = Vector<3>(0, 0, 0);
+        // Hardware data
+        Vector<3> measuredAcc = Vector<3>(0, 0, 0);
+        Vector<3> measuredMag = Vector<3>(0, 0, 0);
+        Vector<3> measuredGyro = Vector<3>(0, 0, 0);
+
+        // IMU data
         Vector<3> initialMagField = Vector<3>(0, 0, 0);
+        Vector<3> initialAcc = Vector<3>(0, 0, 0);
+        Vector<3> GyroOffset = Vector<3>(0, 0, 0);
+
+
+        // IMU data (calculated)
+        Vector<3> accelerationGlobal = Vector<3>(0, 0, 0);
+        Vector<3> accelerationLocal = Vector<3>(0, 0, 0);
+        Quaternion orientationGlobal = Quaternion(1, 0, 0, 0);
+        Quaternion orientationLocal = Quaternion(1, 0, 0, 0);
     };
   
-    Vector<3> convertToEuler(const Quaternion &orientation);
 }
 #endif

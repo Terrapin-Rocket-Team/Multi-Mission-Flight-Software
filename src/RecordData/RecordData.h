@@ -8,7 +8,7 @@ extern PSRAM *ram;
 enum LogType
 {
     LOG,
-    ERROR,
+    ERROR_,
     WARNING,
     INFO
 };

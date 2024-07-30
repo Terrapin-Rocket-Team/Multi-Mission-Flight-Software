@@ -3,15 +3,11 @@
 
 #include "../Constants.h"
 #include "../Math/CircBuffer.h"
+#include "../BlinkBuzz/BlinkBuzz.h"
 #include <string.h>
 #include <stdio.h>
+#include "../RecordData/RecordData.h"
 
-#ifdef ARDUINO
-#include <Arduino.h>
-#elif defined(WIN32)
-#include "../../test/NativeTestMocks/Arduino.h"
-
-#endif
 namespace mmfs
 {
     enum SensorType // These have trailing underscores to avoid conflicts with the same names in other libraries *cough* IMU *cough*
@@ -52,7 +48,7 @@ namespace mmfs
         // Updates the sensor's fields by querying the sensor for new data (calls read() internally)
         virtual void update() = 0;
         // Initializes the sensor and sets up any necessary parameters
-        virtual void begin(bool useBiasCorrection = true) = 0;
+        virtual bool begin(bool useBiasCorrection = true) = 0;
 
         virtual SensorType getType() const = 0;        // Returns the type of the sensor
         virtual const char *getTypeString() const = 0; // Returns the type of the sensor as a string
@@ -84,6 +80,9 @@ namespace mmfs
         char *name = nullptr;       // Name of the sensor
         char *staticData = nullptr; // Initial "power on" data
         char *data = nullptr;       // Transient data
+
+        const int CIRC_BUFFER_LENGTH = UPDATE_RATE * SENSOR_BIAS_CORRECTION_DATA_LENGTH; // number of entries to give SBCDL length average
+        const int CIRC_BUFFER_IGNORE = UPDATE_RATE * SENSOR_BIAS_CORRECTION_DATA_IGNORE; // number of entries to ignore for SBCD
     };
 }; // namespace mmfs
 
