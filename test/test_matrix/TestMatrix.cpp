@@ -1,6 +1,6 @@
 #include <unity.h>
 #include "../src/Math/Matrix.h"
-#include "../../src/NativeTestMocks/NativeTestHelper.h"
+#include "../../lib/NativeTestMocks/NativeTestHelper.h"
 
 using mmfs::Matrix;
 

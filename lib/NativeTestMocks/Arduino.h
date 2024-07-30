@@ -4,8 +4,9 @@
 #include <cstdio>
 #include <string.h>
 #include <chrono>
+#ifdef WIN32
 #include <windows.h>
-
+#endif
 #define SS 10 // random ass numbers lol
 
 #define HIGH 1

@@ -1,7 +1,7 @@
 #include "Arduino.h"
 #include "../../src/Constants.h"
 #include "../../src/RecordData/RecordData.h"
-#include "../BlinkBuzz/BlinkBuzz.h"
+#include "../../src/BlinkBuzz/BlinkBuzz.h"
 
 PSRAM pram;
 PSRAM *ram = &pram;

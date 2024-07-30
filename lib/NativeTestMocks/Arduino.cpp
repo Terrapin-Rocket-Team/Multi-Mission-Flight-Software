@@ -8,6 +8,10 @@ uint64_t millis()
     return (std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count() - start);
 }
 
+#ifndef WIN32
+void Sleep(long ms) {}
+#endif
+
 void delay(unsigned long ms) { Sleep (ms);}
 
 void delay(int ms) { Sleep(ms);}

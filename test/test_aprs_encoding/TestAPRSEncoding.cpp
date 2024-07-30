@@ -1,6 +1,6 @@
 #include "../../src/Radio/APRS/APRSMsg.h"
 #include <unity.h>
-#include "../../src/NativeTestMocks/NativeTestHelper.h"
+#include "../../lib/NativeTestMocks/NativeTestHelper.h"
 
 
 using namespace mmfs;
