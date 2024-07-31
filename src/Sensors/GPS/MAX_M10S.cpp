@@ -41,9 +41,9 @@ namespace mmfs
         if (!initialized || !m10s.getPVT() || m10s.getInvalidLlh())
             return; // See if new data is available
 
-        pos.x() = m10s.getLatitude() / 10000000.0;
-        pos.y() = m10s.getLongitude() / 10000000.0;
-        pos.z() = m10s.getAltitude() / 1000.0;
+        position.x() = m10s.getLatitude() / 10000000.0;
+        position.y() = m10s.getLongitude() / 10000000.0;
+        position.z() = m10s.getAltitude() / 1000.0;
         heading = m10s.getHeading();
         fixQual = m10s.getSIV();
     }

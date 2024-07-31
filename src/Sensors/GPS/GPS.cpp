@@ -14,7 +14,7 @@ namespace mmfs
     */
     Vector<3> GPS::getPos() const
     {
-        return pos;
+        return position;
     }
 
     double GPS::getHeading() const
@@ -58,7 +58,7 @@ namespace mmfs
 
     const char *GPS::getDataString() const
     {
-        sprintf(data, "%.10f,%.10f,%.2f,%.2f,%.2f,%.2f,%d,", pos.x(), pos.y(), pos.z(), displacement.x(), displacement.y(), displacement.z(), fixQual); // trailing comma
+        sprintf(data, "%.10f,%.10f,%.2f,%.2f,%.2f,%.2f,%d,", position.x(), position.y(), position.z(), displacement.x(), displacement.y(), displacement.z(), fixQual); // trailing comma
         return data;
     }
 
@@ -78,27 +78,40 @@ namespace mmfs
 
             bb.aonoff(BUZZER_PIN, 1000);
             hasFirstFix = true;
-            origin.x() = pos.x();
-            origin.y() = pos.y();
-            origin.z() = pos.z();
+            origin.x() = position.x();
+            origin.y() = position.y();
+            origin.z() = position.z();
 
             calcInitialValuesForDistance();
         }
         if (hasFirstFix)
         {
+            if(biasCorrectionMode){
+                originBuffer.push(position);
+                Vector<3> sum = Vector<3>(0, 0, 0);
+                int valsToCount = std::min(originBuffer.getCount(), CIRC_BUFFER_LENGTH - CIRC_BUFFER_IGNORE);
+                for (int i = 0; i < valsToCount; i++)
+                {
+                    sum += originBuffer[i];
+                }
+                origin = sum / valsToCount / 1.0;
+            }
             calcDistance();
-            displacement.z() = (pos.z() - origin.z());
+            displacement.z() = (position.z() - origin.z());
         }
     }
 
     bool GPS::begin(bool useBiasCorrection)
     {
-        pos = Vector<3>(0, 0, 0);
+        biasCorrectionMode = useBiasCorrection;
+        position = Vector<3>(0, 0, 0);
         displacement = Vector<3>(0, 0, 0);
         origin = Vector<3>(0, 0, 0);
+        originBuffer.clear();
         fixQual = 0;
         hasFirstFix = false;
         heading = 0;
+        return init();
     }
 
     // Taken from this article and repo. As I understand it, it's an accurate approximation of the Vincenty formulae to find the distance between two points on the earth
@@ -114,7 +127,7 @@ namespace mmfs
         constexpr auto ECC_SQRD = EARTH_FLAT * (2.0 - EARTH_FLAT); // eccentricity squared. IDK what this means
 
         constexpr auto m = RAD * EARTH_RAD;
-        const auto coslat = cos(pos.x() * RAD);
+        const auto coslat = cos(position.x() * RAD);
         const auto w2 = 1.0 / (1.0 - ECC_SQRD * (1.0 - coslat * coslat)); // IDK what this means
         const auto w = sqrt(w2);                                          // IDK what this means
 
@@ -124,8 +137,8 @@ namespace mmfs
 
     void GPS::calcDistance()
     {
-        double dy = wrapLongitude(pos.y() - origin.y()) * ky;
-        double dx = (pos.x() - origin.x()) * kx;
+        double dy = wrapLongitude(position.y() - origin.y()) * ky;
+        double dx = (position.x() - origin.x()) * kx;
         displacement.x() = dx;
         displacement.y() = dy;
     }

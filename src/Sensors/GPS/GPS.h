@@ -28,7 +28,7 @@ namespace mmfs
 
     protected:
         GPS();
-        Vector<3> pos;          // latitude and longitude, alt
+        Vector<3> position;          // latitude and longitude, alt
         Vector<3> displacement; // m from starting location
         Vector<3> origin;       // lat(deg), long(deg), alti(m) of the original location
         int fixQual;                 // num of connections to satellites
@@ -40,6 +40,8 @@ namespace mmfs
         double kx, ky;
         void calcDistance();
         double wrapLongitude(double val);
+
+        CircBuffer<Vector<3>> originBuffer = CircBuffer<Vector<3>>(CIRC_BUFFER_LENGTH);
     };
 }
 

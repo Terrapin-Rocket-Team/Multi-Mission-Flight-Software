@@ -43,9 +43,9 @@ public:
     void read() override {}
     void set(double lat, double lon, double alt)
     {
-        pos.x() = lat;
-        pos.y() = lon;
-        pos.z() = alt;
+        position.x() = lat;
+        position.y() = lon;
+        position.z() = alt;
     }
 
     bool init() override
@@ -60,6 +60,15 @@ public:
     void setFixQual(int qual)
     {
         fixQual = qual;
+    }
+    bool isInBiasCorrectionMode()
+    {
+        return biasCorrectionMode;
+    }
+
+    int getMaxBufferLen()
+    {
+        return originBuffer.getSize();
     }
 };
 

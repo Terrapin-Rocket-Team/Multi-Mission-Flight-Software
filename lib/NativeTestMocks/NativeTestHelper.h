@@ -3,6 +3,9 @@
 #include "../../src/RecordData/RecordData.h"
 #include "../../src/BlinkBuzz/BlinkBuzz.h"
 #include <string>
+#include <unity.h>
+
+#define UNITY_INCLUDE_DOUBLE
 
 PSRAM pram;
 PSRAM *ram = &pram;

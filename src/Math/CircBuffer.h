@@ -32,9 +32,7 @@ CircBuffer<T>::CircBuffer(int size)
 {
     this->size = size;
     buffer = new T[size];
-    head = 0;
-    tail = 0;
-    count = 0;
+    clear();
 }
 
 template <typename T>

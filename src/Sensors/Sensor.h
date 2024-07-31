@@ -7,6 +7,7 @@
 #include <string.h>
 #include <stdio.h>
 #include "../RecordData/RecordData.h"
+#include <algorithm>
 
 namespace mmfs
 {

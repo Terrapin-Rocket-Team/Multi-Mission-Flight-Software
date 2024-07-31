@@ -1,5 +1,4 @@
 #include "../../src/Radio/APRS/APRSMsg.h"
-#include <unity.h>
 #include "../../lib/NativeTestMocks/NativeTestHelper.h"
 
 

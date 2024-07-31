@@ -68,7 +68,7 @@ namespace mmfs
             pressureBuffer.push(pressure);
 
             double sum = 0;
-            int valsToCount = CIRC_BUFFER_LENGTH - CIRC_BUFFER_IGNORE;
+            int valsToCount = std::min(pressureBuffer.getCount(), CIRC_BUFFER_LENGTH - CIRC_BUFFER_IGNORE);
             for (int i = 0; i < valsToCount; i++)
             {
                 sum += pressureBuffer[i];
