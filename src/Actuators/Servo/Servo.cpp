@@ -3,7 +3,7 @@
 namespace mmfs
 {
 
-    bool Servo::initialize()
+    bool Servo::init()
     {
         initialized = true;
         return true;

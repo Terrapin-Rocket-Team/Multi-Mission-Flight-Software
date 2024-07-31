@@ -3,12 +3,12 @@
 namespace mmfs
 {
 
-    BMP280::BMP280() : bmp()
+    BMP280::BMP280(const char *name) : bmp()
     {
-        setName("BMP280");
+        setName(name);
     }
 
-    bool BMP280::initialize()
+    bool BMP280::init()
     {
         if (!bmp.begin())
         { // hardware I2C mode, can pass in address & alt Wire
@@ -16,27 +16,18 @@ namespace mmfs
             return initialized = false;
         }
 
-        delay(1000);
-
         double startPressure = 0;
         for (int i = 0; i < 10; i++)
         {
             bmp.readPressure();
             delay(25);
         }
-        for (int i = 0; i < 100; i++)
-        {
-            startPressure += bmp.readPressure();
-            delay(25);
-        }
-        groundPressure = (startPressure / 100.0) / 100.0; // hPa
         return initialized = true;
     }
 
-    void BMP280::update()
+    void BMP280::read()
     {
         pressure = bmp.readPressure() / 100.0;       // hPa
         temp = bmp.readTemperature();                // C
-        altitude = bmp.readAltitude(groundPressure); // m
     }
 }

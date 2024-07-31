@@ -15,9 +15,9 @@ namespace mmfs
         SFE_UBLOX_GNSS m10s;
 
     public:
-        MAX_M10S();
-        bool initialize() override;
-        void update() override;
+        MAX_M10S(const char *name = "MAX-M10S");
+        bool init() override;
+        void read() override;
     };
 }
 #endif // MAX_M10S_H

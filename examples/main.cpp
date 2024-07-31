@@ -1,9 +1,9 @@
 #include <Arduino.h>
 #include "AvionicsState.h"
-#include "../BlinkBuzz/BlinkBuzz.h"
-#include "../Sensors/GPS/MAX_M10S.h"
-#include "../Sensors/IMU/BNO055.h"
-#include "../Sensors/Baro/BMP390.h"
+#include "../src/BlinkBuzz/BlinkBuzz.h"
+#include "../src/Sensors/GPS/MAX_M10S.h"
+#include "../src/Sensors/IMU/BNO055.h"
+#include "../src/Sensors/Baro/BMP390.h"
 
 using namespace mmfs;
 PSRAM *ram;

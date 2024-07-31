@@ -2,7 +2,7 @@
 #define APRS_TELEM_MSG_H
 
 #include "APRSMsgBase.h"
-#include <imumaths.h>
+#include "../../Math/Vector.h"
 namespace mmfs
 {
     const uint8_t PI_ON = 0b00000001;          // Pi is on
@@ -13,11 +13,11 @@ namespace mmfs
     {
         double lat;
         double lng;
-        int alt;
-        int spd;
-        int hdg;
+        double alt;
+        double spd;
+        double hdg;
         int stage;
-        imu::Vector<3> orientation;
+        Vector<3> orientation;
         uint8_t statusFlags;
     };
 
@@ -26,7 +26,7 @@ namespace mmfs
     public:
         APRSTelemMsg(APRSConfig header);
         APRSTelemData data;
-        char *type = "PositionWithoutTimestamp";
+        const char *type = "PositionWithoutTimestamp";
 
     private:
         void decodeData(int cursor) override;

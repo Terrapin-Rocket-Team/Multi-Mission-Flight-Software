@@ -2,7 +2,6 @@
 #define LIGHT_SENSOR_H
 
 #include "../Sensor.h"
-#include "../../Constants.h"
 
 namespace mmfs
 {
@@ -16,6 +15,7 @@ namespace mmfs
         virtual const double getLux() const;
         virtual SensorType getType() const override { return LIGHT_SENSOR_; }
         virtual const char *getTypeString() const override { return "Light Sensor"; }
+        virtual void update() override;
 
     protected:
         LightSensor()

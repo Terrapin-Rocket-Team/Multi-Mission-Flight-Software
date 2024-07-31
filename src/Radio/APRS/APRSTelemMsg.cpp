@@ -9,7 +9,7 @@ namespace mmfs
         data.spd = 0;
         data.hdg = 0;
         data.stage = 0;
-        data.orientation = imu::Vector<3>(0, 0, 0);
+        data.orientation = Vector<3>(0, 0, 0);
         data.statusFlags = 0;
     }
 
@@ -38,21 +38,21 @@ namespace mmfs
         // lat and lng
         string[cursor++] = '!';                                          // Message type (position without timestamp)
         string[cursor++] = 'M';                                          // overlay
-        encodeBase91(string, cursor, (int)380926 * (90 - data.lat), 4);  // 380926 is the magic number from the APRS spec (page 38)
-        encodeBase91(string, cursor, (int)190463 * (180 + data.lng), 4); // 190463 is the magic number from the APRS spec (page 38)
+        encodeBase91(string, cursor, 380926 * (90 - data.lat), 4);  // 380926 is the magic number from the APRS spec (page 38)
+        encodeBase91(string, cursor, 190463 * (180 + data.lng), 4); // 190463 is the magic number from the APRS spec (page 38)
         string[cursor++] = '^';                                          // end of lat and lng
         string[cursor++] = ' ';                                          // space to start 'Comment' section
 
         // course, speed, altitude
-        encodeBase91(string, cursor, (int)(data.hdg * HDG_SCALE), 2);                // (91^2/360) scale to fit in 2 base91 characters
-        encodeBase91(string, cursor, (int)(data.spd * SPD_SCALE), 2);                // (91^2/1000) scale to fit in 2 base91 characters. 1000 knots is the assumed max speed.
-        encodeBase91(string, cursor, (int)((data.alt + ALT_OFFSET) * ALT_SCALE), 3); // (91^3/35000) scale to fit in 3 base91 characters. 35000 feet is the assumed max altitude.
+        encodeBase91(string, cursor, data.hdg * HDG_SCALE, 2);                // (91^2/360) scale to fit in 2 base91 characters
+        encodeBase91(string, cursor, data.spd * SPD_SCALE, 2);                // (91^2/1000) scale to fit in 2 base91 characters. 1000 knots is the assumed max speed.
+        encodeBase91(string, cursor, (data.alt + ALT_OFFSET) * ALT_SCALE, 3); // (91^3/35000) scale to fit in 3 base91 characters. 35000 feet is the assumed max altitude.
 
         // stage and orientation
         string[cursor++] = (uint8_t)(data.stage + (int)'0');                              // stage is just written in plaintext.
-        encodeBase91(string, cursor, (int)(data.orientation.x() * ORIENTATION_SCALE), 2); // same as course
-        encodeBase91(string, cursor, (int)(data.orientation.y() * ORIENTATION_SCALE), 2); // same as course
-        encodeBase91(string, cursor, (int)(data.orientation.z() * ORIENTATION_SCALE), 2); // same as course
+        encodeBase91(string, cursor, data.orientation.x() * ORIENTATION_SCALE, 2); // same as course
+        encodeBase91(string, cursor, data.orientation.y() * ORIENTATION_SCALE, 2); // same as course
+        encodeBase91(string, cursor, data.orientation.z() * ORIENTATION_SCALE, 2); // same as course
         string[cursor++] = (uint8_t)(data.statusFlags + 33);                              // all content is supposed to be printable ASCII characters, so we add 33 to the status flags to make sure it is.
         len = cursor;
     }
@@ -76,7 +76,7 @@ namespace mmfs
         data.hdg /= HDG_SCALE;
         decodeBase91(string, cursor, data.spd, 2);
         data.spd /= SPD_SCALE;
-        decodeBase91(string, cursor, data.alt, 2);
+        decodeBase91(string, cursor, data.alt, 3);
         data.alt = data.alt / ALT_SCALE - ALT_OFFSET;
 
         // stage and orientation

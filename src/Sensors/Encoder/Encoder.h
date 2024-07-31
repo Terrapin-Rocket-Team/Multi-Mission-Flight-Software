@@ -16,6 +16,8 @@ namespace mmfs
         virtual const char *getStaticDataString() const override;
         virtual const char *getTypeString() const override { return "Encoder"; }
         virtual SensorType getType() const override { return ENCODER_; }
+        virtual void update() override;
+        virtual bool begin(bool useBiasCorrection = true) override;
 
     protected:
         Encoder()
