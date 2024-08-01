@@ -4,14 +4,14 @@
 
 The `mmfs` library provides a flexible and efficient framework for handling data logging in embedded systems, specifically designed for flight computers on model rockets. It includes several classes that manage different storage types and logging mechanisms to ensure reliable data capture and storage throughout a flight mission.
 
-This README covers the `StorageType`, `SdCardFile`, `PSRAM`, and `Logger` classes, providing details on their functionality, internal workings, and usage examples.
+This README covers the `StorageType`, `SdCardStorage`, `PSRAM`, and `Logger` classes, providing details on their functionality, internal workings, and usage examples.
 
 ----------
 
 ## Table of Contents
 
 -   [StorageType](#storagetype)
--   [SdCardFile](#sdcardfile)
+-   [SdCardStorage](#sdcardstorage)
 -   [PSRAM](#psram)
 -   [Logger](#logger)
 
@@ -36,18 +36,25 @@ Implementing a custom storage mechanism requires inheriting from the `StorageTyp
 -   `virtual int readTo(char *data, char endChar)`: Read data until a specified end character is encountered.
 -   `virtual bool seek(uint64_t offset)`: Seek to a specific offset in the storage device.
 
-## SdCardFile
+## SdCardStorage
 
 ### Purpose
 
-`SdCardFile` implements the `StorageType` interface to provide data storage on an SD card. It leverages the SdFat library to handle SD card operations, typically used on the Arduino or Teensy platform, making it easy to log flight data and events during missions. For ease of use, each method call in this class is standalone, with most methods not requiring specific calls to precede or follow itself, with the exception of the initialization logic. This also means however, that between each read or write operation, the SD card file is opened and closed. Thus, it is recommended to block together I/O calls to reduce computational overhead, and doing so in 512 byte increments, as that is what the SD card is optimized for.
+`SdCardStorage` implements the `StorageType` interface to provide data storage on an SD card. It leverages the SdFat library to handle SD card operations, typically used on the Arduino or Teensy platform, making it easy to log flight data and events during missions. For ease of use, each method call in this class is standalone, with most methods not requiring specific calls to precede or follow itself, with the exception of the initialization logic. This also means that between each read or write operation, the SD card file is opened and closed. Thus, it is recommended to block together I/O calls to reduce computational overhead, and doing so in 512 byte increments, as that is what the SD card is optimized for.
 
-If the SD card that is being used is formatted differently than the default FAT32 or FAT64 structure, change the `SD_FAT_TYPE` preprocessor variable to reflect that. This will affect the datatypes for the `sd`, `logFile`, and `flightDataFile` variables. 
+If the SD card that is being used is formatted differently than the default FAT32 or FAT64 structure, change the `SD_FAT_TYPE` preprocessor variable to reflect that. This will affect the datatypes for the `sd`, `logFile`, and `flightDataFile` variables.
+
+### Internal Mechanism
+Since an SD card is a persistent storage device with a file system, the `SdCardStorage` class manages file operations, such as adding files, selecting files, writing data, and reading data. It uses the SdFat library to interact with the SD card, providing a high-level interface for data logging. The class also supports multiple files, allowing developers to log different types of data in separate files.
+
+To accomplish this, internally the `SdCardStorage` class uses a linked list to manage multiple files. Each file is represented by a `FileNode` object, which contains the file name and a pointer to the next file in the list. This allows for dynamic addition and selection of files during runtime. Files can then be selected by either the file name or index, with the index being the order in which files were added. Traversing the linked list for the next file is a circular operation, meaning that if the end of the list is reached, the next file will be the first file in the list.
 
 ### Methods
 
 -   `bool init() override`: Initialize the SD card.
--   `bool init(const char *fileSuffix)`: Initialize the SD card with a specific file suffix.
+-   `bool addFile(const char *fileName)`: Add a file to the SD card for data logging.
+-   `bool selectFile(const char *fileName)`: Select a file for subsequent read/write operations.
+-   `bool selectFile(int index)`: Select a file by index for subsequent read/write operations. Indexed by the order in which files were added.
 -   `bool isReady() const override`: Check if the SD card is ready for operations.
 -   `void write(char *data, int size) override`: Write data to the SD card.
 -   `void print(const char *data)`: Print a null-terminated string to the SD card.
@@ -59,12 +66,19 @@ If the SD card that is being used is formatted differently than the default FAT3
 ### Example
 
 ```cpp
-mmfs::SdCardFile sdCard;
+mmfs::SdCardStorage sdCard;
 
-if (sdCard.init("FlightData.csv")) {
-    if (sdCard.isReady()) {
+if (sdCard.init()) {
+    sdCard.addFile("FlightData.csv");
+    if (sdCard.selectFile("FlightData.csv") && sdCard.isReady()) {
         char data[] = "Flight data sample";
         sdCard.write(data, strlen(data));
+    }
+
+    sdCard.addFile("LogData.txt");
+    if (sdCard.selectFile(1) && sdCard.isReady()) {
+        char logData[] = "Log data sample";
+        sdCard.write(logData, strlen(logData));
     }
 }
 ```
@@ -115,7 +129,7 @@ if (psram.init()) {
 
 ### Purpose
 
-`Logger` combines the functionalities of `PSRAM` and `SdCardFile` to provide a comprehensive data logging solution. It manages flight data and log data, ensuring efficient storage and retrieval. If more custom data recording mechanisms are needed, this class can be avoided, however, most use cases will suffice with implementations of the `Logger` class and object.
+`Logger` combines the functionalities of `PSRAM` and `SdCardStorage` to provide a comprehensive data logging solution. It manages flight data and log data, ensuring efficient storage and retrieval. If more custom data recording mechanisms are needed, this class can be avoided, however, most use cases will suffice with implementations of the `Logger` class and object.
 
 ### Internal Mechanism
 

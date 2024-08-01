@@ -10,51 +10,48 @@
 #define LOGGER_H
 
 #include "Psram.h"
-#include "SdCardFile.h"
+#include "SdCardStorage.h"
+
 
 namespace mmfs {
 
-enum LogType
-{
+enum LogType {
     LOG,
     ERROR,
     WARNING,
     INFO
 };
-enum Dest
-{
-    BOTH,
+
+enum Dest {
+    TO_FILE,
     TO_USB,
-    TO_FILE
+    BOTH
 };
-enum Mode
-{
-    FLIGHT,
-    GROUND
+
+enum Mode {
+    GROUND,
+    FLIGHT
 };
-enum GroundDest
-{
-    FILE,
+
+enum GroundDest {
     BUFFER,
     ALTERNATING_BOTH
 };
 
-class Logger
-{
+class Logger {
 private:
-    PSRAM *ram;
-    SdCardFile *dataFile;
-    SdCardFile *logFile;
+    PSRAM ram;
+    SdCardStorage sdCard;
     bool ready;
     bool dumped;
     GroundDest groundDest;
     /** The buffer size of the circular buffer, in bytes, for preflight */
     uint16_t bufferSize;
-    uint16_t bufIdx;
     /** If groundDest is ALTERNATING_BOTH, this is the number of data entries to be put to the PSRAM between each write to the file */
-    int interval;
-    int bufCount; // number of entries in the buffer into the interval
-
+    int bufferInterval;
+    uint32_t bufIdx;
+    uint32_t bufCount;
+    Mode mode;
 
 public:
 
