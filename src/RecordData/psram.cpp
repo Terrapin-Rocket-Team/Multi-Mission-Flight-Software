@@ -1,4 +1,7 @@
-#include "psram.h"
+#include "Psram.h"
+
+using namespace mmfs;
+
 
 PSRAM::PSRAM()
 {
@@ -15,7 +18,7 @@ bool PSRAM::init()
 {
     uint8_t size = external_psram_size;
     memBegin = cursorStart = reinterpret_cast<char *>(0x70000000);
-    memEnd = cursorEnd = memBegin + (size * 1048576);
+    memEnd = cursorEnd = cursorStart + (size * 1048576);
 
     if (size > 0)
     {
@@ -24,22 +27,51 @@ bool PSRAM::init()
 
     return ready;
 }
-void PSRAM::println(const char *data, bool isFlightData)
+
+void PSRAM::write(char *data, int size)
+{
+    write(data, size, true);
+}
+
+void PSRAM::write(char *data, int size, bool writeToTop)
 {
     if (ready)
     {
-        print(data, isFlightData);
-        print("\n", isFlightData);
+        if (writeToTop)
+        {
+            for (int i = 0; i < size; i++)
+            {
+                *cursorStart = data[i];
+                cursorStart++;
+            }
+        }
+        else
+        {
+            for (int i = 0; i < size; i++)
+            {
+                *cursorEnd = data[i];
+                cursorEnd--;
+            }
+        }
+    }
+}
+
+void PSRAM::println(const char *data, bool writeToTop)
+{
+    if (ready)
+    {
+        print(data, writeToTop);
+        print("\n", writeToTop);
     }
 }
 
 // Write string to FRAM
-void PSRAM::print(const char *data, bool isFlightData)
+void PSRAM::print(const char *data, bool writeToTop)
 {
-    if (ready)
+    if (ready) {
         for (int i = 0; data[i] != '\0'; i++)
         {
-            if (isFlightData)
+            if (writeToTop)
             {
                 *cursorStart = data[i];
                 cursorStart++;
@@ -50,95 +82,137 @@ void PSRAM::print(const char *data, bool isFlightData)
                 cursorEnd--;
             }
         }
-}
-
-// Dump FRAM to SD Card. Only to be called after flight has landed or timeout is reached.
-bool PSRAM::dumpFlightData()
-{
-    if (isSDReady() && ready)
-    {
-        flightDataFile = sd.open(flightDataFileName, FILE_WRITE);
-        if (flightDataFile)
-        {
-            flightDataFile.write(memBegin, cursorStart - memBegin);
-            flightDataFile.close();
-        }
-        else return false;
-    } else return false;
-
-    cursorStart = memBegin;
-    return true;
-}
-
-bool PSRAM::dumpLogData()
-{ // more complicated because data is stored in reverse order
-    if (!isSDReady() || !ready){
-        digitalWrite(33, HIGH);
-        delay(200);
-        digitalWrite(33, LOW);
-        delay(200);
-        return false;
     }
-
-    char buffer[2048]; // large buffer but the Teensy should be able to handle it. Buffer should be a multiple of 512 for SD card efficiency.
-    char *writeCursor = memEnd;
-    int i;
-    logFile = sd.open(logFileName, FILE_WRITE);
-
-    if (!logFile){
-        digitalWrite(33, HIGH);
-        delay(200);
-        digitalWrite(33, LOW);
-        delay(200);
-        digitalWrite(33, HIGH);
-        delay(200);
-        digitalWrite(33, LOW);
-        delay(200);
-        return false;
-    }
-    
-    while (writeCursor >= cursorEnd)
-    {
-
-        for (i = 0; i < 2048; i++)
-        {
-            if (writeCursor <= cursorEnd)
-            {
-                buffer[i] = '\0';
-                writeCursor--;
-                break;
-            }
-            buffer[i] = *writeCursor--;
-        }
-        logFile.write(buffer, i);
-    }
-
-    logFile.close();
-    cursorEnd = memEnd;
-    dumped = true;
-        digitalWrite(33, HIGH);
-        delay(200);
-        digitalWrite(33, LOW);
-        delay(200);
-        digitalWrite(33, HIGH);
-        delay(200);
-        digitalWrite(33, LOW);
-        delay(200);
-        digitalWrite(33, HIGH);
-        delay(200);
-        digitalWrite(33, LOW);
-        delay(200);
-    
-    return true;
 }
 
 // Returns whether the FRAM is initialized
-bool PSRAM::isReady()
+bool PSRAM::isReady() const
 {
     return ready;
 }
 
-int PSRAM::getFreeSpace()
+int PSRAM::getFreeSpace() const
 {
     return cursorEnd - cursorStart;
+}
+
+int PSRAM::getDataSpace() const
+{
+    return cursorStart - memBegin;
+}
+
+int PSRAM::getLogSpace() const
+{
+    return memEnd - cursorEnd;
+}
+
+int PSRAM::read(char *data, int size)
+{
+    int i = -1;
+    if (ready)
+    {
+        char *mem = memBegin;
+        i = 0;
+        while (mem != cursorStart && i < size)
+        {
+            *data = *mem;
+            mem++;
+            data++;
+            i++;
+        }
+    }
+    return i;
+}
+
+int PSRAM::read(char *data)
+{
+    int i = -1;
+    if (ready)
+    {
+        i = 0;
+        char *mem = memBegin;
+        while (mem != cursorStart)
+        {
+            *data = *mem;
+            mem++;
+            data++;
+            i++;
+        }
+    }
+    return i;
+}
+
+int PSRAM::readTo(char *data, char endChar)
+{
+    int i = -1;
+    if (ready)
+    {
+        i = 0;
+        char *mem = memBegin;
+        while (*mem != endChar && mem != cursorStart)
+        {
+            *data = *mem;
+            mem++;
+            data++;
+            i++;
+        }
+    }
+    return i;
+}
+
+int PSRAM::readFromBottom(char *data, int size)
+{
+    int i = -1;
+    if (ready)
+    {
+        char *mem = memEnd;
+        i = 0;
+        while (i < size && mem != cursorEnd) {
+            *data = *mem;
+            mem--;
+            data++;
+            i++;
+        }
+    }
+
+    return i;
+}
+
+int PSRAM::readFromBottom(char *data)
+{
+    int i = -1;
+    if (ready)
+    {
+        i = 0;
+        char *mem = memEnd;
+        while (mem != cursorEnd)
+        {
+            *data = *mem;
+            mem--;
+            data++;
+            i++;
+        }
+    }
+
+    return i;
+}
+
+bool PSRAM::seek(uint64_t offset)
+{
+    if (ready)
+    {
+        cursorStart += offset;
+        return true;
+    }
+    return false;
+}
+
+bool PSRAM::seekFromBottom(uint64_t offset)
+{
+    if (ready)
+    {
+        cursorEnd -= offset;
+        return true;
+    }
+    return false;
 }
