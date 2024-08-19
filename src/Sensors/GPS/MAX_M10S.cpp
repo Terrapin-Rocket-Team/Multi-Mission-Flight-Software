@@ -49,8 +49,6 @@ namespace mmfs
         fixQual = m10s.getSIV();
         if (!hasFirstFix && fixQual >= 3)
         {
-            recordLogData(INFO, "GPS has first fix.");
-
             bb.aonoff(BUZZER_PIN, 1000);
             hasFirstFix = true;
             origin.x() = pos.x();

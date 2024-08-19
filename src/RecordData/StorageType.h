@@ -1,6 +1,8 @@
 #ifndef STORAGE_TYPE_H
 #define STORAGE_TYPE_H
 
+#include <cstdint>
+
 namespace mmfs {
 
 class StorageType
@@ -53,4 +55,4 @@ public:
 
 } // namespace mmfs
 
-#endif STORAGE_TYPE_H
+#endif // STORAGE_TYPE_H
