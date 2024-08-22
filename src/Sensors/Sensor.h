@@ -1,7 +1,7 @@
 #ifndef SENSOR_H
 #define SENSOR_H
 
-#include "../RecordData/RecordData.h"
+#include "../RecordData/Logger.h"
 #include "../Constants.h"
 
 namespace mmfs

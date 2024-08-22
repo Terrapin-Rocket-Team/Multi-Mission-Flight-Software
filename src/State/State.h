@@ -10,7 +10,7 @@
 #include "../Sensors/GPS/GPS.h"
 #include "../Sensors/IMU/IMU.h"
 #include "../Radio/Radio.h"
-#include "../RecordData/RecordData.h"
+#include "../RecordData/Logger.h"
 #include "../Constants.h"
 
 namespace mmfs
@@ -25,7 +25,7 @@ namespace mmfs
         // SensorType sensorOrder[numSensors] = {BAROMETER_, GPS_, IMU_, BAROMETER_}; It doesn't what order they're in, as long as they're in the array.
         // useKalmanFilter: whether or not to use the Kalman Filter. If false, the state will use the raw sensor data.
         // stateRecordsOwnData: whether or not the state should call recordFlightData() itself. If false, other funcitons must call recordFlightData() to record the state's data.
-        State(Sensor **sensors, int numSensors, KalmanInterface *kfilter, bool stateRecordsOwnData = true);
+        State(Sensor **sensors, int numSensors, KalmanInterface *kfilter, Logger *logger, bool stateRecordsOwnData = true);
         virtual ~State();
 
         // to be called after all applicable sensors have been added.
@@ -62,6 +62,7 @@ namespace mmfs
         Sensor **sensors;
         int numSensors; // how many sensors are actually enabled
 
+        Logger *logger;
         char *csvHeader;
         char *dataString;
         char *stateString;

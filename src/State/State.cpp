@@ -4,7 +4,7 @@
 namespace mmfs
 {
 
-    State::State(Sensor **sensors, int numSensors, KalmanInterface *kfilter, bool stateRecordsOwnData)
+    State::State(Sensor **sensors, int numSensors, KalmanInterface *kfilter, Logger *logger, bool stateRecordsOwnData)
     {
         baroOldAltitude = 0;
         baroVelocity = 0;
@@ -17,6 +17,7 @@ namespace mmfs
         this->sensors = sensors;
         recordOwnFlightData = stateRecordsOwnData;
         this->kfilter = kfilter;
+        this->logger = logger;
     }
 
     State::~State()
@@ -41,18 +42,18 @@ namespace mmfs
                 {
                     good++;
                     snprintf(logData, 100, "%s [%s] initialized.", sensors[i]->getTypeString(), sensors[i]->getName());
-                    recordLogData(INFO, logData);
+                    logger->recordLogData(INFO, logData);
                 }
                 else
                 {
                     snprintf(logData, 100, "%s [%s] failed to initialize.", sensors[i]->getTypeString(), sensors[i]->getName());
-                    recordLogData(ERROR, logData);
+                    logger->recordLogData(ERROR, logData);
                 }
             }
             else
             {
                 snprintf(logData, 100, "A sensor in the array was null!");
-                recordLogData(ERROR, logData);
+                logger->recordLogData(ERROR, logData);
             }
         }
         if (useKF)
@@ -79,7 +80,7 @@ namespace mmfs
                 {
                     Wire.end();
                     Wire.begin();
-                    recordLogData(ERROR, "I2C Error");
+                    logger->recordLogData(ERROR, "I2C Error");
                     sensors[i]->update();
                     delay(10);
                     sensors[i]->update();
@@ -165,7 +166,7 @@ namespace mmfs
 
         setDataString();
         if (recordOwnFlightData)
-            recordFlightData(dataString);
+            logger->recordFlightData(dataString);
     }
 
     void State::setCsvHeader()

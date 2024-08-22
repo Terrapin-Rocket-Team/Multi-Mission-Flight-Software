@@ -1,7 +1,7 @@
 #ifndef ACTUATOR_H
 #define ACTUATOR_H
 
-#include "../RecordData/RecordData.h"
+#include "../RecordData/Logger.h"
 
 namespace mmfs
 {
