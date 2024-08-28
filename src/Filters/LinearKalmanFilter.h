@@ -1,39 +1,46 @@
-#include "../Math/Matrix.h"
-
 #ifndef LINEARKALMANFILTER_H
 #define LINEARKALMANFILTER_H
 
-namespace mmfs
-{
+#include "Filter.h"
+#include "../Math/Matrix.h"
 
-    typedef struct
-    {
-        Matrix F; // State Transition Matrix
-        Matrix G; // Control Matrix
-        Matrix H; // Observation Matrix
-        Matrix P; // Estimate Covariance Matrix
-        Matrix R; // Measurement Uncertainty Matrix
-        Matrix K; // Kalman Gain Matrix
-        Matrix Q; // Process Noise Matrix
-        Matrix U; // Control Vector
-        Matrix X; // State Vector
-    } KFState;
+namespace mmfs {
 
-    class LinearKalmanFilter
-    {
-    public:
-        LinearKalmanFilter(Matrix X, Matrix U, Matrix P, Matrix F, Matrix G, Matrix R, Matrix Q);
-        void predict_state();
-        void estimate_state(Matrix measurement);
-        void calculate_kalman_gain();
-        void covariance_update();
-        void covariance_extrapolate();
-        void calculate_initial_values();
-        Matrix iterate(Matrix measurement, Matrix control, Matrix F, Matrix G, Matrix H);
+class LinearKalmanFilter : public Filter {
+protected:
+    struct State {
+        Matrix X; // State vector
+        Matrix U; // Control input
+        Matrix P; // Covariance matrix
+        Matrix F; // State transition matrix
+        Matrix G; // Control input model
+        Matrix Q; // Process noise covariance
+        Matrix R; // Measurement noise covariance
+        Matrix H; // Measurement model
+        Matrix K; // Kalman gain
+    } state;
 
-    private:
-        KFState state;
-    };
+    // Customizable methods for subclasses
+    virtual Matrix setF(double dt) = 0;
+    virtual Matrix setG(double dt) = 0;
+    virtual Matrix setH() = 0;
+    virtual void calculate_initial_values() = 0;
+
+public:
+    LinearKalmanFilter::LinearKalmanFilter(Matrix X, Matrix U, Matrix P, Matrix F, Matrix G, Matrix R, Matrix Q);
+
+    void predict_state();
+    void estimate_state(Matrix measurement);
+    void calculate_kalman_gain();
+    void covariance_update();
+    void covariance_extrapolate();
+
+    double* iterate(double time, double* controlVars, double* measurements, double* stateArr) override;
+
+    int getMeasurementSize() const override;
+    int getInputSize() const override;
+};
 
 } // namespace mmfs
-#endif
+
+#endif // LINEARKALMANFILTER_H

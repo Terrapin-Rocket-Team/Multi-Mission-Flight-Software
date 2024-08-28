@@ -50,13 +50,13 @@ Matrix &Matrix::operator=(const Matrix &other)
 }
 
 // Gets #rows of the matrix
-int Matrix::getRows()
+int Matrix::getRows() const
 {
     return this->rows;
 }
 
 // Gets #columns of the matrix
-int Matrix::getCols()
+int Matrix::getCols() const
 {
     return this->cols;
 }
