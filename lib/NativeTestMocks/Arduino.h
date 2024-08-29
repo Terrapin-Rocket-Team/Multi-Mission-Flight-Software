@@ -30,6 +30,7 @@ class SerialClass {
         void write(const char *data);
         void print(const char *data);
         void println(const char *data);
+        void begin(int baud = 9600);
 };
 
 extern SerialClass Serial;

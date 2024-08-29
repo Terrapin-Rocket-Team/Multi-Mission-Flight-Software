@@ -1,15 +1,39 @@
 #ifndef CIRC_BUFFER_H
 #define CIRC_BUFFER_H
 
+/*
+
+A Queue implementation using a circular buffer. Can use [] operator to peek at elements. (e.g. buffer[0] to get the oldest element, buffer[buffer.getCount() - 1] to get the newest element)
+
+Intended usage: A buffer storing a few seconds of sensor data that can be averaged over to provide a more accurate "rest" value for the sensor.
+
+Example usage from Barometer:
+
+            pressureBuffer.push(pressure);
+
+            double sum = 0;
+
+            // Counts the first half othe buffer to avoid including potential launch transients before launch is detected.
+            int valsToCount = std::min(pressureBuffer.getCount(), CIRC_BUFFER_LENGTH - CIRC_BUFFER_IGNORE);
+            
+            for (int i = 0; i < valsToCount; i++)
+            {
+                sum += pressureBuffer[i]; // [] operator
+            }
+            groundPressure = sum / valsToCount / 1.0;
+            groundAltitude = calcAltitude(groundPressure);
+        }
+*/
+
 template <typename T>
 class CircBuffer
 {
 private:
     T *buffer;
-    int size;
-    int head;
-    int tail;
-    int count;
+    int size = 0;
+    int head = 0;
+    int tail = 0;
+    int count = 0;
 
 public:
     CircBuffer(int size);
