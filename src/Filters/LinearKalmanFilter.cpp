@@ -1,87 +1,98 @@
 #include "LinearKalmanFilter.h"
 
-namespace mmfs
-{
+namespace mmfs {
 
-    // Constructor initializes sizes
-    LinearKalmanFilter::LinearKalmanFilter(Matrix X, Matrix U, Matrix P, Matrix F, Matrix G, Matrix R, Matrix Q)
-    {
-        state.X = X;
-        state.U = U;
-        state.P = P;
-        state.F = F;
-        state.G = G;
-        state.R = R;
-        state.Q = Q;
-        predict_state();
-        covariance_extrapolate();
-    }
+LinearKalmanFilter::LinearKalmanFilter() {
+    // Initialize as necessary
+}
 
-    // Predicts the next state
-    void LinearKalmanFilter::predict_state()
-    {
-        state.X = (state.F * state.X) + (state.G * state.U);
-    }
+Matrix LinearKalmanFilter::getF(double dt) {
+    // Default implementation of F matrix (state transition)
+    double *data = new double[36]{
+        1.0, 0, 0, dt, 0, 0,
+        0, 1.0, 0, 0, dt, 0,
+        0, 0, 1.0, 0, 0, dt,
+        0, 0, 0, 1.0, 0, 0,
+        0, 0, 0, 0, 1.0, 0,
+        0, 0, 0, 0, 0, 1.0
+    };
+    return Matrix(6, 6, data);
+}
 
-    // Estimates the state based on measurements
-    void LinearKalmanFilter::estimate_state(Matrix measurement)
-    {
-        state.X = state.X + state.K * (measurement - state.H * state.X);
-    }
+Matrix LinearKalmanFilter::getG(double dt) {
+    // Default implementation of G matrix (control)
+    double *data = new double[18]{
+        0.5 * dt * dt, 0, 0,
+        0, 0.5 * dt * dt, 0,
+        0, 0, 0.5 * dt * dt,
+        dt, 0, 0,
+        0, dt, 0,
+        0, 0, dt
+    };
+    return Matrix(6, 3, data);
+}
 
-    // Calculates the Kalman gain
-    void LinearKalmanFilter::calculate_kalman_gain()
-    {
-        state.K = state.P * state.H.T() * (state.H * state.P * state.H.T() + state.R).inv();
-    }
+Matrix LinearKalmanFilter::getH() {
+    // Default implementation of H matrix (measurement)
+    double *data = new double[18]{
+        1.0, 0, 0, 0, 0, 0,
+        0, 1.0, 0, 0, 0, 0,
+        0, 0, 1.0, 0, 0, 0
+    };
+    return Matrix(3, 6, data);
+}
 
-    // Updates the covariance matrix
-    void LinearKalmanFilter::covariance_update()
-    {
-        int n = state.X.getRows();
-        state.P = (Matrix::ident(n) - state.K * state.H) * state.P * (Matrix::ident(n) - state.K * state.H).T() + state.K * state.R * state.K.T();
-    }
+Matrix LinearKalmanFilter::getR() {
+    // Default implementation of R matrix (measurement noise)
+    double *data = new double[9]{
+        1.0, 0, 0,
+        0, 1.0, 0,
+        0, 0, 0.5
+    };
+    return Matrix(3, 3, data);
+}
 
-    // Extrapolates the covariance matrix
-    void LinearKalmanFilter::covariance_extrapolate()
-    {
-        state.P = state.F * state.P * state.F.T() + state.Q;
-    }
+Matrix LinearKalmanFilter::getQ() {
+    // Default implementation of Q matrix (process noise)
+    double *data = new double[36]{
+        0.1, 0, 0, 0, 0, 0,
+        0, 0.1, 0, 0, 0, 0,
+        0, 0, 0.1, 0, 0, 0,
+        0, 0, 0, 0.1, 0, 0,
+        0, 0, 0, 0, 0.1, 0,
+        0, 0, 0, 0, 0, 0.1
+    };
+    return Matrix(6, 6, data);
+}
 
-    // Iterate through the Kalman Filter steps
-    double *LinearKalmanFilter::iterate(double time, double *controlVars, double *measurements, double *stateArr)
-    {
-        // Convert the raw data into matrices
-        Matrix control = Matrix(state.U.getRows(), 1, controlVars);
-        Matrix measurement = Matrix(state.H.getRows(), 1, measurements);
+Matrix LinearKalmanFilter::iterate(const Matrix& measurement, const Matrix& control, double dt) {
+    predictState();
+    calculateKalmanGain();
+    estimateState(measurement);
+    covarianceUpdate();
+    covarianceExtrapolate();
+    return state.X;
+}
 
-        // Apply Kalman Filter steps
-        predict_state();
-        covariance_extrapolate();
-        calculate_kalman_gain();
-        estimate_state(measurement);
-        covariance_update();
+void LinearKalmanFilter::predictState() {
+    state.X = getF(0.1) * state.X + getG(0.1) * state.U;
+}
 
-        // Update the stateArr pointer with the new state values
-        double *result = state.X.getArr();
-        for (int i = 0; i < state.X.getRows(); ++i)
-        {
-            stateArr[i] = result[i];
-        }
+void LinearKalmanFilter::estimateState(const Matrix& measurement) {
+    state.X = state.X + state.K * (measurement - getH() * state.X);
+}
 
-        return stateArr; // Return the updated state
-    }
+void LinearKalmanFilter::calculateKalmanGain() {
+    state.K = state.P * getH().transpose() * (getH() * state.P * getH().transpose() + getR()).inverse();
+}
 
-    // Returns the measurement size
-    int LinearKalmanFilter::getMeasurementSize() const
-    {
-        return state.H.getRows();
-    }
+void LinearKalmanFilter::covarianceUpdate() {
+    int n = state.X.getRows();
+    state.P = (Matrix::ident(n) - state.K * getH()) * state.P * (Matrix::ident(n) - state.K * getH()).transpose() + state.K * getR() * state.K.transpose();
+}
 
-    // Returns the input size
-    int LinearKalmanFilter::getInputSize() const
-    {
-        return state.G.getCols();
-    }
+void LinearKalmanFilter::covarianceExtrapolate() {
+    state.P = getF(0.1) * state.P * getF(0.1).transpose() + getQ();
+}
 
 } // namespace mmfs

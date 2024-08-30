@@ -1,5 +1,5 @@
-#ifndef LINEARKALMANFILTER_H
-#define LINEARKALMANFILTER_H
+#ifndef LINEAR_KALMAN_FILTER_H
+#define LINEAR_KALMAN_FILTER_H
 
 #include "Filter.h"
 #include "../Math/Matrix.h"
@@ -7,40 +7,27 @@
 namespace mmfs {
 
 class LinearKalmanFilter : public Filter {
-protected:
-    struct State {
-        Matrix X; // State vector
-        Matrix U; // Control input
-        Matrix P; // Covariance matrix
-        Matrix F; // State transition matrix
-        Matrix G; // Control input model
-        Matrix Q; // Process noise covariance
-        Matrix R; // Measurement noise covariance
-        Matrix H; // Measurement model
-        Matrix K; // Kalman gain
-    } state;
-
-    // Customizable methods for subclasses
-    virtual Matrix setF(double dt) = 0;
-    virtual Matrix setG(double dt) = 0;
-    virtual Matrix setH() = 0;
-    virtual void calculate_initial_values() = 0;
-
 public:
-    LinearKalmanFilter::LinearKalmanFilter(Matrix X, Matrix U, Matrix P, Matrix F, Matrix G, Matrix R, Matrix Q);
+    LinearKalmanFilter();
+    virtual ~LinearKalmanFilter() = default;
 
-    void predict_state();
-    void estimate_state(Matrix measurement);
-    void calculate_kalman_gain();
-    void covariance_update();
-    void covariance_extrapolate();
+    // Virtual getter methods for matrices, to be overridden by subclasses
+    virtual Matrix getF(double dt);
+    virtual Matrix getG(double dt);
+    virtual Matrix getH();
+    virtual Matrix getR();
+    virtual Matrix getQ();
 
-    double* iterate(double time, double* controlVars, double* measurements, double* stateArr) override;
+    Matrix iterate(const Matrix& measurement, const Matrix& control, double dt);
 
-    int getMeasurementSize() const override;
-    int getInputSize() const override;
+protected:
+    void predictState();
+    void estimateState(const Matrix& measurement);
+    void calculateKalmanGain();
+    void covarianceUpdate();
+    void covarianceExtrapolate();
 };
 
 } // namespace mmfs
 
-#endif // LINEARKALMANFILTER_H
+#endif // LINEAR_KALMAN_FILTER_H

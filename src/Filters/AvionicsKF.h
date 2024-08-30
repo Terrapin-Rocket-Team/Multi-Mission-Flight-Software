@@ -1,0 +1,23 @@
+#ifndef AVIONICS_KF_H
+#define AVIONICS_KF_H
+
+#include "LinearKalmanFilter.h"
+
+namespace mmfs {
+
+class AvionicsKF : public LinearKalmanFilter {
+public:
+    AvionicsKF();
+    ~AvionicsKF() = default;
+
+    // Override getter methods to provide subteam-specific matrix implementations
+    Matrix getF(double dt) override;
+    Matrix getG(double dt) override;
+    Matrix getH() override;
+    Matrix getR() override;
+    Matrix getQ() override;
+};
+
+} // namespace mmfs
+
+#endif // AVIONICS_KF_H
