@@ -4,6 +4,8 @@ namespace mmfs {
 
 AvionicsKF::AvionicsKF() {
     // Initialization specific to the rocket subteam
+    // make a 6 DOF KF, with 3 measurements, 3 controls, and 6 states
+    LinearKalmanFilter(3, 3, 6);
 }
 
 Matrix AvionicsKF::getF(double dt) {

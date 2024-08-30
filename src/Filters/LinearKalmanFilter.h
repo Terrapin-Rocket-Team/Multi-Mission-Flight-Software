@@ -8,24 +8,46 @@ namespace mmfs {
 
 class LinearKalmanFilter : public Filter {
 public:
-    LinearKalmanFilter();
+
+    int measurementSize;
+    int controlSize;
+    int stateSize;
+
+    // Constructors
+    LinearKalmanFilter(int measurementSize, int controlSize, int stateSize);
+    LinearKalmanFilter(Matrix X, Matrix P, Matrix K);
+    LinearKalmanFilter(Matrix X, Matrix P);
     virtual ~LinearKalmanFilter() = default;
 
     // Virtual getter methods for matrices, to be overridden by subclasses
-    virtual Matrix getF(double dt);
-    virtual Matrix getG(double dt);
-    virtual Matrix getH();
-    virtual Matrix getR();
-    virtual Matrix getQ();
+    virtual void initialize() = 0;
+    virtual Matrix getF(double dt) = 0;
+    virtual Matrix getG(double dt) = 0;
+    virtual Matrix getH() = 0;
+    virtual Matrix getR() = 0;
+    virtual Matrix getQ() = 0;
 
-    Matrix iterate(const Matrix& measurement, const Matrix& control, double dt);
+    Matrix iterate(Matrix measurement, Matrix control, double dt);
+
+    // Override core interface methods
+    int getMeasurementSize() const override { return measurementSize; }
+    int getInputSize() const override { return controlSize; }
+
+
+
 
 protected:
-    void predictState();
-    void estimateState(const Matrix& measurement);
+    // Instance variables to store matrices
+    Matrix X; // State vector
+    Matrix P; // Error covariance matrix
+    Matrix K; // Kalman gain
+    
+    void predictState(Matrix control);
+    void estimateState(Matrix measurement);
     void calculateKalmanGain();
     void covarianceUpdate();
     void covarianceExtrapolate();
+
 };
 
 } // namespace mmfs
