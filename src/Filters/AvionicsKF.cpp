@@ -2,6 +2,7 @@
 
 namespace mmfs {
 
+// Define the measurement size, control size, and state size
 AvionicsKF::AvionicsKF() : LinearKalmanFilter(3, 3, 6) {}
 
 Matrix AvionicsKF::getF(double dt) {

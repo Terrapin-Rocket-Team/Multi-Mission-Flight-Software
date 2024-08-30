@@ -27,12 +27,12 @@ public:
     virtual Matrix getR() = 0;
     virtual Matrix getQ() = 0;
 
-    Matrix iterate(Matrix measurement, Matrix control, double dt);
+    Matrix iterate(double dt, Matrix measurement, Matrix control);
 
     // Override core interface methods
     int getMeasurementSize() const override { return measurementSize; }
     int getInputSize() const override { return controlSize; }
-    double* iterate(double time, double* state, double* measurements, double* controlVars) override;
+    double* iterate(double dt, double* state, double* measurements, double* controlVars) override;
 
 
 
@@ -44,11 +44,11 @@ protected:
     Matrix P; // Error covariance matrix
     Matrix K; // Kalman gain
     
-    void predictState(Matrix control);
+    void predictState(double dt, Matrix control);
     void estimateState(Matrix measurement);
     void calculateKalmanGain();
     void covarianceUpdate();
-    void covarianceExtrapolate();
+    void covarianceExtrapolate(double dt);
 
 };
 
