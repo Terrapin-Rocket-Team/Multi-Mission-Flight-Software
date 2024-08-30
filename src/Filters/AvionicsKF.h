@@ -11,6 +11,7 @@ public:
     ~AvionicsKF() = default;
 
     // Override getter methods to provide subteam-specific matrix implementations
+    void initialize() override {};
     Matrix getF(double dt) override;
     Matrix getG(double dt) override;
     Matrix getH() override;

@@ -17,6 +17,7 @@ namespace mmfs
         int getRows() const;
         int getCols() const;
         double *getArr();
+        double get(int i, int j);
         Matrix operator*(Matrix other);
         Matrix multiply(Matrix other);
         Matrix operator*(double scalar);

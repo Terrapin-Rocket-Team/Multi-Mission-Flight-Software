@@ -66,6 +66,11 @@ double *Matrix::getArr()
     return this->array;
 }
 
+double Matrix::get(int i, int j)
+{
+    return this->array[i * this->cols + j];
+}
+
 // Overloads * operator to multiply two matrices
 Matrix Matrix::operator*(Matrix other)
 {

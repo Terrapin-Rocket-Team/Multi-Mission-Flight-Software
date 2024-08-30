@@ -32,6 +32,8 @@ public:
     // Override core interface methods
     int getMeasurementSize() const override { return measurementSize; }
     int getInputSize() const override { return controlSize; }
+    double* iterate(double time, double* state, double* measurements, double* controlVars) override;
+
 
 
 

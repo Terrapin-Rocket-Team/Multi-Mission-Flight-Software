@@ -108,6 +108,27 @@ Matrix LinearKalmanFilter::iterate(Matrix measurement, Matrix control, double dt
     return X;
 }
 
+double* LinearKalmanFilter::iterate(double time, double* state, double* measurements, double* controlVars) {
+    // Convert arrays to matrices
+    Matrix stateMatrix(stateSize, 1, state);
+    Matrix measurementMatrix(measurementSize, 1, measurements);
+    Matrix controlMatrix(controlSize, 1, controlVars);
+
+    // Kalman Filter steps
+    predictState(controlMatrix);
+    calculateKalmanGain();
+    estimateState(measurementMatrix);
+    covarianceUpdate();
+    covarianceExtrapolate();
+
+    // Update the state array with the new state values
+    for (int i = 0; i < stateSize; ++i) {
+        state[i] = X.get(i, 0);
+    }
+
+    return state;
+}
+
 void LinearKalmanFilter::predictState(Matrix U) {
     X = getF(0.1) * X + getG(0.1) * U;
 }
