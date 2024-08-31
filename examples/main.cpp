@@ -4,6 +4,7 @@
 #include "../src/Sensors/GPS/MAX_M10S.h"
 #include "../src/Sensors/IMU/BNO055.h"
 #include "../src/Sensors/Baro/BMP390.h"
+#include "../src/Filters/AvionicsKF.h"
 
 using namespace mmfs;
 PSRAM *ram;
@@ -17,7 +18,7 @@ void setup()
     BNO055 imu;
     BMP390 baro;
     Sensor *sensors[3] = {&gps, &imu, &baro};
-    KalmanInterface kfilter(3, 3, 6);
+    AvionicsKF kfilter;
     AvionicsState avionicsState(sensors, 3, &kfilter, false);
 
     ram = new PSRAM();

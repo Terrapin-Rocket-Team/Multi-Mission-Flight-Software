@@ -12,6 +12,7 @@ public:
     // Provide interface to query filter dimensions
     virtual int getMeasurementSize() const = 0;
     virtual int getInputSize() const = 0;
+    virtual int getStateSize() const = 0;
 };
 
 

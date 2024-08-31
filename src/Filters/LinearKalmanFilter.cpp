@@ -18,16 +18,6 @@ LinearKalmanFilter::LinearKalmanFilter(int measurementSize, int controlSize, int
     this->stateSize = stateSize;
 }
 
-LinearKalmanFilter::LinearKalmanFilter(Matrix X, Matrix P, Matrix K)
-{
-    this->X = X;
-    this->P = P;
-    this->K = K;
-
-    this->measurementSize = K.getCols();
-    this->controlSize = K.getRows();
-}
-
 LinearKalmanFilter::LinearKalmanFilter(Matrix X, Matrix P)
 {
     this->X = X;

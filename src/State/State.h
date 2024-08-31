@@ -3,7 +3,7 @@
 
 #include <Wire.h>
 
-#include "../Filters/KalmanInterface.h"
+#include "../Filters/Filter.h"
 
 // Include all the sensor classes
 #include "../Sensors/Baro/Barometer.h"
@@ -27,7 +27,7 @@ namespace mmfs
         // SensorType sensorOrder[numSensors] = {BAROMETER_, GPS_, IMU_, BAROMETER_}; It doesn't what order they're in, as long as they're in the array.
         // useKalmanFilter: whether or not to use the Kalman Filter. If false, the state will use the raw sensor data.
         // stateRecordsOwnData: whether or not the state should call recordFlightData() itself. If false, other funcitons must call recordFlightData() to record the state's data.
-        State(Sensor **sensors, int numSensors, KalmanInterface *kfilter, bool stateRecordsOwnData = true);
+        State(Sensor **sensors, int numSensors, Filter *filter, bool stateRecordsOwnData = true);
         virtual ~State();
 
         // to be called after all applicable sensors have been added.
@@ -94,7 +94,7 @@ namespace mmfs
 
         // Kalman Filter settings
         bool useKF;
-        KalmanInterface *kfilter;
+        Filter *filter;
     };
 }
 #endif
