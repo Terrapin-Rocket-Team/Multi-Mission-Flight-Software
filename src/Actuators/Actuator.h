@@ -1,15 +1,14 @@
 #ifndef ACTUATOR_H
 #define ACTUATOR_H
 
-#include "../RecordData/RecordData.h"
+#include "../RecordData/Logger.h"
 
 namespace mmfs
 {
 
 enum ActuatorType
 {
-    SERVO_,
-    UNKNOWN_
+    SERVO_
 };
 class Actuator
 {

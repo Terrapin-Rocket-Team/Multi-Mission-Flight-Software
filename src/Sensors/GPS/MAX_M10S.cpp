@@ -1,4 +1,5 @@
 #include "MAX_M10S.h"
+#include "../../BlinkBuzz/BlinkBuzz.h"
 
 namespace mmfs
 {
@@ -48,11 +49,7 @@ namespace mmfs
         fixQual = m10s.getSIV();
         if (!hasFirstFix && fixQual >= 3)
         {
-            recordLogData(INFO, "GPS has first fix.");
-
-            digitalWrite(33, HIGH);
-            delay(1000);
-            digitalWrite(33, LOW);
+            bb.aonoff(BUZZER_PIN, 1000);
             hasFirstFix = true;
             origin.x() = pos.x();
             origin.y() = pos.y();
