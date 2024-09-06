@@ -1,7 +1,7 @@
 #ifndef AVIONICS_KF_H
 #define AVIONICS_KF_H
 
-#include "LinearKalmanFilter.h"
+#include "../src/Filters/LinearKalmanFilter.h"
 
 namespace mmfs {
 

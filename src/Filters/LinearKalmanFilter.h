@@ -15,7 +15,6 @@ public:
 
     // Constructors
     LinearKalmanFilter(int measurementSize, int controlSize, int stateSize);
-    LinearKalmanFilter(Matrix X, Matrix P, Matrix K);
     LinearKalmanFilter(Matrix X, Matrix P);
     virtual ~LinearKalmanFilter() = default;
 
