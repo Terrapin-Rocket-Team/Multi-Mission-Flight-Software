@@ -4,7 +4,7 @@
 namespace mmfs
 {
 
-    State::State(Sensor **sensors, int numSensors, KalmanInterface *kfilter, Logger *logger, bool stateRecordsOwnData)
+    State::State(Sensor **sensors, int numSensors, Filter *filter, Logger *logger, bool stateRecordsOwnData)
     {
         baroOldAltitude = 0;
         baroVelocity = 0;
@@ -16,7 +16,7 @@ namespace mmfs
         this->maxNumSensors = numSensors;
         this->sensors = sensors;
         recordOwnFlightData = stateRecordsOwnData;
-        this->kfilter = kfilter;
+        this->filter = filter;
         this->logger = logger;
     }
 
@@ -24,7 +24,7 @@ namespace mmfs
     {
         delete[] csvHeader;
         delete[] stateString;
-        delete kfilter;
+        delete filter;
     }
 
 #pragma endregion
@@ -58,8 +58,7 @@ namespace mmfs
         }
         if (useKF)
         {
-            kfilter = new KalmanInterface(3, 3, 6);
-            kfilter->initialize();
+            filter->initialize();
         }
         numSensors = good;
         setCsvHeader();
@@ -104,8 +103,9 @@ namespace mmfs
 
         if (useKF && sensorOK(imu) && sensorOK(baro)) // we only really care about Z filtering.
         {
-            double *measurements = new double[kfilter->getMeasurementSize()];
-            double *inputs = new double[kfilter->getInputSize()];
+            double *measurements = new double[filter->getMeasurementSize()];
+            double *inputs = new double[filter->getInputSize()];
+            double *stateVars = new double[filter->getStateSize()];
 
             // gps x y barometer z
             measurements[0] = sensorOK(gps) ? gps->getDisplacement().x() : 0;
@@ -117,7 +117,14 @@ namespace mmfs
             inputs[1] = acceleration.y() = imu->getAcceleration().y();
             inputs[2] = acceleration.z() = imu->getAcceleration().z();
 
-            double *predictions = kfilter->iterate(currentTime - lastTime, inputs, measurements);
+            stateVars[0] = position.x();
+            stateVars[1] = position.y();
+            stateVars[2] = position.z();
+            stateVars[3] = velocity.x();
+            stateVars[4] = velocity.y();
+            stateVars[5] = velocity.z();
+
+            double *predictions = filter->iterate(currentTime - lastTime, stateVars, measurements, inputs);
             // pos x, y, z, vel x, y, z
             position.x() = predictions[0];
             position.y() = predictions[1];
@@ -138,7 +145,7 @@ namespace mmfs
         {
             if (sensorOK(gps))
             {
-                position = imu::Vector<3>(gps->getDisplacement().x(), gps->getDisplacement().y(), gps->getAlt());
+                position = Vector<3>(gps->getDisplacement().x(), gps->getDisplacement().y(), gps->getAlt());
                 velocity = gps->getVelocity();
             }
             if (sensorOK(baro))
@@ -153,16 +160,16 @@ namespace mmfs
         }
         if (sensorOK(gps))
         {
-            coordinates = gps->getHasFirstFix() ? imu::Vector<2>(gps->getPos().x(), gps->getPos().y()) : imu::Vector<2>(0, 0);
+            coordinates = gps->getHasFirstFix() ? Vector<2>(gps->getPos().x(), gps->getPos().y()) : Vector<2>(0, 0);
             heading = gps->getHeading();
         }
         else
         {
-            coordinates = imu::Vector<2>(0, 0);
+            coordinates = Vector<2>(0, 0);
             heading = 0;
         }
 
-        orientation = sensorOK(imu) ? imu->getOrientation() : imu::Quaternion(0, 0, 0, 1);
+        orientation = sensorOK(imu) ? imu->getOrientation() : Quaternion(0, 0, 0, 1);
 
         setDataString();
         if (recordOwnFlightData)

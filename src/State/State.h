@@ -3,7 +3,7 @@
 
 #include <Wire.h>
 
-#include "KalmanInterface.h"
+#include "../Filters/Filter.h"
 
 // Include all the sensor classes
 #include "../Sensors/Baro/Barometer.h"
@@ -12,6 +12,8 @@
 #include "../Radio/Radio.h"
 #include "../RecordData/Logger.h"
 #include "../Constants.h"
+#include "../Math/Vector.h"
+#include "../Math/Quaternion.h"
 
 namespace mmfs
 {
@@ -25,7 +27,7 @@ namespace mmfs
         // SensorType sensorOrder[numSensors] = {BAROMETER_, GPS_, IMU_, BAROMETER_}; It doesn't what order they're in, as long as they're in the array.
         // useKalmanFilter: whether or not to use the Kalman Filter. If false, the state will use the raw sensor data.
         // stateRecordsOwnData: whether or not the state should call recordFlightData() itself. If false, other funcitons must call recordFlightData() to record the state's data.
-        State(Sensor **sensors, int numSensors, KalmanInterface *kfilter, Logger *logger, bool stateRecordsOwnData = true);
+        State(Sensor **sensors, int numSensors, Filter *filter, Logger *logger, bool stateRecordsOwnData = true);
         virtual ~State();
 
         // to be called after all applicable sensors have been added.
@@ -43,11 +45,11 @@ namespace mmfs
         virtual char *getStateString(); // This contains only the portions that define what the state thinks the rocket looks like, not full sensor data.
 
         // State Getters
-        virtual imu::Vector<3> getPosition() const { return position; }
-        virtual imu::Vector<3> getVelocity() const { return velocity; }
-        virtual imu::Vector<3> getAcceleration() const { return acceleration; }
-        virtual imu::Quaternion getOrientation() const { return orientation; }
-        virtual imu::Vector<2> getCoordinates() const { return coordinates; } // lat long in decimal degrees
+        virtual Vector<3> getPosition() const { return position; }
+        virtual Vector<3> getVelocity() const { return velocity; }
+        virtual Vector<3> getAcceleration() const { return acceleration; }
+        virtual Quaternion getOrientation() const { return orientation; }
+        virtual Vector<2> getCoordinates() const { return coordinates; } // lat long in decimal degrees
         virtual double getHeading() const { return heading; }
 
         // State Setters
@@ -80,11 +82,11 @@ namespace mmfs
         bool sensorOK(const Sensor *sensor) const;
 
         // State variables
-        imu::Vector<3> position;     // in m from start position
-        imu::Vector<3> velocity;     // in m/s
-        imu::Vector<3> acceleration; // in m/s^2
-        imu::Quaternion orientation; // in quaternion
-        imu::Vector<2> coordinates;  // in lat, lon
+        Vector<3> position;     // in m from start position
+        Vector<3> velocity;     // in m/s
+        Vector<3> acceleration; // in m/s^2
+        Quaternion orientation; // in quaternion
+        Vector<2> coordinates;  // in lat, lon
         double heading;              // in degrees
 
         // These two only exist because of bugs in the KF. They will be removed when the KF is fixed.
@@ -93,7 +95,7 @@ namespace mmfs
 
         // Kalman Filter settings
         bool useKF;
-        KalmanInterface *kfilter;
+        Filter *filter;
     };
 }
 #endif

@@ -1,32 +1,39 @@
 #include <Arduino.h>
 #include "AvionicsState.h"
-#include "../BlinkBuzz/BlinkBuzz.h"
-#include "../Sensors/GPS/MAX_M10S.h"
-#include "../Sensors/IMU/BNO055.h"
-#include "../Sensors/Baro/BMP390.h"
+#include "../src/BlinkBuzz/BlinkBuzz.h"
+#include "../src/Sensors/GPS/MAX_M10S.h"
+#include "../src/Sensors/IMU/BNO055.h"
+#include "../src/Sensors/Baro/BMP390.h"
+#include "AvionicsKF.h"
 
 using namespace mmfs;
-PSRAM *ram;
 const int BUZZER_PIN = 33;
 const int BUILTIN_LED_PIN = LED_BUILTIN;
 int allowedPins[] = {BUILTIN_LED_PIN, BUZZER_PIN};
 BlinkBuzz bb(allowedPins, 2, true);
+
+
+MAX_M10S gps;
+BNO055 imu;
+BMP390 baro;
+Sensor *sensors[3] = {&gps, &imu, &baro};
+AvionicsKF kfilter;
+Logger logger;
+AvionicsState avionicsState(sensors, 3, &kfilter, &logger);
+
+
 void setup()
 {
-    MAX_M10S gps;
-    BNO055 imu;
-    BMP390 baro;
-    Sensor *sensors[3] = {&gps, &imu, &baro};
-    KalmanInterface kfilter(3, 3, 6);
-    AvionicsState avionicsState(sensors, 3, &kfilter, false);
 
-    ram = new PSRAM();
-    if (!setupSDCard())
+    logger.init();
+
+
+    if (!(logger.isSdCardReady()))
         bb.onoff(BUZZER_PIN, 200, 3);
     else
         bb.onoff(BUZZER_PIN, 1000, 1);
 
-    if (!ram->init())
+    if (!(logger.isPsramReady()))
         bb.onoff(BUZZER_PIN, 200, 3);
     else
         bb.onoff(BUZZER_PIN, 1000, 1);
@@ -40,4 +47,6 @@ void setup()
 void loop()
 {
     bb.update();
+
+    avionicsState.updateState();
 }

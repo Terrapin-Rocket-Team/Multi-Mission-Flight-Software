@@ -1,9 +1,9 @@
 #ifndef GPS_H
 #define GPS_H
 
-#include <imumaths.h>
 #include "../Sensor.h"
 #include "../../Constants.h"
+#include "../../Math/Vector.h"
 
 namespace mmfs
 {
@@ -12,10 +12,10 @@ namespace mmfs
     public:
         virtual ~GPS(){};
         virtual double getAlt() const;
-        virtual imu::Vector<3> getVelocity() const;
-        virtual imu::Vector<2> getPos() const;
-        virtual imu::Vector<3> getOriginPos() const;
-        virtual imu::Vector<3> getDisplacement() const;
+        virtual Vector<3> getVelocity() const;
+        virtual Vector<2> getPos() const;
+        virtual Vector<3> getOriginPos() const;
+        virtual Vector<3> getDisplacement() const;
         virtual const char *getTimeOfDay() const;
         virtual int getFixQual() const;
         virtual double getHeading() const;
@@ -29,13 +29,13 @@ namespace mmfs
 
     protected:
         GPS();
-        imu::Vector<2> pos;          // latitude and longitude
+        Vector<2> pos;          // latitude and longitude
         double altitude;             // alti in mm
-        imu::Vector<3> velocity;     // m per s
-        imu::Vector<3> displacement; // m from starting location
-        imu::Vector<3> origin;       // lat(deg), long(deg), alti(m) of the original location
+        Vector<3> velocity;     // m per s
+        Vector<3> displacement; // m from starting location
+        Vector<3> origin;       // lat(deg), long(deg), alti(m) of the original location
         int fixQual;                 // num of connections to satellites
-        imu::Vector<3> irlTime;      // returns the current hour, min, and sec
+        Vector<3> irlTime;      // returns the current hour, min, and sec
         bool hasFirstFix;            // whether or not gps has recieved first fix
         double heading;
         int hr, min, sec;

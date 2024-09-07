@@ -12,15 +12,23 @@ Logger::Logger(GroundDest groundDest, uint16_t bufferSize, int bufferInterval) {
     this->bufferInterval = bufferInterval;
     bufIdx = 0;
     bufCount = 0;
-    mode = GROUND;
     dumped = false;
+}
 
-    if (ram.init() && sdCard.init()) {
+// Initializes the logger
+void Logger::init() {
+
+
+    if (sdCard.init()) {
         sdCard.addFile("Log.txt");
         sdCard.addFile("FlightData.csv");
         sdCard.selectFile(0);       // since we dk the file name, we select the first file (Log.txt)
-        ready = true;
+        SDready = true;
     }
+
+    RAMready = ram.init();
+
+    setRecordMode(GROUND);
 }
 
 // Records flight data to the SD card or PSRAM
@@ -97,7 +105,7 @@ void Logger::setRecordMode(Mode m) {
         // Dump the PSRAM to the SD card
         dumpData();
 
-        if (ram.isReady())
+        if (!ram.isReady())
             ram.init();
 
         // Reinitialize files on mode change

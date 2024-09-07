@@ -42,7 +42,8 @@ class Logger {
 private:
     PSRAM ram;
     SdCardStorage sdCard;
-    bool ready;
+    bool SDready;
+    bool RAMready;
     bool dumped;
     GroundDest groundDest;
     /** The buffer size of the circular buffer, in bytes, for preflight */
@@ -56,6 +57,13 @@ private:
 public:
 
     Logger(GroundDest groundDest = ALTERNATING_BOTH, uint16_t bufferSize = 25000, int bufferInterval = 300);
+
+    void init();
+
+    bool isPsramReady() const { return RAMready; }
+    bool isSdCardReady() const { return SDready; }
+    bool isReady() const { return RAMready && SDready; }
+
     /** Takes the pointer to a null terminated character array and prints it to the appropriate destination based on the mode */
     void recordFlightData(char *data); 
     /** 
