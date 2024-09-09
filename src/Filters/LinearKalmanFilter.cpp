@@ -4,9 +4,6 @@ namespace mmfs {
 
 LinearKalmanFilter::LinearKalmanFilter(int measurementSize, int controlSize, int stateSize)
 {
-    if (measurementSize <= 0 || controlSize <= 0 || stateSize <= 0) {
-        throw std::invalid_argument("Matrix sizes must be positive integers.");
-    }
 
     // Initialize with zeros (new keyword does value-initialization in C++03 5.3.4)
     X = Matrix(stateSize, 1, new double[stateSize]()); // State vector

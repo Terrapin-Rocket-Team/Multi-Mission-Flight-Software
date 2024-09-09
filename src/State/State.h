@@ -53,7 +53,7 @@ namespace mmfs
         virtual double getHeading() const { return heading; }
 
         // State Setters
-        virtual void setUseKF(bool useKF) { this->useKF = useKF; }
+        virtual void setUseFilter(bool useFilter) { this->useFilter = useFilter; }
         virtual void setRecordOwnFlightData(bool recordOwnFlightData) { this->recordOwnFlightData = recordOwnFlightData; }
 
     protected:
@@ -94,7 +94,7 @@ namespace mmfs
         double baroOldAltitude; // in m
 
         // Kalman Filter settings
-        bool useKF;
+        bool useFilter = true;
         Filter *filter;
     };
 }

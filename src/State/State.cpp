@@ -56,7 +56,7 @@ namespace mmfs
                 logger->recordLogData(ERROR, logData);
             }
         }
-        if (useKF)
+        if (useFilter)
         {
             filter->initialize();
         }
@@ -101,7 +101,7 @@ namespace mmfs
         IMU *imu = reinterpret_cast<IMU *>(getSensor(IMU_));
         Barometer *baro = reinterpret_cast<Barometer *>(getSensor(BAROMETER_));
 
-        if (useKF && sensorOK(imu) && sensorOK(baro)) // we only really care about Z filtering.
+        if (useFilter && sensorOK(imu) && sensorOK(baro)) // we only really care about Z filtering.
         {
             double *measurements = new double[filter->getMeasurementSize()];
             double *inputs = new double[filter->getInputSize()];

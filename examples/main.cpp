@@ -14,9 +14,9 @@ BlinkBuzz bb(allowedPins, 2, true);
 
 
 MAX_M10S gps;
-BNO055 imu;
+BNO055 imu055;
 BMP390 baro;
-Sensor *sensors[3] = {&gps, &imu, &baro};
+Sensor *sensors[3] = {&gps, &imu055, &baro};
 AvionicsKF kfilter;
 Logger logger;
 AvionicsState avionicsState(sensors, 3, &kfilter, &logger);
