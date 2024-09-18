@@ -33,7 +33,10 @@ void tearDown(void)
 
 // Test functions must be void and take no arguments, put them here
 
-
+// void test_function_name() {
+//     TEST_ASSERT_EQUAL(expected, actual);
+//     TEST_ASSERT_EQUAL_FLOAT(expected, actual);
+}
 
 // ---
 

@@ -14,6 +14,7 @@ Matrix m5(4, 4, new double[16]{0,0,-1,2,0,1,0,0,9,0,0,0,0,0,0,1});
 void test_copy_constructor()
 {
     Matrix m4(m1);
+    m1.disp();
     TEST_ASSERT_NOT_EQUAL(&m1, &m4);
     TEST_ASSERT_EQUAL(2, m4.getRows());
     TEST_ASSERT_EQUAL(2, m4.getCols());

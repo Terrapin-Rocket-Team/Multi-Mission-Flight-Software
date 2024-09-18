@@ -1,13 +1,8 @@
 #ifndef SD_CARD_H
 #define SD_CARD_H
 
-#ifdef ARDUINO
 #include <Arduino.h>
 #include <SdFat.h>
-#else
-#include "NativeTestMocks/Arduino.h"
-#include "NativeTestMocks/SdFat.h"
-#endif
 
 extern SdFs sd;
 extern FsFile logFile;
