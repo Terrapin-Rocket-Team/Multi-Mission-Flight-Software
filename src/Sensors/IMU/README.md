@@ -45,11 +45,8 @@ Quaternions can be converted to and from DCMs and Euler angles. This is useful f
 #### Example
 
 Given a quaternion $\mathbf{q}$, the corresponding DCM $\mathbf{C}$ can be calculated as follows:
-$\mathbf{C} = \begin{bmatrix}
-1 - 2(q_2^2 + q_3^2) & 2(q_1q_2 - q_0q_3) & 2(q_1q_3 + q_0q_2) \\
-2(q_1q_2 + q_0q_3) & 1 - 2(q_1^2 + q_3^2) & 2(q_2q_3 - q_0q_1) \\
-2(q_1q_3 - q_0q_2) & 2(q_2q_3 + q_0q_1) & 1 - 2(q_1^2 + q_2^2)
-\end{bmatrix}$
+
+![Equation](<images/equation (1).svg>)
 
 ### Euler Angles
 
@@ -65,18 +62,18 @@ Given gyroscope angular velocity **w** and accelerameter accelerations **a** mea
 
 Since this is a relative orientation, we will start with assumption of a starting orientation of 
 
-Set **$q^{t=0}$** = $\begin{bmatrix} 1 \\ 0 \\ 0 \\0 \end{bmatrix}$
+![Equation](<images/equation (2).svg>)
 
-Set $\theta = |$**w**|$\Delta t$ 
+![Equation](<images/equation (3).svg>)
 
-Set **v** = $\frac{\bold{w}}{|\bold{w}|}$
+![Equation](<images/equation (4).svg>)
 
-**$q_\Delta$** = $\begin{bmatrix} cos(\frac{\theta}{2}) \\ v_1*sin(\frac{\theta}{2}) \\ v_2*sin(\frac{\theta}{2}) \\v_3*sin(\frac{\theta}{2}) \end{bmatrix}$
+![Equation](<images/equation (5).svg>)
 
 
 TODO check the order of multiplication on the following line 
 
-**$q^{t + \Delta t}$** = **$q_\Delta$** * **$q^{t}$**
+![Equation](<images/equation (6).svg>)
 
 This quaternion **$q^{t + \Delta t}$** represents the rotation from body to world frame.
 
@@ -86,27 +83,35 @@ The above approch works... but degrades over time (search google for dead reckin
 
 TODO how to know if the gyro is stationary and stop doing this if it isnt???
 
-Given **$a^\Beta$** = $\begin{bmatrix} a_x \\ a_y \\a_z \end{bmatrix}$ turn it into the interial frame acceleration.
+Given 
 
-**$q_a^\Beta$** = $\begin{bmatrix} 0 \\ a_x \\ a_y \\a_z \end{bmatrix}$
+![Equation](<images/equation (7).svg>) 
 
-**$q_a^I$** = **$q^{t + \Delta t}$** * **$q_a^\Beta$** * **$q^{(t + \Delta t)^{-1}}$**
+to turn it into the interial frame acceleration.
 
-Set **v** = $\begin{bmatrix} \frac{q_{a_x}^I}{|q_{a}^I|} \\ \frac{q_{a_y}^I}{|q_{a}^I|} \\\frac{q_{a_z}^I}{|q_{a}^I|} \end{bmatrix}$
+![Equation](<images/equation (8).svg>)
 
-Set $\phi = cos^{-1}(\bold{v_x})$
+![Equation](<images/equation (9).svg>)
 
-Set **n** = $\begin{bmatrix} v_y \\ -v_x \\ 0\end{bmatrix}$
+![Equation](<images/equation (10).svg>)
+
+Set
+
+![Equation](<images/equation (11).svg>)
+
+Set
+
+![Equation](<images/equation (12).svg>)
 
 Then your new *better* attitude is given by the complimentary filter
 
-**$q^{t + \Delta t}_c$** = $\begin{bmatrix} (1-\alpha)*\phi \\ \frac{n_x}{|\bold{n}|} \\ \frac{n_y}{|\bold{n}|} \\ \frac{n_z}{|\bold{n}|} \end{bmatrix}$ * **$q^{t + \Delta t}$**
+![Equation](<images/equation (13).svg>)
 
 with $\alpha = [0, 1]$ TODO determine the best value of alpha for a sensor
 
 Your new attitude now becomes 
 
-**$q^{t}$** = **$q^{t + \Delta t}_c$**
+![Equation](<images/equation (14).svg>)
 
 
 ## Absolute Attitude Determination
