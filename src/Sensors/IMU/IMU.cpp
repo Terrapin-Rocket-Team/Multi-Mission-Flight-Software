@@ -18,6 +18,11 @@ namespace mmfs
         return angularVelocity;
     }
 
+    Vector<3> IMU::getAngularVelocity()
+    {
+        return angularVelocity;
+    }
+
     Vector<3> IMU::getMagField()
     {
         return magField;
