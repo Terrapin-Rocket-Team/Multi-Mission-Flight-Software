@@ -15,13 +15,12 @@ namespace mmfs
             // Serial.println("Could not find a valid BMP390 sensor, check wiring!");
             return initialized = false;
         }
-
-        double startPressure = 0;
         for (int i = 0; i < 10; i++)
         {
             bmp.readPressure();
             delay(25);
         }
+        groundPressure = bmp.readPressure() / 100.0; // hPa
         return initialized = true;
     }
 
