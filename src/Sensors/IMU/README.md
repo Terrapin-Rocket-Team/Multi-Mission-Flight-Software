@@ -20,11 +20,11 @@ The Direction Cosine Matrix (DCM) is a matrix that describes the orientation of 
 #### Example
 
 A DCM matrix $\mathbf{C}$ can be represented as:
-$\mathbf{C} = \begin{bmatrix}
+$$\mathbf{C} = \begin{bmatrix}
 c_{11} & c_{12} & c_{13} \\
 c_{21} & c_{22} & c_{23} \\
 c_{31} & c_{32} & c_{33}
-\end{bmatrix}$
+\end{bmatrix}$$
 
 Where $c_{ij}$ are the direction cosines between the reference frame axes.
 
