@@ -56,6 +56,8 @@ namespace mmfs
 
     Quaternion IMU::quatInverse(Quaternion q)
     {
+        // This is technically the quaternion conjugate. However,
+        // for quaternions the conjugate is equivalent to the inverse.
         return Quaternion(q.w(), -q.x(), -q.y(), -q.z());
     }
 
