@@ -43,4 +43,6 @@ void SerialClass::print(const char *data) {}
 
 void SerialClass::println(const char *data) {}
 
+void SerialClass::begin(int baud) {}
+
 SerialClass Serial;

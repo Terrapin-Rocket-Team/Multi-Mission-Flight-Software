@@ -13,8 +13,8 @@ namespace mmfs
     // - Implement Global and Local orientations
     // - Implement Global and Local accelerations
     // - Implement Magnetometer reading fusion
-    // - Revist naming conventions
-    // - Revisit necessary funcitons/variables
+    // - Revisit naming conventions
+    // - Revisit necessary functions/variables
 
     class IMU : public Sensor
     {

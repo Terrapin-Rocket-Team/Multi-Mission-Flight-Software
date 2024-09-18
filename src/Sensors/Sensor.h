@@ -2,10 +2,8 @@
 #define SENSOR_H
 
 #include "../Constants.h"
-#include "../Math/CircBuffer.h"
+#include "../Utils/CircBuffer.h"
 #include "../BlinkBuzz/BlinkBuzz.h"
-#include <string.h>
-#include <stdio.h>
 #include "../RecordData/RecordData.h"
 #include <algorithm>
 

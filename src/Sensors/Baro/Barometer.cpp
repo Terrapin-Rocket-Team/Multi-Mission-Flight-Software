@@ -91,7 +91,6 @@ namespace mmfs
         biasCorrectionMode = useBiasCorrection;
         if (init())
         {
-
             if (!biasCorrectionMode)
             {
                 double startPressure = 0;
