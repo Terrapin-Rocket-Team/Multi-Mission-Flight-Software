@@ -37,6 +37,30 @@ public:
     {
         return true;
     }
+    bool open(const char *fileName, int mode)
+    {
+        return true;
+    }
+    bool seek(uint64_t offset)
+    {
+        return true;
+    }
+    int read(char *data, int size)
+    {
+        return 0;
+    }
+    bool available()
+    {
+        return true;
+    }
+    int peek()
+    {
+        return 0;
+    }
+    int read()
+    {
+        return 0;
+    }
 };
 
 class SdFs

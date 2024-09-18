@@ -1,14 +1,11 @@
 #include <Arduino.h>
 #include "../../src/Constants.h"
-#include "../../src/RecordData/RecordData.h"
 #include "../../src/BlinkBuzz/BlinkBuzz.h"
 #include <string>
 #include <unity.h>
 
 #define UNITY_INCLUDE_DOUBLE
 
-PSRAM pram;
-PSRAM *ram = &pram;
 uint8_t external_psram_size = 0;
 
 int allowed_pins[] = {13, 33};

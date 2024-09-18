@@ -50,13 +50,13 @@ Matrix &Matrix::operator=(const Matrix &other)
 }
 
 // Gets #rows of the matrix
-int Matrix::getRows()
+int Matrix::getRows() const
 {
     return this->rows;
 }
 
 // Gets #columns of the matrix
-int Matrix::getCols()
+int Matrix::getCols() const
 {
     return this->cols;
 }
@@ -64,6 +64,11 @@ int Matrix::getCols()
 double *Matrix::getArr()
 {
     return this->array;
+}
+
+double Matrix::get(int i, int j)
+{
+    return this->array[i * this->cols + j];
 }
 
 // Overloads * operator to multiply two matrices

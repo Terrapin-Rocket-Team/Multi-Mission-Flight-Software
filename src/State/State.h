@@ -2,14 +2,14 @@
 #define STATE_H
 
 
-#include "../Filters/KalmanInterface.h"
+#include "../Filters/Filter.h"
 
 // Include all the sensor classes
 #include "../Sensors/Baro/Barometer.h"
 #include "../Sensors/GPS/GPS.h"
 #include "../Sensors/IMU/IMU.h"
 #include "../Radio/Radio.h"
-#include "../RecordData/RecordData.h"
+#include "../RecordData/Logger.h"
 #include "../Constants.h"
 #include "../Math/Vector.h"
 #include "../Math/Quaternion.h"
@@ -26,7 +26,7 @@ namespace mmfs
         // SensorType sensorOrder[numSensors] = {BAROMETER_, GPS_, IMU_, BAROMETER_}; It doesn't what order they're in, as long as they're in the array.
         // useKalmanFilter: whether or not to use the Kalman Filter. If false, the state will use the raw sensor data.
         // stateRecordsOwnData: whether or not the state should call recordFlightData() itself. If false, other funcitons must call recordFlightData() to record the state's data.
-        State(Sensor **sensors, int numSensors, KalmanInterface *kfilter, bool stateRecordsOwnData = true);
+        State(Sensor **sensors, int numSensors, Filter *filter, Logger *logger, bool stateRecordsOwnData = true);
         virtual ~State();
 
         // to be called after all applicable sensors have been added.
@@ -52,7 +52,7 @@ namespace mmfs
         virtual double getHeading() const { return heading; }
 
         // State Setters
-        virtual void setUseKF(bool useKF) { this->useKF = useKF; }
+        virtual void setUseFilter(bool useFilter) { this->useFilter = useFilter; }
         virtual void setRecordOwnFlightData(bool recordOwnFlightData) { this->recordOwnFlightData = recordOwnFlightData; }
 
     protected:
@@ -63,6 +63,7 @@ namespace mmfs
         Sensor **sensors;
         int numSensors; // how many sensors are actually enabled
 
+        Logger *logger;
         char *csvHeader;
         char *dataString;
         char *stateString;
@@ -92,8 +93,8 @@ namespace mmfs
         double baroOldAltitude; // in m
 
         // Kalman Filter settings
-        bool useKF;
-        KalmanInterface *kfilter;
+        bool useFilter = true;
+        Filter *filter;
     };
 }
 #endif

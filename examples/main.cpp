@@ -4,29 +4,42 @@
 #include "../src/Sensors/GPS/MAX_M10S.h"
 #include "../src/Sensors/IMU/BNO055.h"
 #include "../src/Sensors/Baro/BMP390.h"
+#include "AvionicsKF.h"
 
 using namespace mmfs;
-PSRAM *ram;
 const int BUZZER_PIN = 33;
 const int BUILTIN_LED_PIN = LED_BUILTIN;
 int allowedPins[] = {BUILTIN_LED_PIN, BUZZER_PIN};
 BlinkBuzz bb(allowedPins, 2, true);
+
+
+MAX_M10S gps;
+BNO055 imu055;
+BMP390 baro;
+Sensor *sensors[3] = {&gps, &imu055, &baro};
+AvionicsKF kfilter;
+Logger logger;
+AvionicsState avionicsState(sensors, 3, &kfilter, &logger);
+
+const int SENSOR_BIAS_CORRECTION_DATA_LENGTH = 2;
+const int SENSOR_BIAS_CORRECTION_DATA_IGNORE = 1;
+const int UPDATE_RATE = 10;
+const int UPDATE_INTERVAL = 1000 / UPDATE_RATE;
+
+ int timeOfLastUpdate = 0;
+
 void setup()
 {
-    MAX_M10S gps;
-    BNO055 imu;
-    BMP390 baro;
-    Sensor *sensors[3] = {&gps, &imu, &baro};
-    KalmanInterface kfilter(3, 3, 6);
-    AvionicsState avionicsState(sensors, 3, &kfilter, false);
 
-    ram = new PSRAM();
-    if (!setupSDCard())
+    logger.init();
+
+
+    if (!(logger.isSdCardReady()))
         bb.onoff(BUZZER_PIN, 200, 3);
     else
         bb.onoff(BUZZER_PIN, 1000, 1);
 
-    if (!ram->init())
+    if (!(logger.isPsramReady()))
         bb.onoff(BUZZER_PIN, 200, 3);
     else
         bb.onoff(BUZZER_PIN, 1000, 1);
@@ -39,5 +52,15 @@ void setup()
 
 void loop()
 {
+    //Do this as often as possible for best results
     bb.update();
+    
+    //Do this at a fixed rate
+    int currentTime = millis();
+    if (currentTime - timeOfLastUpdate < UPDATE_INTERVAL)
+        return;
+    timeOfLastUpdate = currentTime;
+
+    
+    avionicsState.updateState();
 }

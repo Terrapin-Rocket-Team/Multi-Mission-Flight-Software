@@ -1,16 +1,16 @@
 #ifndef AVIONICSSTATE_H
 #define AVIONICSSTATE_H
 
-// Platformio is such a fucking pile of trash
 #include "../src/State/State.h"
 #include "../src/BlinkBuzz/BlinkBuzz.h"
+#include "../src/Filters/LinearKalmanFilter.h"
 
 namespace mmfs
 {
     class AvionicsState : public State
     {
     public:
-        AvionicsState(Sensor **sensors, int numSensors, KalmanInterface *kfilter, bool recordData);
+        AvionicsState(Sensor **sensors, int numSensors, LinearKalmanFilter *kfilter, Logger *logger, bool stateRecordsOwnData = true);
         void updateState(double newTime = -1) override;
 
     private:

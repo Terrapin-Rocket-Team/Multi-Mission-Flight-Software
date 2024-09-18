@@ -19,7 +19,7 @@ namespace mmfs
         return initialized = true;
     }
 
-    void BNO055::update()
+    void BNO055::read()
     {
         measuredAcc = convertIMUtoMMFS(bno.getVector(Adafruit_BNO055::VECTOR_LINEARACCEL));
         measuredGyro = convertIMUtoMMFS(bno.getVector(Adafruit_BNO055::VECTOR_GYROSCOPE));

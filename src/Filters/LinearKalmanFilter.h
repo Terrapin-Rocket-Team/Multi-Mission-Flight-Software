@@ -1,39 +1,57 @@
+#ifndef LINEAR_KALMAN_FILTER_H
+#define LINEAR_KALMAN_FILTER_H
+
+#include "Filter.h"
 #include "../Math/Matrix.h"
 
-#ifndef LINEARKALMANFILTER_H
-#define LINEARKALMANFILTER_H
+namespace mmfs {
 
-namespace mmfs
-{
+class LinearKalmanFilter : public Filter {
+public:
 
-    typedef struct
-    {
-        Matrix F; // State Transition Matrix
-        Matrix G; // Control Matrix
-        Matrix H; // Observation Matrix
-        Matrix P; // Estimate Covariance Matrix
-        Matrix R; // Measurement Uncertainty Matrix
-        Matrix K; // Kalman Gain Matrix
-        Matrix Q; // Process Noise Matrix
-        Matrix U; // Control Vector
-        Matrix X; // State Vector
-    } KFState;
+    int measurementSize;
+    int controlSize;
+    int stateSize;
 
-    class LinearKalmanFilter
-    {
-    public:
-        LinearKalmanFilter(Matrix X, Matrix U, Matrix P, Matrix F, Matrix G, Matrix R, Matrix Q);
-        void predict_state();
-        void estimate_state(Matrix measurement);
-        void calculate_kalman_gain();
-        void covariance_update();
-        void covariance_extrapolate();
-        void calculate_initial_values();
-        Matrix iterate(Matrix measurement, Matrix control, Matrix F, Matrix G, Matrix H);
+    // Constructors
+    LinearKalmanFilter(int measurementSize, int controlSize, int stateSize);
+    LinearKalmanFilter(Matrix X, Matrix P);
+    virtual ~LinearKalmanFilter() = default;
 
-    private:
-        KFState state;
-    };
+    // Virtual getter methods for matrices, to be overridden by subclasses
+    virtual void initialize() = 0;
+    virtual Matrix getF(double dt) = 0;
+    virtual Matrix getG(double dt) = 0;
+    virtual Matrix getH() = 0;
+    virtual Matrix getR() = 0;
+    virtual Matrix getQ() = 0;
+
+    Matrix iterate(double dt, Matrix measurement, Matrix control);
+
+    // Override core interface methods
+    int getMeasurementSize() const override { return measurementSize; }
+    int getInputSize() const override { return controlSize; }
+    int getStateSize() const override { return stateSize; }
+    double* iterate(double dt, double* state, double* measurements, double* controlVars) override;
+
+
+
+
+
+protected:
+    // Instance variables to store matrices
+    Matrix X; // State vector
+    Matrix P; // Error covariance matrix
+    Matrix K; // Kalman gain
+    
+    void predictState(double dt, Matrix control);
+    void estimateState(Matrix measurement);
+    void calculateKalmanGain();
+    void covarianceUpdate();
+    void covarianceExtrapolate(double dt);
+
+};
 
 } // namespace mmfs
-#endif
+
+#endif // LINEAR_KALMAN_FILTER_H

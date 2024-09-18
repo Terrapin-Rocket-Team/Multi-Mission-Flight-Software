@@ -4,7 +4,7 @@
 #include "../Constants.h"
 #include "../Utils/CircBuffer.h"
 #include "../BlinkBuzz/BlinkBuzz.h"
-#include "../RecordData/RecordData.h"
+#include "../RecordData/Logger.h"
 #include <algorithm>
 
 namespace mmfs
@@ -28,13 +28,6 @@ namespace mmfs
             delete[] staticData;
             delete[] name;
         };
-
-        // --------------------------------- HARDWARE IMPLEMENTATION -----------------------------------------------
-
-        // Sets up the sensor and stores any critical parameters. Needs to reset the sensor if it is already initialized. Called by begin()
-        virtual bool init() = 0;
-        // Physically reads the outputs from the sensor hardware. Called by update()
-        virtual void read() = 0;
 
         // ------------------------------- SENSOR TYPE IMPLEMMENTATION ---------------------------------------------
 
@@ -74,6 +67,14 @@ namespace mmfs
         // ----------------------------------------------------------------------------------------------------------
 
     protected:
+        // --------------------------------- HARDWARE IMPLEMENTATION -----------------------------------------------
+
+        // Sets up the sensor and stores any critical parameters. Needs to reset the sensor if it is already initialized. Called by begin()
+        virtual bool init() = 0;
+        // Physically reads the outputs from the sensor hardware. Called by update()
+        virtual void read() = 0;
+
+        // ----------------------------------------------------------------------------------------------------------
         bool initialized = false;
         bool biasCorrectionMode = true;
         char *name = nullptr;       // Name of the sensor

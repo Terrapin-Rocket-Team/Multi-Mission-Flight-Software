@@ -37,7 +37,7 @@ namespace mmfs
         BNO055(const char *name = "BNO055");
         virtual void calibrateBno();
         virtual bool init() override;
-        virtual void update() override;
+        virtual void read() override;
     };
 }
 
