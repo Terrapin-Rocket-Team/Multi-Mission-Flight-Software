@@ -45,17 +45,17 @@ Given **$a^\Beta$** = $\begin{bmatrix} a_x \\ a_y \\a_z \end{bmatrix}$ turn it i
 
 **$q_a^I$** = **$q^{t + \Delta t}$** * **$q_a^\Beta$** * **$q^{(t + \Delta t)^{-1}}$**
 
-Set **v** = $\begin{bmatrix} \frac{q_{a_x}^I}{|q_{a_x}^I|} \\ \frac{q_{a_y}^I}{|q_{a_y}^I|} \\\frac{q_{a_z}^I}{|q_{a_z}^I|} \end{bmatrix}$
+Set **v** = $\begin{bmatrix} \frac{q_{a_x}^I}{|q_{a}^I|} \\ \frac{q_{a_y}^I}{|q_{a}^I|} \\\frac{q_{a_z}^I}{|q_{a}^I|} \end{bmatrix}$
 
 Set $\phi = cos^{-1}(\bold{v_x})$
 
-Set **n** = $\begin{bmatrix} n_y \\ -n_x \\ 0\end{bmatrix}$
+Set **n** = $\begin{bmatrix} v_y \\ -v_x \\ 0\end{bmatrix}$
 
 Then your new *better* attitude is given by the complimentary filter
 
 **$q^{t + \Delta t}_c$** = $\begin{bmatrix} (1-\alpha)*\phi \\ \frac{n_x}{|\bold{n}|} \\ \frac{n_y}{|\bold{n}|} \\ \frac{n_z}{|\bold{n}|} \end{bmatrix}$ * **$q^{t + \Delta t}$**
 
-with $\alpha = [0, 1]$
+with $\alpha = [0, 1]$ TODO determine the best value of alpha for a sensor
 
 Your new attitude now becomes 
 
