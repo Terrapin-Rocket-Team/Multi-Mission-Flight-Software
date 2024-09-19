@@ -8,9 +8,8 @@
 #include <string>
 #include <cstring>
 #elif defined(__unix__)  // Linux
-// TODO
+#include <cstdio>
 #elif defined(__APPLE__) // OSX
-// TODO
 #include <cstdio>
 #endif
 
