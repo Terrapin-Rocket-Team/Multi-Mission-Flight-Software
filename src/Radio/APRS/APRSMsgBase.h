@@ -11,6 +11,7 @@
 // TODO
 #elif defined(__APPLE__) // OSX
 // TODO
+#include <cstdio>
 #endif
 
 #include "../RadioMessage.h"

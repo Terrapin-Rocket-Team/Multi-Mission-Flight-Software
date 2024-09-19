@@ -1,3 +1,6 @@
+#ifndef NATIVE_TEST_HELPER_H
+#define NATIVE_TEST_HELPER_H
+
 #include <Arduino.h>
 #include "../../src/Constants.h"
 #include "../../src/BlinkBuzz/BlinkBuzz.h"
@@ -6,14 +9,13 @@
 
 #define UNITY_INCLUDE_DOUBLE
 
-uint8_t external_psram_size = 0;
+extern int allowed_pins[];
+extern BlinkBuzz bb;
 
-int allowed_pins[] = {13, 33};
+extern const int UPDATE_RATE;
+extern const int SENSOR_BIAS_CORRECTION_DATA_IGNORE;
+extern const int SENSOR_BIAS_CORRECTION_DATA_LENGTH;
+extern const int UPDATE_INTERVAL;
+extern const int BUZZER_PIN;
 
-BlinkBuzz bb(allowed_pins, 2, true);
-
-const int UPDATE_RATE = 10;
-const int SENSOR_BIAS_CORRECTION_DATA_IGNORE = 1;
-const int SENSOR_BIAS_CORRECTION_DATA_LENGTH = 2;
-const int UPDATE_INTERVAL = 1.0 / UPDATE_RATE * 1000;
-const int BUZZER_PIN = 14;
+#endif // NATIVE_TEST_HELPER_H
