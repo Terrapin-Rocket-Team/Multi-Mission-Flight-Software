@@ -43,7 +43,7 @@ void test_baro_begin()
     baro.set(500, 25);
 
     TEST_ASSERT_TRUE(baro.begin(false));
-
+    TEST_ASSERT_TRUE(0);
     TEST_ASSERT_EQUAL_FLOAT(500, baro.fakeP);
     TEST_ASSERT_EQUAL_FLOAT(25, baro.fakeT);
     TEST_ASSERT_EQUAL(false, baro.isInBiasCorrectionMode());
