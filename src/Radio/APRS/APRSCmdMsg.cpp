@@ -25,10 +25,10 @@ namespace mmfs
     void APRSCmdMsg::decodeData(int cursor)
     {
         sscanf((char *)&string[cursor + 11], // ignore the :TO_FIELD: part
-               "PWR:%d VID:%d DAT:%d L:%d",
+               "PWR:%hhd VID:%hhd DAT:%hhd L:%hhd",
                &data.minutesUntilPowerOn,
                &data.minutesUntilVideoStart,
                &data.minutesUntilDataRecording,
-               &data.launch);
+               (uint8_t *)&data.launch);
     }
 } // namespace mmfs

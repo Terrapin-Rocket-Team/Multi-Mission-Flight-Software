@@ -49,7 +49,7 @@ private:
     /** The buffer size of the circular buffer, in bytes, for preflight */
     uint16_t bufferSize;
     /** If groundDest is ALTERNATING_BOTH, this is the number of data entries to be put to the PSRAM between each write to the file */
-    int bufferInterval;
+    unsigned int bufferInterval;
     uint32_t bufIdx;
     uint32_t bufCount;
     Mode mode;

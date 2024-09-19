@@ -24,7 +24,7 @@ AvionicsState avionicsState(sensors, 3, &kfilter, &logger);
 const int SENSOR_BIAS_CORRECTION_DATA_LENGTH = 2;
 const int SENSOR_BIAS_CORRECTION_DATA_IGNORE = 1;
 const int UPDATE_RATE = 10;
-const int UPDATE_INTERVAL = 1000 / UPDATE_RATE;
+const int UPDATE_INTERVAL = 1000.0 / UPDATE_RATE;
 
  int timeOfLastUpdate = 0;
 

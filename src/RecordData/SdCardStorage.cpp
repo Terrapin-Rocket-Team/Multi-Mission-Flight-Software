@@ -175,7 +175,7 @@ bool SdCardStorage::addFile(const char* fileName) {
     if (newNode == nullptr) {
         return false; // Memory allocation failed
     }
-    strncpy(newNode->fileName, fileName, NAME_SIZE);
+    strncpy(newNode->fileName, fileName, NAME_SIZE - 1);
     newNode->offset = 0;
     newNode->index = ++fileIndex;
     newNode->next = head;
