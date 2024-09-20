@@ -4,7 +4,7 @@
 namespace mmfs
 {
 
-    State::State(Sensor **sensors, int numSensors, Filter *filter, Logger *logger, bool stateRecordsOwnData)
+    State::State(Sensor **sensors, int numSensors, Filter *filter, bool stateRecordsOwnData)
     {
         baroOldAltitude = 0;
         baroVelocity = 0;
@@ -17,7 +17,6 @@ namespace mmfs
         this->sensors = sensors;
         recordOwnFlightData = stateRecordsOwnData;
         this->filter = filter;
-        this->logger = logger;
     }
 
     State::~State()
@@ -42,18 +41,18 @@ namespace mmfs
                 {
                     good++;
                     snprintf(logData, 100, "%s [%s] initialized.", sensors[i]->getTypeString(), sensors[i]->getName());
-                    logger->recordLogData(INFO_, logData);
+                    logger.recordLogData(INFO_, logData);
                 }
                 else
                 {
                     snprintf(logData, 100, "%s [%s] failed to initialize.", sensors[i]->getTypeString(), sensors[i]->getName());
-                    logger->recordLogData(ERROR_, logData);
+                    logger.recordLogData(ERROR_, logData);
                 }
             }
             else
             {
                 snprintf(logData, 100, "A sensor in the array was null!");
-                logger->recordLogData(ERROR_, logData);
+                logger.recordLogData(ERROR_, logData);
             }
         }
         if (useFilter)
@@ -79,7 +78,7 @@ namespace mmfs
                 // {
                 //     Wire.end();
                 //     Wire.begin();
-                //     logger->recordLogData(ERROR_, "I2C Error");
+                //     logger.recordLogData(ERROR_, "I2C Error");
                 //     sensors[i]->update();
                 //     delay(10);
                 //     sensors[i]->update();
@@ -172,7 +171,7 @@ namespace mmfs
 
         setDataString();
         if (recordOwnFlightData)
-            logger->recordFlightData(dataString);
+            logger.recordFlightData(dataString);
     }
 
     void State::setCsvHeader()
