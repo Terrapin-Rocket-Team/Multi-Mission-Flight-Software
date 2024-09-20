@@ -4,6 +4,7 @@
 #include "StorageType.h"
 #include "SdFat.h"
 #include <cstring> // For strncpy and strcmp
+#include <Arduino.h>
 
 namespace mmfs {
 

@@ -17,7 +17,7 @@ namespace mmfs
     public:
         APRSCmdMsg(APRSConfig header);
         APRSCmdData data;
-        char *type = "Text";
+        const char *type = "Text";
 
     protected:
         void decodeData(int cursor) override;

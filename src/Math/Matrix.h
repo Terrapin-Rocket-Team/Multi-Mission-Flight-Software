@@ -1,6 +1,5 @@
-#include <iostream>
 #include <cmath>
-
+#include <algorithm>
 #ifndef MATRIX_H
 #define MATRIX_H
 

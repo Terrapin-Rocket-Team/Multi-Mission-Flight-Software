@@ -114,7 +114,7 @@ void ErrorHandler::addError(Error *error)
         errorTail = error;
     }
     // Log the error
-    logger->recordLogData(error->type == NONCRITICAL_WARNING ? WARNING : ERROR, error->toString());
+    logger->recordLogData(error->type == NONCRITICAL_WARNING ? WARNING_ : ERROR_, error->toString());
 }
 
 Error *ErrorHandler::getFirstError()

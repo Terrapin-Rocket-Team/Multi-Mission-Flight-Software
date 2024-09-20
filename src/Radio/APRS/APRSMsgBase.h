@@ -8,12 +8,13 @@
 #include <string>
 #include <cstring>
 #elif defined(__unix__)  // Linux
-// TODO
+#include <cstdio>
 #elif defined(__APPLE__) // OSX
-// TODO
+#include <cstdio>
 #endif
 
 #include "../RadioMessage.h"
+#include <cmath>
 namespace mmfs
 {
     struct APRSConfig
@@ -34,16 +35,15 @@ namespace mmfs
         virtual bool decode() override;
         virtual bool encode() override;
         APRSConfig header;
-        char *type;
+        const char *type;
 
     protected:
         int encodeHeader();
         int decodeHeader();
         virtual void encodeData(int cursor) = 0;
         virtual void decodeData(int cursor) = 0;
-        void encodeBase91(uint8_t *message, int &cursor, int value, int precision);
+        void encodeBase91(uint8_t *message, int &cursor, double value, int precision);
         void decodeBase91(const uint8_t *message, int &cursor, double &value, int precision);
-        void decodeBase91(const uint8_t *message, int &cursor, int &value, int precision);
     };
 } // namespace mmfs
 #endif // RADIO_H

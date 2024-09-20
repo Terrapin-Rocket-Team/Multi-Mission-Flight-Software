@@ -74,26 +74,17 @@ namespace mmfs
 
 #pragma region Base91 Encoding
 
-    void APRSMsgBase::encodeBase91(uint8_t *message, int &cursor, int value, int precision)
+    void APRSMsgBase::encodeBase91(uint8_t *message, int &cursor, double value, int precision)
     {
         for (int i = precision - 1; i >= 0; i--)
         {
             int divisor = pow(91, i);
             message[cursor++] = (uint8_t)((int)(value / divisor) + 33);
-            value %= divisor;
+            value = std::fmod(value, divisor);
         }
     }
 
     void APRSMsgBase::decodeBase91(const uint8_t *message, int &cursor, double &value, int precision)
-    {
-        value = 0;
-        for (int i = 0; i < precision; i++)
-        {
-            value += (message[cursor++] - 33) * pow(91, precision - i - 1);
-        }
-    }
-
-    void APRSMsgBase::decodeBase91(const uint8_t *message, int &cursor, int &value, int precision)
     {
         value = 0;
         for (int i = 0; i < precision; i++)

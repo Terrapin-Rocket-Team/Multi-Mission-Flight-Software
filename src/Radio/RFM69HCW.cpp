@@ -578,7 +578,7 @@ namespace mmfs
             m.setArr((uint8_t *)message, this->msgLen);
             m.decode();
 
-            snprintf(message, this->msgLen, "%lf,%lf,%d,%d,%d,%lf,%lf,%lf,%d,%d,%d,%d", m.data.lat, m.data.lng, m.data.alt, m.data.spd, m.data.hdg, m.data.orientation.x(), m.data.orientation.y(), m.data.orientation.z(), m.data.stage, m.data.statusFlags & 0b100, m.data.statusFlags & 0b010, m.data.statusFlags & 0b001);
+            snprintf(message, this->msgLen, "%lf,%lf,%d,%d,%d,%lf,%lf,%lf,%d,%d,%d,%d", m.data.lat, m.data.lng, (int)m.data.alt, (int)m.data.spd, (int)m.data.hdg, m.data.orientation.x(), m.data.orientation.y(), m.data.orientation.z(), m.data.stage, m.data.statusFlags & 0b100, m.data.statusFlags & 0b010, m.data.statusFlags & 0b001);
 
             this->msgLen = strlen(message);
             return true;
@@ -600,7 +600,7 @@ namespace mmfs
 
             // add RSSI to the end of message
             this->RSSI();
-            snprintf(message, this->msgLen, "Source:%s,Destination:%s,Path:%s,Type:%s,Data:%lf/%lf/%d/%d/%d/%lf/%lf/%lf/%d/%d/%d/%d,RSSI:%d", m.header.CALLSIGN, m.header.TOCALL, m.header.PATH, m.type, m.data.lat, m.data.lng, m.data.alt, m.data.spd, m.data.hdg, m.data.orientation.x(), m.data.orientation.y(), m.data.orientation.z(), m.data.stage, m.data.statusFlags & 0b100, m.data.statusFlags & 0b010, m.data.statusFlags & 0b001, this->rssi);
+            snprintf(message, this->msgLen, "Source:%s,Destination:%s,Path:%s,Type:%s,Data:%lf/%lf/%d/%d/%d/%lf/%lf/%lf/%d/%d/%d/%d,RSSI:%d", m.header.CALLSIGN, m.header.TOCALL, m.header.PATH, m.type, m.data.lat, m.data.lng, (int)m.data.alt, (int)m.data.spd, (int)m.data.hdg, m.data.orientation.x(), m.data.orientation.y(), m.data.orientation.z(), m.data.stage, m.data.statusFlags & 0b100, m.data.statusFlags & 0b010, m.data.statusFlags & 0b001, this->rssi);
 
             this->msgLen = strlen(message);
             return true;
@@ -616,7 +616,7 @@ namespace mmfs
             message[this->msgLen] = 0;
 
             APRSCmdMsg m(this->cfg);
-            APRSCmdData data;
+            //APRSCmdData data;
             m.setArr((uint8_t *)message, this->msgLen);
             m.decode();
 

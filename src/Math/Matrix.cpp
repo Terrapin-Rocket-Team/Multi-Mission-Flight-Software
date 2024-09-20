@@ -91,7 +91,7 @@ Matrix Matrix::multiply(Matrix other)
 {
     if (this->cols != other.rows)
     {
-        std::cerr << "Multiplication error: Dimensions do not match!" << std::endl;
+        //std::cerr << "Multiplication error: Dimensions do not match!" << std::endl;
     }
 
     double *result = new double[this->rows * other.cols];
@@ -139,7 +139,7 @@ Matrix Matrix::add(Matrix other)
 {
     if (this->rows != other.rows || this->cols != other.cols)
     {
-        std::cerr << "Addition error: Dimensions do not match!" << std::endl;
+        //std::cerr << "Addition error: Dimensions do not match!" << std::endl;
     }
 
     double *result = new double[this->rows * this->cols];
@@ -165,7 +165,7 @@ Matrix Matrix::subtract(Matrix other)
 {
     if (this->rows != other.rows || this->cols != other.cols)
     {
-        std::cerr << "Subtraction error: Dimensions do not match!" << std::endl;
+        //std::cerr << "Subtraction error: Dimensions do not match!" << std::endl;
     }
 
     double *result = new double[this->rows * this->cols];
@@ -225,7 +225,7 @@ void Matrix::luDecompositionWithPartialPivoting(double *A, int *pivot, int n)
 
         if (max == 0.0)
         {
-            std::cerr << "Inversion error: Matrix is singular!" << std::endl;
+            //std::cerr << "Inversion error: Matrix is singular!" << std::endl;
             return;
         }
 
@@ -285,7 +285,7 @@ Matrix Matrix::inverse()
 {
     if (this->rows != this->cols)
     {
-        std::cerr << "Inversion error: Dimensions do not match!" << std::endl;
+        //std::cerr << "Inversion error: Dimensions do not match!" << std::endl;
     }
 
     int n = this->rows;            // at this point, n = rows = cols
@@ -351,14 +351,14 @@ Matrix Matrix::ident(int n)
 void Matrix::disp()
 {
     // prints each row of the matrix on a separate line
-    for (int i = 0; i < this->rows; ++i)
-    {
-        // separates each column of the matrix by a space
-        for (int j = 0; j < this->cols; ++j)
-        {
-            std::cout << this->array[i * this->cols + j] << " ";
-        }
-        std::cout << std::endl;
-    }
+    // for (int i = 0; i < this->rows; ++i)
+    // {
+    //     // separates each column of the matrix by a space
+    //     for (int j = 0; j < this->cols; ++j)
+    //     {
+    //         std::cout << this->array[i * this->cols + j] << " ";
+    //     }
+    //     std::cout << std::endl;
+    // }
 }
 } // namespace mmfs

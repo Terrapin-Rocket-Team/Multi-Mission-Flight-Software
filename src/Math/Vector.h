@@ -123,6 +123,12 @@ public:
     return *this;
   }
 
+  Vector &operator+=(const Vector &v) {
+    for (int x = 0; x < N; x++)
+      p_vec[x] += v.p_vec[x];
+    return *this;
+  }
+
   double &operator[](int n) { return p_vec[n]; }
 
   double operator[](int n) const { return p_vec[n]; }

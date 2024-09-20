@@ -21,6 +21,12 @@ AvionicsKF kfilter;
 Logger logger;
 AvionicsState avionicsState(sensors, 3, &kfilter, &logger);
 
+const int SENSOR_BIAS_CORRECTION_DATA_LENGTH = 2;
+const int SENSOR_BIAS_CORRECTION_DATA_IGNORE = 1;
+const int UPDATE_RATE = 10;
+const int UPDATE_INTERVAL = 1000.0 / UPDATE_RATE;
+
+ int timeOfLastUpdate = 0;
 
 void setup()
 {
@@ -46,7 +52,15 @@ void setup()
 
 void loop()
 {
+    //Do this as often as possible for best results
     bb.update();
+    
+    //Do this at a fixed rate
+    int currentTime = millis();
+    if (currentTime - timeOfLastUpdate < UPDATE_INTERVAL)
+        return;
+    timeOfLastUpdate = currentTime;
 
+    
     avionicsState.updateState();
 }

@@ -74,7 +74,7 @@ void Logger::recordLogData(LogType type, const char *data, Dest dest) {
 }
 
 // Records log data with a specific timestamp, type, and destination
-void Logger::recordLogData(double timeStamp, LogType type, const char *data, Dest dest = BOTH) {
+void Logger::recordLogData(double timeStamp, LogType type, const char *data, Dest dest) {
     int size = 15 + 7; // 15 for the timestamp and extra chars, 7 for the log type
     char logPrefix[size];
     snprintf(logPrefix, size, "%.3f - [%s] ", timeStamp, logTypeStrings[type]);

@@ -17,7 +17,7 @@ public:
         delete[] name;
     };
     // Sets up the actuator and stores any critical parameters
-    virtual bool initialize() = 0;
+    virtual bool init() = 0;
     // gives the names of the columns which transient data will be stored under, in a comma separated string
     virtual const char *getCsvHeader() const = 0;
     // gives the data values of the variables said to be stored by the header, in the same order, in a comma separated string

@@ -9,17 +9,17 @@
 #ifndef LOGGER_H
 #define LOGGER_H
 
-#include "Psram.h"
+#include "psram.h"
 #include "SdCardStorage.h"
 
 
 namespace mmfs {
 
 enum LogType {
-    LOG,
-    ERROR,
-    WARNING,
-    INFO
+    LOG_,
+    ERROR_,
+    WARNING_,
+    INFO_
 };
 
 enum Dest {
@@ -49,7 +49,7 @@ private:
     /** The buffer size of the circular buffer, in bytes, for preflight */
     uint16_t bufferSize;
     /** If groundDest is ALTERNATING_BOTH, this is the number of data entries to be put to the PSRAM between each write to the file */
-    int bufferInterval;
+    unsigned int bufferInterval;
     uint32_t bufIdx;
     uint32_t bufCount;
     Mode mode;

@@ -34,10 +34,10 @@ namespace mmfs
 
     public:
         // BNO Returns ACC in m/s^2, orientation in quaternion, orientation in euler angles, and magnetometer in uT (microteslas)
-        BNO055();
+        BNO055(const char *name = "BNO055");
         virtual void calibrateBno();
-        virtual bool initialize() override;
-        virtual void update() override;
+        virtual bool init() override;
+        virtual void read() override;
     };
 }
 

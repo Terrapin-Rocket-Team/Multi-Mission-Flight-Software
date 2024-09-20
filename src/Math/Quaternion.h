@@ -75,6 +75,9 @@ public:
     _z = axis.z() * sht;
   }
 
+
+
+// This is supposed to use imu::Matrix, but we arent using that, so to avoid confusion, it's been commented out.
   // void fromMatrix(const Matrix<3> &m) {
   //   double tr = m.trace();
 
@@ -117,6 +120,7 @@ public:
     axis.z() = _z / sqw;
   }
 
+  // This is supposed to use imu::Matrix, but we arent using that, so to avoid confusion, it's been commented out.
   // Matrix<3> toMatrix() const {
   //   Matrix<3> ret;
   //   ret.cell(0, 0) = 1 - 2 * _y * _y - 2 * _z * _z;

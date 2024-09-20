@@ -38,22 +38,22 @@ namespace mmfs
             if (sensors[i])
             {
                 tryNumSensors++;
-                if (sensors[i]->initialize())
+                if (sensors[i]->begin())
                 {
                     good++;
                     snprintf(logData, 100, "%s [%s] initialized.", sensors[i]->getTypeString(), sensors[i]->getName());
-                    logger->recordLogData(INFO, logData);
+                    logger->recordLogData(INFO_, logData);
                 }
                 else
                 {
                     snprintf(logData, 100, "%s [%s] failed to initialize.", sensors[i]->getTypeString(), sensors[i]->getName());
-                    logger->recordLogData(ERROR, logData);
+                    logger->recordLogData(ERROR_, logData);
                 }
             }
             else
             {
                 snprintf(logData, 100, "A sensor in the array was null!");
-                logger->recordLogData(ERROR, logData);
+                logger->recordLogData(ERROR_, logData);
             }
         }
         if (useFilter)
@@ -73,17 +73,17 @@ namespace mmfs
             if (sensorOK(sensors[i]))
             { // not nullptr and initialized
                 sensors[i]->update();
-                Wire.beginTransmission(0x42); // random address for testing the i2c bus
-                byte b = Wire.endTransmission();
-                if (b != 0x00)
-                {
-                    Wire.end();
-                    Wire.begin();
-                    logger->recordLogData(ERROR, "I2C Error");
-                    sensors[i]->update();
-                    delay(10);
-                    sensors[i]->update();
-                }
+                // Wire.beginTransmission(0x42); // random address for testing the i2c bus
+                // byte b = Wire.endTransmission();
+                // if (b != 0x00)
+                // {
+                //     Wire.end();
+                //     Wire.begin();
+                //     logger->recordLogData(ERROR_, "I2C Error");
+                //     sensors[i]->update();
+                //     delay(10);
+                //     sensors[i]->update();
+                // }
             }
         }
     }
@@ -110,12 +110,12 @@ namespace mmfs
             // gps x y barometer z
             measurements[0] = sensorOK(gps) ? gps->getDisplacement().x() : 0;
             measurements[1] = sensorOK(gps) ? gps->getDisplacement().y() : 0;
-            measurements[2] = baro->getRelAltM();
+            measurements[2] = baro->getAGLAltM();
 
             // imu x y z
-            inputs[0] = acceleration.x() = imu->getAcceleration().x();
-            inputs[1] = acceleration.y() = imu->getAcceleration().y();
-            inputs[2] = acceleration.z() = imu->getAcceleration().z();
+            inputs[0] = acceleration.x() = imu->getAccelerationGlobal().x();
+            inputs[1] = acceleration.y() = imu->getAccelerationGlobal().y();
+            inputs[2] = acceleration.z() = imu->getAccelerationGlobal().z();
 
             stateVars[0] = position.x();
             stateVars[1] = position.y();
@@ -135,8 +135,8 @@ namespace mmfs
 
             if (sensorOK(baro))
             {
-                baroVelocity = (baro->getRelAltM() - baroOldAltitude) / (currentTime - lastTime);
-                baroOldAltitude = baro->getRelAltM();
+                baroVelocity = (baro->getAGLAltM() - baroOldAltitude) / (currentTime - lastTime);
+                baroOldAltitude = baro->getAGLAltM();
             }
 
             delete[] predictions;
@@ -145,17 +145,16 @@ namespace mmfs
         {
             if (sensorOK(gps))
             {
-                position = Vector<3>(gps->getDisplacement().x(), gps->getDisplacement().y(), gps->getAlt());
-                velocity = gps->getVelocity();
+                position = gps->getDisplacement();
             }
             if (sensorOK(baro))
             {
-                baroVelocity = velocity.z() = (baro->getRelAltM() - baroOldAltitude) / (currentTime - lastTime);
-                baroOldAltitude = position.z() = baro->getRelAltM();
+                baroVelocity = velocity.z() = (baro->getAGLAltM() - baroOldAltitude) / (currentTime - lastTime);
+                baroOldAltitude = position.z() = baro->getAGLAltM();
             }
             if (sensorOK(imu))
             {
-                acceleration = imu->getAcceleration();
+                acceleration = imu->getAccelerationGlobal();
             }
         }
         if (sensorOK(gps))
@@ -169,7 +168,7 @@ namespace mmfs
             heading = 0;
         }
 
-        orientation = sensorOK(imu) ? imu->getOrientation() : Quaternion(0, 0, 0, 1);
+        orientation = sensorOK(imu) ? imu->getOrientationGlobal() : Quaternion(1, 0, 0, 0);
 
         setDataString();
         if (recordOwnFlightData)

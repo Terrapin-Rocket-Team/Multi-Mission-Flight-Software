@@ -3,43 +3,49 @@
 namespace mmfs
 {
 
-    Quaternion IMU::getOrientation()
+    Quaternion IMU::getOrientationGlobal()
     {
-        return orientation;
+        return orientationGlobal;
     }
 
-    Vector<3> IMU::getAcceleration()
+    Vector<3> IMU::getAccelerationGlobal()
     {
-        return accelerationVec;
+        return accelerationGlobal;
     }
 
-    Vector<3> IMU::getOrientationEuler()
+    Quaternion IMU::getOrientationLocal()
     {
-        return orientationEuler;
+        return orientationLocal;
     }
 
-    Vector<3> IMU::getMagnetometer()
+    Vector<3> IMU::getAccelerationLocal()
     {
-        return magnetometer;
+        return accelerationLocal;
     }
 
-    Vector<3> convertToEuler(const Quaternion &orientation)
-
+    Vector<3> IMU::getMagnetometerReading()
     {
-        Vector<3> euler = orientation.toEuler();
-        // reverse the vector, since it returns in z, y, x
-        euler = Vector<3>(euler.x(), euler.y(), euler.z());
-        return euler;
+        return measuredMag;
+    }
+
+    Vector<3> IMU::getGyroReading()
+    {
+        return measuredGyro;
+    }
+
+    Vector<3> IMU::getAccReading()
+    {
+        return measuredAcc;
     }
 
     const char *IMU::getCsvHeader() const
     {                                                                                                          // incl I- for IMU
-        return "I-AX (m/s/s),I-AY (m/s/s),I-AZ (m/s/s),I-ULRX,I-ULRY,I-ULRZ,I-QUATX,I-QUATY,I-QUATZ,I-QUATW,"; // trailing comma
+        return "I-AX (m/s/s),I-AY (m/s/s),I-AZ (m/s/s),I-QUATX,I-QUATY,I-QUATZ,I-QUATW,"; // trailing comma
     }
 
     const char *IMU::getDataString() const
     {
-        sprintf(data, "%.2f,%.2f,%.2f,%.2f,%.2f,%.2f,%.2f,%.2f,%.2f,%.2f,", accelerationVec.x(), accelerationVec.y(), accelerationVec.z(), orientationEuler.x(), orientationEuler.y(), orientationEuler.z(), orientation.x(), orientation.y(), orientation.z(), orientation.w()); // trailing comma"
+        sprintf(data, "%.2f,%.2f,%.2f,%.2f,%.2f,%.2f,%.2f,", measuredAcc.x(), measuredAcc.y(), measuredAcc.z(), orientationGlobal.x(), orientationGlobal.y(), orientationGlobal.z(), orientationGlobal.w()); // trailing comma"
         return data;
     }
 
@@ -47,5 +53,15 @@ namespace mmfs
     {
         sprintf(data, "Initial Magnetic Field (uT): %.2f,%.2f,%.2f\n", initialMagField.x(), initialMagField.y(), initialMagField.z());
         return data;
+    }
+    void IMU::update()
+    {
+        read();
+    }
+
+    bool IMU::begin(bool useBiasCorrection)
+    {
+        biasCorrectionMode = useBiasCorrection;
+        return init();
     }
 }

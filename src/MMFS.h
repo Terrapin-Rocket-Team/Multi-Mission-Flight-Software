@@ -7,7 +7,6 @@
 #include "Sensors/GPS/MAX_M10S.h"
 #include "Sensors/LightSensor/LightSensor.h"
 #include "Sensors/Baro/BMP280.h"
-#include "State/KalmanInterface.h"
 #include "State/State.h"
 #include "Constants.h"
 #include "Filters/LinearKalmanFilter.h"
