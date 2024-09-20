@@ -10,7 +10,7 @@ namespace mmfs
     class AvionicsState : public State
     {
     public:
-        AvionicsState(Sensor **sensors, int numSensors, LinearKalmanFilter *kfilter, Logger *logger, bool stateRecordsOwnData = true);
+        AvionicsState(Sensor **sensors, int numSensors, LinearKalmanFilter *kfilter, bool stateRecordsOwnData = true);
         void updateState(double newTime = -1) override;
 
     private:

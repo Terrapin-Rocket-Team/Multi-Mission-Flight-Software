@@ -89,6 +89,9 @@ public:
 
 };
 
+
 } // namespace mmfs
+
+extern mmfs::Logger logger;
 
 #endif //LOGGER_H
