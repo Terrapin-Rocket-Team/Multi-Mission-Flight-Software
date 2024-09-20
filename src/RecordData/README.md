@@ -141,7 +141,7 @@ if (psram.init()) {
 The enums within the `Logger` class allow the customization of behavior, in terms of how data is logged, as well as where it is logged to, by simply passing in the appropriate enum to the methods of this class. This way, the behavior and staging logic can be processed externally, yet the data logging logic can take in its variety of inputs. This is also used by the `ErrorHandler` class in order to log any errors or warnings that may be occurring. 
 
 #### `LogType`
-Used to prefix and indicate the type of data that the entry into the log file is. This can be of a `LOG`, `ERROR`, `WARNING`, or `INFO`, and is simply a label associated with the given entry.
+Used to prefix and indicate the type of data that the entry into the log file is. This can be of a `LOG_`, `ERROR_`, `WARNING_`, or `INFO_`, and is simply a label associated with the given entry.
 
 #### `Dest`
 Used to determine where the log data or flight data would be stored to. `TO_USB` means that the data isn't actually stored and is just printed to the serial (useful for debugging), while the `TO_FILE` option makes it so that the passed in data is only sent to the PSRAM or SD card, but doesn't clutter up the Serial output. The default behavior, `BOTH`, makes it so that the data is sent to as many destinations as possible, both printing it and recording it if viable.
