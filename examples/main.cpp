@@ -19,7 +19,7 @@ BMP390 baro;
 Sensor *sensors[3] = {&gps, &imu055, &baro};
 AvionicsKF kfilter;
 Logger logger;
-AvionicsState avionicsState(sensors, 3, &kfilter, &logger);
+AvionicsState avionicsState(sensors, 3, &kfilter);
 
 const int SENSOR_BIAS_CORRECTION_DATA_LENGTH = 2;
 const int SENSOR_BIAS_CORRECTION_DATA_IGNORE = 1;
