@@ -18,7 +18,7 @@ namespace mmfs
         while (m10s.begin() == false && count < 3) // Connect to the u-blox module using Wire port
         {
             // Serial.println(F("u-blox GNSS not detected at default I2C address. Retrying..."));
-            // TODO: RECORD FAILURE IN RECORDDATA
+            // TODO: RECORD FAILURE IN RECORDDATA?
             delay(250);
             count++;
         }

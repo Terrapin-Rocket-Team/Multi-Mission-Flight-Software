@@ -4,6 +4,7 @@
 #include "../Sensor.h"
 #include "../../Constants.h"
 #include "../../Math/Vector.h"
+#include "../../RecordData/Logger.h"
 
 namespace mmfs
 {

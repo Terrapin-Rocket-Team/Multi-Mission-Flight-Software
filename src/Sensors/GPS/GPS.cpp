@@ -74,7 +74,7 @@ namespace mmfs
 
         if (!hasFirstFix && fixQual >= 3)
         {
-            //recordLogData(INFO_, "GPS has first fix.");
+            logger.recordLogData(INFO_, "GPS has first fix.");
 
             bb.aonoff(BUZZER_PIN, 1000);
             hasFirstFix = true;
