@@ -28,7 +28,7 @@ namespace mmfs
 
 #pragma endregion
 
-    bool State::init()
+    bool State::init(bool useBiasCorrection)
     {
         char *logData = new char[100];
         int good = 0, tryNumSensors = 0;
@@ -37,7 +37,7 @@ namespace mmfs
             if (sensors[i])
             {
                 tryNumSensors++;
-                if (sensors[i]->begin())
+                if (sensors[i]->begin(useBiasCorrection))
                 {
                     good++;
                     snprintf(logData, 100, "%s [%s] initialized.", sensors[i]->getTypeString(), sensors[i]->getName());
