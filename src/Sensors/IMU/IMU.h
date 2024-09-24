@@ -22,11 +22,10 @@ namespace mmfs
         virtual ~IMU(){};
 
         //local represents the orientation off of the intial angle. Global represents the orientation with repesct to gravity
-        virtual Quaternion getOrientation;
+        virtual Quaternion getOrientation();
         virtual Vector<3> getAngularVelocity();
-        virtual Vector<3> getMagnetometerReading();
-        virtual Vector<3> getGyroReading();
-        virtual Vector<3> getAccReading();
+        virtual Vector<3> getMagField();
+        virtual Vector<3> getAcceleration();
         virtual double getAlpha() {return alpha;};
         virtual void setAlpha(double a) {alpha = a;};
         virtual SensorType getType() const override { return IMU_; }
@@ -51,7 +50,7 @@ namespace mmfs
         Vector<3> orientationEuler = Vector<3>(0, 0, 0);
         Quaternion orientation = Quaternion(1, 0, 0, 0);
         Vector<3> angularVelocity = Vector<3>(0, 0, 0);
-        Vector<3> magnetometer = Vector<3>(0, 0, 0);
+        Vector<3> magField = Vector<3>(0, 0, 0);
         Vector<3> initialMagField = Vector<3>(0, 0, 0);
         double alpha = .5;
     };

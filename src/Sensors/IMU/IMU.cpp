@@ -2,20 +2,15 @@
 
 namespace mmfs
 {
-
-    Quaternion IMU::getOrientationGlobal()
+    void IMU::update()
     {
-        return orientationGlobal;
+        read();
     }
 
-    Vector<3> IMU::getAccelerationGlobal()
+    bool IMU::begin(bool useBiasCorrection)
     {
-        return accelerationGlobal;
-    }
-
-    Quaternion IMU::getOrientationLocal()
-    {
-        return orientationLocal;
+        biasCorrectionMode = useBiasCorrection;
+        return init();
     }
 
     Vector<3> IMU::getAngularVelocity()
@@ -23,9 +18,9 @@ namespace mmfs
         return angularVelocity;
     }
 
-    Vector<3> IMU::getMagnetometer()
+    Vector<3> IMU::getMagField()
     {
-        return magnetometer;
+        return magField;
     }
 
     Vector<3> convertToEuler(const Quaternion &orientation)
@@ -44,7 +39,7 @@ namespace mmfs
 
     const char *IMU::getDataString() const
     {
-        sprintf(data, "%.2f,%.2f,%.2f,%.2f,%.2f,%.2f,%.2f,%.2f,%.2f,%.2f,%.2f,%.2f,%.2f,", accelerationVec.x(), accelerationVec.y(), accelerationVec.z(), angularVelocity.x(), angularVelocity.y(), angularVelocity.z(), magnetometer.x(), magnetometer.y(), magnetometer.z(), orientation.x(), orientation.y(), orientation.z(), orientation.w()); // trailing comma"
+        sprintf(data, "%.2f,%.2f,%.2f,%.2f,%.2f,%.2f,%.2f,%.2f,%.2f,%.2f,%.2f,%.2f,%.2f,", accelerationVec.x(), accelerationVec.y(), accelerationVec.z(), angularVelocity.x(), angularVelocity.y(), angularVelocity.z(), magField.x(), magField.y(), magField.z(), orientation.x(), orientation.y(), orientation.z(), orientation.w()); // trailing comma"
         return data;
     }
 
@@ -87,15 +82,5 @@ namespace mmfs
         q = Quaternion((1-alpha)*phi, n.x()/n.magnitude(), n.y()/n.magnitude(), n.z()/n.magnitude()) * q;
 
         return q;
-    }
-    void IMU::update()
-    {
-        read();
-    }
-
-    bool IMU::begin(bool useBiasCorrection)
-    {
-        biasCorrectionMode = useBiasCorrection;
-        return init();
     }
 }
