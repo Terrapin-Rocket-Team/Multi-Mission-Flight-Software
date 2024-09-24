@@ -26,6 +26,7 @@ namespace mmfs
         virtual Vector<3> getAngularVelocity();
         virtual Vector<3> getMagField();
         virtual Vector<3> getAcceleration();
+        virtual Vector<3> getAccelerationGlobal();
         virtual double getAlpha() {return alpha;};
         virtual void setAlpha(double a) {alpha = a;};
         virtual SensorType getType() const override { return IMU_; }
