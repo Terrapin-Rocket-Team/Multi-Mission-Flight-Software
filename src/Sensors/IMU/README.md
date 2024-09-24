@@ -92,6 +92,7 @@ to turn it into the interial frame acceleration.
 ![Equation](<images/equation (8).svg>)
 
 ![Equation](<images/equation (9).svg>)
+TODO change this so that the inverse is switched
 
 ![Equation](<images/equation (10).svg>)
 

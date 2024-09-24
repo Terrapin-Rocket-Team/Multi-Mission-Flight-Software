@@ -53,7 +53,7 @@ namespace mmfs
         Vector<3> angularVelocity = Vector<3>(0, 0, 0);
         Vector<3> magField = Vector<3>(0, 0, 0);
         Vector<3> initialMagField = Vector<3>(0, 0, 0);
-        double alpha = .5;
+        double alpha = 0.9; // [0, 1] Higher this number, the more the gyro is trusted over the accelerameter
     };
   
     Vector<3> convertToEuler(const Quaternion &orientation);

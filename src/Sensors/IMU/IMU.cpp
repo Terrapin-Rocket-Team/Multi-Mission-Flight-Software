@@ -1,4 +1,5 @@
 #include "IMU.h"
+#include <stdio.h>
 
 namespace mmfs
 {
@@ -41,7 +42,7 @@ namespace mmfs
     Vector<3> IMU::getAccelerationGlobal()
     {
         Quaternion accelBody = Quaternion(0, accelerationVec.x(), accelerationVec.y(), accelerationVec.z());
-        Quaternion accelInterial = orientation * accelBody * quatInverse(orientation);
+        Quaternion accelInterial = quatInverse(orientation) * accelBody * orientation;
         return Vector<3>(accelInterial.x(), accelInterial.y(), accelInterial.z());
     }
 
@@ -81,13 +82,17 @@ namespace mmfs
     Quaternion IMU::orientationComplementaryFilter(double dt)
     {
         double theta = angularVelocity.magnitude() * dt;
+        printf("Theta: %f\n", theta);
         Vector<3> v = angularVelocity/angularVelocity.magnitude();
-        Quaternion q_delta = Quaternion(cos(theta/2), v.x()*sin(theta/2), v.y()*sin(theta/2), v.z()*sin(theta/2));
+        Quaternion q_delta = Quaternion(cos(theta/2), v*sin(theta/2));
         Quaternion q = q_delta * orientation;
+        printf("Q: %f, %f, %f, %f\n", q.w(), q.x(), q.y(), q.z());
 
         // Complementary Filter
-        Quaternion accel_body = Quaternion(0, accelerationVec.x(), accelerationVec.y(), accelerationVec.z());
-        Quaternion accel_interial = q * accel_body * quatInverse(q);
+        Quaternion accel_body = Quaternion(0, accelerationVec);
+        printf("A^B: %f, %f, %f, %f\n", accel_body.w(), accel_body.x(), accel_body.y(), accel_body.z());
+        Quaternion accel_interial = quatInverse(q) * accel_body * q;
+        printf("A^I: %f, %f, %f, %f\n", accel_interial.w(), accel_interial.x(), accel_interial.y(), accel_interial.z());
         v = Vector<3>(accel_interial.x()/accel_interial.magnitude(), accel_interial.y()/accel_interial.magnitude(), accel_interial.z()/accel_interial.magnitude());
         
         // To find phi need to divide by cos. Need to check that cos != 0.
@@ -100,8 +105,11 @@ namespace mmfs
             phi = 3.14159265358979323846;
         }
 
+        printf("Phi: %f\n", phi);
+
         Vector<3> n = Vector<3>(v.y(), -v.x(), 0);
         q = Quaternion((1-alpha)*phi, n.x()/n.magnitude(), n.y()/n.magnitude(), n.z()/n.magnitude()) * q;
+        printf("Q: %f, %f, %f, %f\n", q.w(), q.x(), q.y(), q.z());
 
         return q;
     }
