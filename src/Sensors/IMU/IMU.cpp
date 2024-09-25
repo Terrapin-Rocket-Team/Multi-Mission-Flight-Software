@@ -24,11 +24,6 @@ namespace mmfs
         return angularVelocity;
     }
 
-    Vector<3> IMU::getAngularVelocity()
-    {
-        return angularVelocity;
-    }
-
     Vector<3> IMU::getMagField()
     {
         return magField;
@@ -151,38 +146,20 @@ namespace mmfs
         orientation = q_BI.conjugate();
     }
 
-    Quaternion IMU::quatInverse(Quaternion q)
+    double IMU::adaptiveAccelGain(double alphaBar, double t_1, double t_2)
     {
-        // This is technically the quaternion conjugate. However,
-        // for quaternions the conjugate is equivalent to the inverse.
-        return Quaternion(q.w(), -q.x(), -q.y(), -q.z());
-    }
+        //alphaBar: constant value that gives the best filtering result in static conditions
+        //t_1: threshold 1 - Below, gravitation accel dominates
+        //t_2: threshold 2 - Below, gain factor decreases linearly as non grav accel increase
+        double g = 9.81; // m/s^2
+        double error = abs(accelerationVec.magnitude() - g)/g;
 
-    Quaternion IMU::orientationComplementaryFilter(double dt)
-    {
-        double theta = angularVelocity.magnitude() * dt;
-        Vector<3> v = angularVelocity/angularVelocity.magnitude();
-        Quaternion q_delta = Quaternion(cos(theta/2), v.x()*sin(theta/2), v.y()*sin(theta/2), v.z()*sin(theta/2));
-        Quaternion q = q_delta * orientation;
-
-        // Complementary Filter
-        Quaternion accel_body = Quaternion(0, accelerationVec.x(), accelerationVec.y(), accelerationVec.z());
-        Quaternion accel_interial = q * accel_body * quatInverse(q);
-        v = Vector<3>(accel_interial.x()/accel_interial.magnitude(), accel_interial.y()/accel_interial.magnitude(), accel_interial.z()/accel_interial.magnitude());
-        
-        // To find phi need to divide by cos. Need to check that cos != 0.
-        double phi;
-        double tol = 1E-6;
-        double cos_val = cos(v.x()); 
-        if (fabs(cos_val) > tol) {   
-            phi = 1 / cos_val;
-        } else {
-            phi = 3.14159265358979323846;
+        double f = 0;
+        if(error < t_1){
+            f = 1;
+        } else if(error < t_2) {
+            f = (t_2 - error)/ t_1;
         }
-
-        Vector<3> n = Vector<3>(v.y(), -v.x(), 0);
-        q = Quaternion((1-alpha)*phi, n.x()/n.magnitude(), n.y()/n.magnitude(), n.z()/n.magnitude()) * q;
-
-        return q;
+        return f*alphaBar;
     }
 }
