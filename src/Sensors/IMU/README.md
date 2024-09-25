@@ -69,6 +69,8 @@ Note this derivation is done on the quaternion that maps inertial to body coordi
 
 1. Determine rate of change of quaternion
 
+![Equation 3](https://latex.codecogs.com/svg.image?%7BB%5Catop%7D%5Cmathbf%7B%5Comega%7D_%7Bq,t_%7Bk%7D%7D=%5Cbegin%7Bbmatrix%7D0%5C%5C%5Comega_x%5C%5C%5Comega_y%5C%5C%5Comega_z%5Cend%7Bbmatrix%7D)
+
 ${B \atop }\mathbf{\omega}_{q,t_{k}} = \begin{bmatrix}0 \\\omega_x \\\omega_y \\\omega_z\end{bmatrix}$
 
 ${B \atop I}q_{w,t_k} = {I \atop B}q_w^{-1}$
