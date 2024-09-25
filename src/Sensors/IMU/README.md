@@ -117,12 +117,80 @@ Your new attitude now becomes
 
 ## Absolute Attitude Determination
 
-### Quaternion Based Complementary Filter
+### Quaternion Based Complementary Filter (w/ Adaptive Gain)
 
 Sources: 
 - https://ahrs.readthedocs.io/en/latest/filters/aqua.html#quaternion-based-complementary-filter
 - https://ahrs.readthedocs.io/en/latest/filters/aqua.html#accelerometer-based-correction
 - https://ahrs.readthedocs.io/en/latest/filters/aqua.html#magnetometer-based-correction
+
+Given gyroscope (angular velocity), accelermater (linear acceleration), magnatometer (magnetic field) measurements (and delta t), determine and propogate an absolute orientation quaternion.
+
+Generally this method will work by combining the propogated gyroscope with the propogated accelerameter (roll, pitch) with the propogated magnatometer (yaw). 
+
+Note this derivation is done on the quaternion that maps inertial to body coordinates. This is generally backwards but follows the sources above (they call inertial global and body local). 
+
+#### Determine gyro orientation
+
+1. Determine rate of change of quaternion
+
+${B \atop }\mathbf{\omega}_{q,t_{k}} = \begin{bmatrix}0 \\\omega_x \\\omega_y \\\omega_z\end{bmatrix}$
+
+${B \atop I}q_{w,t_k} = {I \atop B}q_w^{-1}$
+
+The above step is necessary as the quaternion we track in the code is the mapping from the body frame to the interial frame.
+
+${B \atop I}\dot{q}_{w,t_k} = -\frac{1}{2} {B \atop }\mathbf{\omega}_{q,t_{k}} {B \atop I}q_{w,t_k}$
+
+2. Propogate gyro orientation
+
+${B \atop I}q_{w,t_k} = {B \atop I}q_{w,t_{k-1}} + {B \atop I}\dot{q}_{w,t_k} * \Delta t$
+
+#### Determine Accel orientation
+
+3. Find the predicted gravity vector in the inertial frame
+
+$g = {I \atop }g_p = {B \atop I}q_{w,t_k}^{-1} * {B \atop }a * {B \atop I}q_{w,t_k}$
+
+4. Determine delta acc orientation
+
+If g_z == -1, then TODO (shouldn't happen though).
+
+$\Delta q_{acc} = \begin{bmatrix}\sqrt{\frac{g_z+1}{2}} \\-\frac{g_y}{\sqrt{(2*(g_z+1))}}  \\ \frac{g_x}{\sqrt{2(g_z+1)}} \\0 \end{bmatrix}$
+
+5. To reduce effect of high frequency noise preform interpolation between delta q_acc and identity quaternion
+
+$\Delta q_{acc} = \Delta q_{acc}.interpolation([1, 0, 0, 0], \alpha=.5, \epsilon=.9)$
+
+6. Combine with gryo orientation to correct roll and pitch
+
+${B \atop I}q_{wa} = {B \atop I}q_{w} \Delta q_{acc}$
+
+#### Determine Mag orientation
+
+7. Get magnetic field vector in world frame
+
+${I \atop }m = {B \atop I}q_{wa}^{-1} * {B \atop }m * {B \atop I}q_{wa}$
+
+8. Determine delta mag orientation
+
+$\Gamma = m_x^2 + m_y^2$
+
+$\Delta q_{mag} = \begin{bmatrix}\frac{\sqrt{\Gamma + m_x\sqrt{\Gamma}}}{\sqrt{2\Gamma}} \\0  \\0  \\ \frac{m_y}{\sqrt{2(\Gamma + m_x\sqrt{\Gamma})}} \end{bmatrix}$
+
+9. To reduce effect of high frequency noise preform interpolation between delta q_mag and identity quaternion (alpha can be different from accelerameter)
+
+$\Delta q_{mag} = \Delta q_{mag}.interpolation([1, 0, 0, 0], \alpha=.6, \epsilon=.9)$
+
+10. Combine with gryo/acc orientation to correct yaw
+
+${B \atop I}q = {B \atop I}q_{wa} \Delta q_{mag}$
+
+${I \atop B}q = {B \atop I}q^{-1}$
+
+This last q with the I over the B is what we want. This is the mapping from the body to interial frame as a quaternion and can be used as such:
+
+${I \atop }r = {I \atop B}q * {B \atop }r * {I \atop B}q^{-1}$
 
 
 
