@@ -228,13 +228,13 @@ public:
     if(p.w() > epsilon)
     {
       // LERP
-      r = p*(1-alpha) + q*alpha;
+      r = q*(1-alpha) + p*alpha;
       r.normalize();
       return r;
     }
 
     double omega = acos(p.w());
-    r = p*((sin((1-alpha)*omega))/(sin(omega))) + q*(sin(alpha*omega)/sin(omega));
+    r = q*((sin((1-alpha)*omega))/(sin(omega))) + p*(sin(alpha*omega)/sin(omega));
     return r;
   }
 

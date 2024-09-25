@@ -91,6 +91,10 @@ public:
 
     bool init() override
     {
+        accelerationVec = Vector<3>{0,0,0};
+        angularVelocity = Vector<3>{0,0,0};
+        magField = Vector<3>{0,0,0};
+        orientation = Quaternion{1,0,0,0};
         return initialized;
     }
 };

@@ -92,14 +92,18 @@ namespace mmfs
         //----------------- ACCEL ORIENTATION --------------//
         // 3. Find the predicted gravity vector in the inertial frame
         Quaternion a_b = Quaternion{0, accelerationVec};
+        if(!(a_b.magnitude() > 0)){
+            // Accel has no roll or pitch contribution to be made
+            orientation = q_w_BI.conjugate();
+            return;
+        }
         a_b.normalize();
         Quaternion g_p_I = q_w_BI.conjugate() * a_b * q_w_BI;
-
         // 4. Determine delta acc orientation
         if(g_p_I.z() == -1){
             // TODO this shouldn't happen though
             // This prob needs some tolerance too
-
+            
             // Temp solution (I just made this up lol)
             g_p_I.z() = -.9;
             g_p_I.w() = .01;
@@ -107,7 +111,7 @@ namespace mmfs
         }
 
         Quaternion delta_q_acc = Quaternion{sqrt((g_p_I.z()+1)/2), -g_p_I.y()/sqrt(2*(g_p_I.z()+1)), g_p_I.x()/sqrt(2*(g_p_I.z()+1)), 0};
-
+        
         // 5. Adaptive gain interpolation to reduce high freq noise
         double accel_best_filtering_at_static = .9; // TODO this is tunable parameter that needs to be validated
         double alpha = adaptiveAccelGain(accel_best_filtering_at_static, .1, .2);
@@ -121,16 +125,18 @@ namespace mmfs
         //----------------- MAG ORIENTATION --------------//
 
         // 7. Get magnetic field vector in interial frame
-        Quaternion m_b = Quaternion{0, magField};
-        Quaternion m_I = q_wa_BI.conjugate() * m_b * q_wa_BI;
-
-        // 8. Determine delta mag orientation
-        double Gamma = m_I.x()*m_I.x() + m_I.y()*m_I.y();
-        if(Gamma == 0){
+        Quaternion m_B = Quaternion{0, magField};
+        if(!(m_B.magnitude() > 0)){
             // Mag Field has no yaw contribution to be made
             orientation = q_wa_BI.conjugate();
             return;
         }
+        m_B.normalize();
+        Quaternion m_I = q_wa_BI.conjugate() * m_B * q_wa_BI;
+
+        // 8. Determine delta mag orientation
+        double Gamma = m_I.x()*m_I.x() + m_I.y()*m_I.y();
+
         Quaternion delta_q_mag = Quaternion{sqrt(Gamma + (m_I.x()*sqrt(Gamma)))/sqrt(2*Gamma), 0, 0, m_I.y()/sqrt(2*(Gamma+ (m_I.x()*sqrt(Gamma))))};
 
         // 9. Interpolation to reduce high freq noise 
