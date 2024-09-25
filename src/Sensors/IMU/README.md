@@ -1,5 +1,7 @@
 # IMU
 
+Note all the matrices in here are just black svgs because GitHub readmes don't fully support latex. That means you will have a tough time reading any matrices in dark mode... sorry.
+
 ## Attitude Kinematics
 
 Attitude kinematics deals with the orientation and rotation of a body in space. This document covers key concepts including reference frames, Direction Cosine Matrices (DCM), and quaternions.
@@ -21,7 +23,7 @@ The Direction Cosine Matrix (DCM) is a matrix that describes the orientation of 
 
 A DCM matrix $\mathbf{C}$ can be represented as:
 
-![Equation](images/equation.svg)
+![Equation 0](images/equation.svg)
 
 Where $c_{ij}$ are the direction cosines between the reference frame axes.
 
@@ -46,7 +48,7 @@ Quaternions can be converted to and from DCMs and Euler angles. This is useful f
 
 Given a quaternion $\mathbf{q}$, the corresponding DCM $\mathbf{C}$ can be calculated as follows:
 
-![Equation](<images/equation (1).svg>)
+![Equation 1](<images/equation (1).svg>)
 
 ### Euler Angles
 
@@ -69,9 +71,7 @@ Note this derivation is done on the quaternion that maps inertial to body coordi
 
 1. Determine rate of change of quaternion
 
-![Equation 3](https://latex.codecogs.com/svg.image?%7BB%5Catop%7D%5Cmathbf%7B%5Comega%7D_%7Bq,t_%7Bk%7D%7D=%5Cbegin%7Bbmatrix%7D0%5C%5C%5Comega_x%5C%5C%5Comega_y%5C%5C%5Comega_z%5Cend%7Bbmatrix%7D)
-
-${B \atop }\mathbf{\omega}_{q,t_{k}} = \begin{bmatrix}0 \\\omega_x \\\omega_y \\\omega_z\end{bmatrix}$
+![Equation 2](https://latex.codecogs.com/svg.image?%7BB%5Catop%7D%5Cmathbf%7B%5Comega%7D_%7Bq,t_%7Bk%7D%7D=%5Cbegin%7Bbmatrix%7D0%5C%5C%5Comega_x%5C%5C%5Comega_y%5C%5C%5Comega_z%5Cend%7Bbmatrix%7D)
 
 ${B \atop I}q_{w,t_k} = {I \atop B}q_w^{-1}$
 
@@ -95,7 +95,7 @@ $g = {I \atop }g_p = {B \atop I}q_{w,t_k}^{-1} * {B \atop }\hat{a} * {B \atop I}
 
 If g_z == -1, then TODO (shouldn't happen though).
 
-$\Delta q_{acc} = \begin{bmatrix}\sqrt{\frac{g_z+1}{2}} \\-\frac{g_y}{\sqrt{(2(g_z+1))}}  \\ \frac{g_x}{\sqrt{2(g_z+1)}} \\0 \end{bmatrix}$
+![Equation 3](https://latex.codecogs.com/svg.image?$%5CDelta%20q_%7Bacc%7D=%5Cbegin%7Bbmatrix%7D%5Csqrt%7B%5Cfrac%7Bg_z&plus;1%7D%7B2%7D%7D%5C%5C-%5Cfrac%7Bg_y%7D%7B%5Csqrt%7B(2(g_z&plus;1))%7D%7D%5C%5C%5Cfrac%7Bg_x%7D%7B%5Csqrt%7B2(g_z&plus;1)%7D%7D%5C%5C0%5Cend%7Bbmatrix%7D$)
 
 5. To reduce effect of high frequency noise preform interpolation between delta q_acc and identity quaternion. Use adaptive gain for alpha. Unclear what to set alpha bar to, .9 seems reasonable though https://link.springer.com/article/10.1023/A:1024157310388)
 
@@ -117,7 +117,7 @@ ${I \atop }m = {B \atop I}q_{wa}^{-1} * {B \atop }m * {B \atop I}q_{wa}$
 
 $\Gamma = m_x^2 + m_y^2$
 
-$\Delta q_{mag} = \begin{bmatrix}\frac{\sqrt{\Gamma + m_x\sqrt{\Gamma}}}{\sqrt{2\Gamma}} \\0  \\0  \\ \frac{m_y}{\sqrt{2(\Gamma + m_x\sqrt{\Gamma})}} \end{bmatrix}$
+![Equation 4](https://latex.codecogs.com/svg.image?$%5CDelta%20q_%7Bmag%7D=%5Cbegin%7Bbmatrix%7D%5Cfrac%7B%5Csqrt%7B%5CGamma&plus;m_x%5Csqrt%7B%5CGamma%7D%7D%7D%7B%5Csqrt%7B2%5CGamma%7D%7D%5C%5C0%5C%5C0%5C%5C%5Cfrac%7Bm_y%7D%7B%5Csqrt%7B2(%5CGamma&plus;m_x%5Csqrt%7B%5CGamma%7D)%7D%7D%5Cend%7Bbmatrix%7D$)
 
 9. To reduce effect of high frequency noise preform interpolation between delta q_mag and identity quaternion (alpha can be different from accelerameter. Unclear what to set it at, .9 seems reasonable though https://link.springer.com/article/10.1023/A:1024157310388)
 
