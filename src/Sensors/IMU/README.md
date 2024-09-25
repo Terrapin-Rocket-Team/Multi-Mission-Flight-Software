@@ -117,3 +117,12 @@ Your new attitude now becomes
 
 ## Absolute Attitude Determination
 
+### Quaternion Based Complementary Filter
+
+Sources: 
+- https://ahrs.readthedocs.io/en/latest/filters/aqua.html#quaternion-based-complementary-filter
+- https://ahrs.readthedocs.io/en/latest/filters/aqua.html#accelerometer-based-correction
+- https://ahrs.readthedocs.io/en/latest/filters/aqua.html#magnetometer-based-correction
+
+
+
