@@ -27,8 +27,10 @@ namespace mmfs
         virtual Vector<3> getMagField();
         virtual Vector<3> getAcceleration();
         virtual Vector<3> getAccelerationGlobal();
-        virtual double getAlpha() {return alpha;};
-        virtual void setAlpha(double a) {alpha = a;};
+        virtual double getAccelBestFilteringAtStatic() {return accel_best_filtering_at_static;};
+        virtual void setAccelBestFilteringAtStatic(double a) {accel_best_filtering_at_static = a;};
+        virtual double getMagBestFilteringAtStatic() {return mag_best_filtering_at_static;};
+        virtual void setMagBestFilteringAtStatic(double m) {mag_best_filtering_at_static = m;};
         virtual SensorType getType() const override { return IMU_; }
         virtual const char *getTypeString() const override { return "IMU"; }
         virtual const char *getCsvHeader() const override;
@@ -53,7 +55,8 @@ namespace mmfs
         Vector<3> angularVelocity = Vector<3>(0, 0, 0);
         Vector<3> magField = Vector<3>(0, 0, 0);
         Vector<3> initialMagField = Vector<3>(0, 0, 0);
-        double alpha = 0.9; // [0, 1] Higher this number, the more the gyro is trusted over the accelerameter
+        double accel_best_filtering_at_static = 0.9; // [0, 1] Higher this number, the more you trust the accelerameter
+        double mag_best_filtering_at_static = 0.9; // [0, 1] Higher this number, the more you trust the magnatometer
     };
   
     Vector<3> convertToEuler(const Quaternion &orientation);

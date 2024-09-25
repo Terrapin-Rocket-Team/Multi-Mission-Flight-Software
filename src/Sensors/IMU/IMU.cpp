@@ -108,7 +108,6 @@ namespace mmfs
         Quaternion delta_q_acc = Quaternion{sqrt((g_p_I.z()+1)/2), -g_p_I.y()/sqrt(2*(g_p_I.z()+1)), g_p_I.x()/sqrt(2*(g_p_I.z()+1)), 0};
         
         // 5. Adaptive gain interpolation to reduce high freq noise
-        double accel_best_filtering_at_static = .9; // TODO this is tunable parameter that needs to be validated
         double alpha = adaptiveAccelGain(accel_best_filtering_at_static, .1, .2);
         delta_q_acc = delta_q_acc.interpolation(Quaternion{1,0,0,0}, alpha, .9);
 
@@ -135,7 +134,6 @@ namespace mmfs
         Quaternion delta_q_mag = Quaternion{sqrt(Gamma + (m_I.x()*sqrt(Gamma)))/sqrt(2*Gamma), 0, 0, m_I.y()/sqrt(2*(Gamma+ (m_I.x()*sqrt(Gamma))))};
 
         // 9. Interpolation to reduce high freq noise 
-        double mag_best_filtering_at_static = .9; // TODO this is tunable parameter that needs to be validated
         delta_q_mag = delta_q_mag.interpolation(Quaternion{1,0,0,0}, mag_best_filtering_at_static, .9);
 
         // 10. Combine with gryo/acc orientation to correct yaw
