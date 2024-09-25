@@ -37,6 +37,8 @@ namespace mmfs
         virtual void update() override;
         virtual bool begin(bool useBiasCorrection = true) override;
 
+        double adaptiveAccelGain(double alphaBar, double t_1 = .1, double t_2 = .2);
+
     protected:
         IMU()
         {                                       // Protected constructor to prevent instantiation

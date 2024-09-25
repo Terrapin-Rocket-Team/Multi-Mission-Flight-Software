@@ -51,78 +51,13 @@ Given a quaternion $\mathbf{q}$, the corresponding DCM $\mathbf{C}$ can be calcu
 ### Euler Angles
 
 
-
-## Relative Attitude Determination
-
-Sources: 
-- https://stanford.edu/class/ee267/lectures/lecture10.pdf 
-- https://ahrs.readthedocs.io/en/latest/filters/angular.html
-
-Given gyroscope angular velocity **w** and accelerameter accelerations **a** measurements how do I propogate my orientation forward in time?
-
-Since this is a relative orientation, we will start with assumption of a starting orientation of 
-
-![Equation](<images/equation (2).svg>)
-
-![Equation](<images/equation (3).svg>)
-
-![Equation](<images/equation (4).svg>)
-
-![Equation](<images/equation (5).svg>)
-
-
-TODO check the order of multiplication on the following line 
-
-![Equation](<images/equation (6).svg>)
-
-This quaternion **$q^{t + \Delta t}$** represents the rotation from body to world frame.
-
-### Accelerameter Complementary Filter
-
-The above approch works... but degrades over time (search google for dead recking). One easy way to improve the attitude estimation over time is to include information from the accelerameter. When stationary, we know that the accelerameter will read +9.81 in the inertial z direction. We can use this information to correct for drift while the gryo is stationary.
-
-TODO how to know if the gyro is stationary and stop doing this if it isnt???
-
-Given 
-
-![Equation](<images/equation (7).svg>) 
-
-to turn it into the interial frame acceleration.
-
-![Equation](<images/equation (8).svg>)
-
-![Equation](<images/equation (9).svg>)
-TODO change this so that the inverse is switched
-
-![Equation](<images/equation (10).svg>)
-
-Set
-
-![Equation](<images/equation (11).svg>)
-
-Set
-
-![Equation](<images/equation (12).svg>)
-
-Then your new *better* attitude is given by the complimentary filter
-
-![Equation](<images/equation (13).svg>)
-
-with $\alpha = [0, 1]$ TODO determine the best value of alpha for a sensor
-
-Your new attitude now becomes 
-
-![Equation](<images/equation (14).svg>)
-
-
 ## Absolute Attitude Determination
 
 ### Quaternion Based Complementary Filter (w/ Adaptive Gain)
 
 Sources: 
 - https://ahrs.readthedocs.io/en/latest/filters/aqua.html#quaternion-based-complementary-filter
-- https://ahrs.readthedocs.io/en/latest/filters/aqua.html#accelerometer-based-correction
-- https://ahrs.readthedocs.io/en/latest/filters/aqua.html#magnetometer-based-correction
+- https://www.mdpi.com/1424-8220/15/8/19302
 
 Given gyroscope (angular velocity), accelermater (linear acceleration), magnatometer (magnetic field) measurements (and delta t), determine and propogate an absolute orientation quaternion.
 
@@ -150,7 +85,9 @@ ${B \atop I}q_{w,t_k} = {B \atop I}q_{w,t_{k-1}} + {B \atop I}\dot{q}_{w,t_k} * 
 
 3. Find the predicted gravity vector in the inertial frame
 
-$g = {I \atop }g_p = {B \atop I}q_{w,t_k}^{-1} * {B \atop }a * {B \atop I}q_{w,t_k}$
+${B \atop }\hat{a} = \frac{{B \atop }a}{||{B \atop }a||}$
+
+$g = {I \atop }g_p = {B \atop I}q_{w,t_k}^{-1} * {B \atop }\hat{a} * {B \atop I}q_{w,t_k}$
 
 4. Determine delta acc orientation
 
@@ -158,7 +95,9 @@ If g_z == -1, then TODO (shouldn't happen though).
 
 $\Delta q_{acc} = \begin{bmatrix}\sqrt{\frac{g_z+1}{2}} \\-\frac{g_y}{\sqrt{(2*(g_z+1))}}  \\ \frac{g_x}{\sqrt{2(g_z+1)}} \\0 \end{bmatrix}$
 
-5. To reduce effect of high frequency noise preform interpolation between delta q_acc and identity quaternion
+5. To reduce effect of high frequency noise preform interpolation between delta q_acc and identity quaternion. Use adaptive gain for alpha. Unclear what to set alpha bar to, .9 seems reasonable though https://link.springer.com/article/10.1023/A:1024157310388)
+
+$\alpha = adaptiveAccelGain(\bar{\alpha}=.9, t_1=.1, t_2=.2)$
 
 $\Delta q_{acc} = \Delta q_{acc}.interpolation([1, 0, 0, 0], \alpha=.5, \epsilon=.9)$
 
@@ -178,9 +117,9 @@ $\Gamma = m_x^2 + m_y^2$
 
 $\Delta q_{mag} = \begin{bmatrix}\frac{\sqrt{\Gamma + m_x\sqrt{\Gamma}}}{\sqrt{2\Gamma}} \\0  \\0  \\ \frac{m_y}{\sqrt{2(\Gamma + m_x\sqrt{\Gamma})}} \end{bmatrix}$
 
-9. To reduce effect of high frequency noise preform interpolation between delta q_mag and identity quaternion (alpha can be different from accelerameter)
+9. To reduce effect of high frequency noise preform interpolation between delta q_mag and identity quaternion (alpha can be different from accelerameter. Unclear what to set it at, .9 seems reasonable though https://link.springer.com/article/10.1023/A:1024157310388)
 
-$\Delta q_{mag} = \Delta q_{mag}.interpolation([1, 0, 0, 0], \alpha=.6, \epsilon=.9)$
+$\Delta q_{mag} = \Delta q_{mag}.interpolation([1, 0, 0, 0], \alpha=.9, \epsilon=.9)$
 
 10. Combine with gryo/acc orientation to correct yaw
 

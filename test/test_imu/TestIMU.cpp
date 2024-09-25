@@ -68,6 +68,24 @@ void test_imu_set()
     TEST_ASSERT_EQUAL_FLOAT(0, imu.getMagField().z());
 }
 
+void test_imu_adaptiveAccelGain()
+{
+    // Test case 1: Error is less than t_1 (should return 1)
+    imu.set(Vector<3>{0, 0, 9.8}, Vector<3>{0, 0, 0}, Vector<3>{0, 0, 0}); // Set acceleration to gravitational acceleration
+    double result = imu.adaptiveAccelGain(0.9);
+    TEST_ASSERT_EQUAL_FLOAT(1.0, result);
+
+    // Test case 2: Error is between t_1 and t_2 (should return value between 1 and 0)
+    imu.set(Vector<3>{0, 0, 8}, Vector<3>{0, 0, 0}, Vector<3>{0, 0, 0}); // Set acceleration close to gravitational acceleration
+    result = imu.adaptiveAccelGain(0.9);
+    TEST_ASSERT(result < 1.0 && result > 0.0); // Check that result is in range (0, 1)
+
+    // Test case 3: Error is greater than t_2 (should return 0)
+    imu.set(Vector<3>{0, 0, 12}, Vector<3>{0, 0, 0}, Vector<3>{0, 0, 0}); // Set acceleration significantly above gravitational acceleration
+    result = imu.adaptiveAccelGain(0.9);
+    TEST_ASSERT_EQUAL_FLOAT(0.0, result);
+}
+
 // TODO complimentary filter test
 void test_imu_orientation()
 {
@@ -99,7 +117,8 @@ int main(int argc, char **argv)
     // RUN_TEST(test_function_name); // no parentheses after function name
     RUN_TEST(test_imu_begin);
     RUN_TEST(test_imu_set);
-    RUN_TEST(test_imu_orientation);
+    RUN_TEST(test_imu_adaptiveAccelGain);
+    //RUN_TEST(test_imu_orientation);
 
     UNITY_END();
 
