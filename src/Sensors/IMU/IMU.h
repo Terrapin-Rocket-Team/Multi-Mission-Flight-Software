@@ -9,13 +9,6 @@
 namespace mmfs
 {
 
-    // TODO:
-    // - Implement Global and Local orientations
-    // - Implement Global and Local accelerations
-    // - Implement Magnetometer reading fusion
-    // - Revisit naming conventions
-    // - Revisit necessary functions/variables
-
     class IMU : public Sensor
     {
     public:
@@ -51,7 +44,7 @@ namespace mmfs
 
         Vector<3> accelerationVec = Vector<3>(0, 0, 0);
         Vector<3> orientationEuler = Vector<3>(0, 0, 0);
-        Quaternion orientation = Quaternion(1, 0, 0, 0);
+        Quaternion orientation = Quaternion(1, 0, 0, 0); // This is the mapping from the body to interial frame as a quaternion and can be used as such: r_I = q * r_B * q^-1
         Vector<3> angularVelocity = Vector<3>(0, 0, 0);
         Vector<3> magField = Vector<3>(0, 0, 0);
         Vector<3> initialMagField = Vector<3>(0, 0, 0);
