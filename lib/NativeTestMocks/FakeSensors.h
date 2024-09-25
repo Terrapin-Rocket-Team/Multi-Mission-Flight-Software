@@ -80,7 +80,7 @@ public:
 
     void read() override 
     {
-        orientation = orientationComplementaryFilter(UPDATE_INTERVAL/1000.0);
+
     }
     void set(Vector<3> acc, Vector<3> gyro, Vector<3> mag)
     {

@@ -38,6 +38,7 @@ namespace mmfs
         virtual bool begin(bool useBiasCorrection = true) override;
 
         double adaptiveAccelGain(double alphaBar, double t_1 = .1, double t_2 = .2);
+        virtual void quaternionBasedComplimentaryFilter(double dt);
 
     protected:
         IMU()
@@ -45,9 +46,6 @@ namespace mmfs
             staticData = new char[30 + MAX_DIGITS_FLOAT * 3]; // 30 chars for the string, 12 chars for the 3 floats
             data = new char[MAX_DIGITS_FLOAT * 10 + 10];      // 10x floats + buffer space
         };
-
-        Quaternion quatInverse(Quaternion q);
-        virtual Quaternion orientationComplementaryFilter(double dt);
 
         Vector<3> accelerationVec = Vector<3>(0, 0, 0);
         Vector<3> orientationEuler = Vector<3>(0, 0, 0);

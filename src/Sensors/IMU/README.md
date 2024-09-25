@@ -93,7 +93,7 @@ $g = {I \atop }g_p = {B \atop I}q_{w,t_k}^{-1} * {B \atop }\hat{a} * {B \atop I}
 
 If g_z == -1, then TODO (shouldn't happen though).
 
-$\Delta q_{acc} = \begin{bmatrix}\sqrt{\frac{g_z+1}{2}} \\-\frac{g_y}{\sqrt{(2*(g_z+1))}}  \\ \frac{g_x}{\sqrt{2(g_z+1)}} \\0 \end{bmatrix}$
+$\Delta q_{acc} = \begin{bmatrix}\sqrt{\frac{g_z+1}{2}} \\-\frac{g_y}{\sqrt{(2(g_z+1))}}  \\ \frac{g_x}{\sqrt{2(g_z+1)}} \\0 \end{bmatrix}$
 
 5. To reduce effect of high frequency noise preform interpolation between delta q_acc and identity quaternion. Use adaptive gain for alpha. Unclear what to set alpha bar to, .9 seems reasonable though https://link.springer.com/article/10.1023/A:1024157310388)
 
@@ -107,7 +107,7 @@ ${B \atop I}q_{wa} = {B \atop I}q_{w} \Delta q_{acc}$
 
 #### Determine Mag orientation
 
-7. Get magnetic field vector in world frame
+7. Get magnetic field vector in interial frame
 
 ${I \atop }m = {B \atop I}q_{wa}^{-1} * {B \atop }m * {B \atop I}q_{wa}$
 

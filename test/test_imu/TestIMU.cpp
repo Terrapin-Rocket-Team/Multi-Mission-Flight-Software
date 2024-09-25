@@ -86,22 +86,44 @@ void test_imu_adaptiveAccelGain()
     TEST_ASSERT_EQUAL_FLOAT(0.0, result);
 }
 
-// TODO complimentary filter test
-void test_imu_orientation()
+void test_quaternion_based_complimentary_filter()
 {
-    double g = 9.8;
-    double interval = .1; // This is set by UPDATE_INTERVAL in NativeTestHelpers.cpp
-    double rad = 5*interval;
-    Vector<3> accelBody = {g*sin(rad), 0, g*cos(rad)};
-    Vector<3> angVelo = {0, rad/interval, 0};
-    Vector<3> magField = {0, 0, 0};
-    imu.set(accelBody, angVelo, magField);
-    imu.update();
+    // Test case 1: Propagate orientation with zero angular velocity, and acceleration aligning with gravity
+    imu.set(Vector<3>{0.0, 0.0, 9.81}, Vector<3>{0.0, 0.0, 0.0}, Vector<3>{0.0, 0.0, 0.0}); // Set accel to gravity and angular velocity to 0
+    imu.quaternionBasedComplimentaryFilter((double)UPDATE_INTERVAL/1000); // Run filter with small time step
 
-    TEST_ASSERT_EQUAL_FLOAT(0.5518532, imu.getOrientation().w());
-    TEST_ASSERT_EQUAL_FLOAT(0, imu.getOrientation().x());
-    TEST_ASSERT_EQUAL_FLOAT(-0.9736356, imu.getOrientation().y());
-    TEST_ASSERT_EQUAL_FLOAT(0, imu.getOrientation().z());
+    // Expected orientation should still be close to identity quaternion (no angular motion)
+    Quaternion expected_orientation = Quaternion{1.0, 0.0, 0.0, 0.0};
+    TEST_ASSERT_EQUAL_FLOAT(expected_orientation.w(), imu.getOrientation().w());
+    TEST_ASSERT_EQUAL_FLOAT(expected_orientation.x(), imu.getOrientation().x());
+    TEST_ASSERT_EQUAL_FLOAT(expected_orientation.y(), imu.getOrientation().y());
+    TEST_ASSERT_EQUAL_FLOAT(expected_orientation.z(), imu.getOrientation().z());
+
+    // Test case 2: Small angular velocity with no external acceleration, identity quaternion
+    imu.set(Vector<3>{0.0, 0.0, 9.81}, Vector<3>{0.1, 0.0, 0.0}, Vector<3>{0.0, 0.0, 0.0}); // Set small angular velocity in x direction
+    imu.quaternionBasedComplimentaryFilter((double)UPDATE_INTERVAL/1000); // Run filter
+    
+    // Check if the orientation has slightly changed due to angular velocity
+    expected_orientation = Quaternion{0.9999875, 0.004999938, 0.0, 0.0};
+    TEST_ASSERT_EQUAL_FLOAT(expected_orientation.w(), imu.getOrientation().w());
+    TEST_ASSERT_EQUAL_FLOAT(expected_orientation.x(), imu.getOrientation().x());
+    TEST_ASSERT_EQUAL_FLOAT(expected_orientation.y(), imu.getOrientation().y());
+    TEST_ASSERT_EQUAL_FLOAT(expected_orientation.z(), imu.getOrientation().z());
+
+    // Test case 3: Large angular velocity and non-gravitational acceleration
+    imu.set(Vector<3>{2.0, 2.0, 5.0}, Vector<3>{1.0, 1.0, 1.0}, Vector<3>{0.5, 0.5, 0.5}); // Random non-gravity forces
+    imu.quaternionBasedComplimentaryFilter((double)UPDATE_INTERVAL/1000); // Run filter
+
+    // The result should deviate significantly from the identity quaternion
+    expected_orientation = Quaternion{0.9517171, -0.06399739, -0.02944679, 0.29878383};
+    printf("Orientation.w(): %f\n", imu.getOrientation().w());
+    printf("Orientation.x(): %f\n", imu.getOrientation().x());
+    printf("Orientation.y(): %f\n", imu.getOrientation().y());
+    printf("Orientation.z(): %f\n", imu.getOrientation().z());
+    TEST_ASSERT_EQUAL_FLOAT(expected_orientation.w(), imu.getOrientation().w());
+    TEST_ASSERT_EQUAL_FLOAT(expected_orientation.x(), imu.getOrientation().x());
+    TEST_ASSERT_EQUAL_FLOAT(expected_orientation.y(), imu.getOrientation().y());
+    TEST_ASSERT_EQUAL_FLOAT(expected_orientation.z(), imu.getOrientation().z());
 }
 
 // ---
@@ -118,7 +140,7 @@ int main(int argc, char **argv)
     RUN_TEST(test_imu_begin);
     RUN_TEST(test_imu_set);
     RUN_TEST(test_imu_adaptiveAccelGain);
-    //RUN_TEST(test_imu_orientation);
+    RUN_TEST(test_quaternion_based_complimentary_filter);
 
     UNITY_END();
 
