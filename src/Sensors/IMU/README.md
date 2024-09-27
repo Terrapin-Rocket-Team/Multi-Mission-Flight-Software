@@ -61,9 +61,9 @@ Sources:
 - https://ahrs.readthedocs.io/en/latest/filters/aqua.html#quaternion-based-complementary-filter
 - https://www.mdpi.com/1424-8220/15/8/19302
 
-Given gyroscope (angular velocity), accelermater (linear acceleration), magnatometer (magnetic field) measurements (and delta t), determine and propogate an absolute orientation quaternion.
+Given gyroscope (angular velocity), accelerometer (linear acceleration), magnetometer (magnetic field) measurements (and delta t), determine and propogate an absolute orientation quaternion.
 
-Generally this method will work by combining the propogated gyroscope with the propogated accelerameter (roll, pitch) with the propogated magnatometer (yaw). 
+Generally this method will work by combining the propogated gyroscope with the propogated accelerameter (roll, pitch) with the propogated magnetometer (yaw). 
 
 Note this derivation is done on the quaternion that maps inertial to body coordinates. This is generally backwards but follows the sources above (they call inertial global and body local). 
 
@@ -77,7 +77,7 @@ ${B \atop I}q_{w,t_k} = {I \atop B}q_w^{-1}$
 
 The above step is necessary as the quaternion we track in the code is the mapping from the body frame to the interial frame.
 
-${B \atop I}\dot{q}_{w,t_k} = -\frac{1}{2} {B \atop }\mathbf{\omega}_{q,t_{k}} {B \atop I}q_{w,t_k}$
+![Equation 3](https://latex.codecogs.com/svg.image?$%7BB%5Catop%20I%7D%5Cdot%7Bq%7D_%7Bw,t_k%7D=-%5Cfrac%7B1%7D%7B2%7D%7BB%5Catop%7D%5Cmathbf%7B%5Comega%7D_%7Bq,t_%7Bk%7D%7D%7BB%5Catop%20I%7Dq_%7Bw,t_k%7D$)
 
 2. Propogate gyro orientation
 
@@ -95,7 +95,7 @@ $g = {I \atop }g_p = {B \atop I}q_{w,t_k}^{-1} * {B \atop }\hat{a} * {B \atop I}
 
 If g_z == -1, then TODO (shouldn't happen though).
 
-![Equation 3](https://latex.codecogs.com/svg.image?$%5CDelta%20q_%7Bacc%7D=%5Cbegin%7Bbmatrix%7D%5Csqrt%7B%5Cfrac%7Bg_z&plus;1%7D%7B2%7D%7D%5C%5C-%5Cfrac%7Bg_y%7D%7B%5Csqrt%7B(2(g_z&plus;1))%7D%7D%5C%5C%5Cfrac%7Bg_x%7D%7B%5Csqrt%7B2(g_z&plus;1)%7D%7D%5C%5C0%5Cend%7Bbmatrix%7D$)
+![Equation 4](https://latex.codecogs.com/svg.image?$%5CDelta%20q_%7Bacc%7D=%5Cbegin%7Bbmatrix%7D%5Csqrt%7B%5Cfrac%7Bg_z&plus;1%7D%7B2%7D%7D%5C%5C-%5Cfrac%7Bg_y%7D%7B%5Csqrt%7B(2(g_z&plus;1))%7D%7D%5C%5C%5Cfrac%7Bg_x%7D%7B%5Csqrt%7B2(g_z&plus;1)%7D%7D%5C%5C0%5Cend%7Bbmatrix%7D$)
 
 5. To reduce effect of high frequency noise preform interpolation between delta q_acc and identity quaternion. Use adaptive gain for alpha. Unclear what to set alpha bar to, .9 seems reasonable though https://link.springer.com/article/10.1023/A:1024157310388)
 
@@ -117,7 +117,7 @@ ${I \atop }m = {B \atop I}q_{wa}^{-1} * {B \atop }m * {B \atop I}q_{wa}$
 
 $\Gamma = m_x^2 + m_y^2$
 
-![Equation 4](https://latex.codecogs.com/svg.image?$%5CDelta%20q_%7Bmag%7D=%5Cbegin%7Bbmatrix%7D%5Cfrac%7B%5Csqrt%7B%5CGamma&plus;m_x%5Csqrt%7B%5CGamma%7D%7D%7D%7B%5Csqrt%7B2%5CGamma%7D%7D%5C%5C0%5C%5C0%5C%5C%5Cfrac%7Bm_y%7D%7B%5Csqrt%7B2(%5CGamma&plus;m_x%5Csqrt%7B%5CGamma%7D)%7D%7D%5Cend%7Bbmatrix%7D$)
+![Equation 5](https://latex.codecogs.com/svg.image?$%5CDelta%20q_%7Bmag%7D=%5Cbegin%7Bbmatrix%7D%5Cfrac%7B%5Csqrt%7B%5CGamma&plus;m_x%5Csqrt%7B%5CGamma%7D%7D%7D%7B%5Csqrt%7B2%5CGamma%7D%7D%5C%5C0%5C%5C0%5C%5C%5Cfrac%7Bm_y%7D%7B%5Csqrt%7B2(%5CGamma&plus;m_x%5Csqrt%7B%5CGamma%7D)%7D%7D%5Cend%7Bbmatrix%7D$)
 
 9. To reduce effect of high frequency noise preform interpolation between delta q_mag and identity quaternion (alpha can be different from accelerameter. Unclear what to set it at, .9 seems reasonable though https://link.springer.com/article/10.1023/A:1024157310388)
 

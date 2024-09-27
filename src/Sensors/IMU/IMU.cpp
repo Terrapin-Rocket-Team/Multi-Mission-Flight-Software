@@ -1,5 +1,4 @@
 #include "IMU.h"
-#include <stdio.h>
 
 namespace mmfs
 {
@@ -36,8 +35,7 @@ namespace mmfs
 
     Vector<3> IMU::getAccelerationGlobal()
     {
-        Quaternion accelBody = Quaternion(0, accelerationVec.x(), accelerationVec.y(), accelerationVec.z());
-        Quaternion accelInterial = orientation * accelBody * orientation.conjugate();
+        Quaternion accelInterial = orientation * Quaternion(0, accelerationVec) * orientation.conjugate();
         return Vector<3>(accelInterial.x(), accelInterial.y(), accelInterial.z());
     }
 
@@ -51,8 +49,8 @@ namespace mmfs
     }
 
     const char *IMU::getCsvHeader() const
-    {                                                                                                          // incl I- for IMU
-        return "I-AX (m/s/s),I-AY (m/s/s),I-AZ (m/s/s),I-ANGX,I-ANGY,I-ANGZ,I-MAGX,I-MAGY,I-MAGZ,I-QUATX,I-QUATY,I-QUATZ,I-QUATW,"; // trailing comma
+    {   // incl I- for IMU
+        return "I-AX (m/s/s),I-AY (m/s/s),I-AZ (m/s/s),I-ANGX (rad/s),I-ANGY (rad/s),I-ANGZ (rad/s),I-MAGX (uT),I-MAGY (uT),I-MAGZ (uT),I-QUATX,I-QUATY,I-QUATZ,I-QUATW,"; // trailing comma
     }
 
     const char *IMU::getDataString() const

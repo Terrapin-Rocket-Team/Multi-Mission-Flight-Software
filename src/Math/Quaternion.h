@@ -149,7 +149,7 @@ public:
   // similarly for result.z().
   //
   Vector<3> toEuler() const {
-    // TODO what Euler is this?
+    // TODO what Euler is this? See comment above, I think it is 1-2-3
     Vector<3> ret;
     double sqw = _w * _w;
     double sqx = _x * _x;
