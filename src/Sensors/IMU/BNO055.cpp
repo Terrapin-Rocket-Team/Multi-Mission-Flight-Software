@@ -1,4 +1,5 @@
 #include "BNO055.h"
+#include "../../RecordData/Logger.h"
 
 namespace mmfs
 {
@@ -24,6 +25,15 @@ namespace mmfs
         measuredAcc = convertIMUtoMMFS(bno.getVector(Adafruit_BNO055::VECTOR_LINEARACCEL));
         measuredGyro = convertIMUtoMMFS(bno.getVector(Adafruit_BNO055::VECTOR_GYROSCOPE));
         measuredMag = convertIMUtoMMFS(bno.getVector(Adafruit_BNO055::VECTOR_MAGNETOMETER));
+        //check the i2c bus to make sure the BNO didn't misbehave
+        Wire.beginTransmission(0x28); //BNO default address. TODO: Allow users to change addresses of devices
+        byte b = Wire.endTransmission();
+        if (b != 0x00)
+        {
+            Wire.end();
+            Wire.begin();
+            logger.recordLogData(ERROR_, "I2C Error");
+        }
     }
 
     void BNO055::calibrateBno()
