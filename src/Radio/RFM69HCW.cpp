@@ -211,7 +211,7 @@ namespace mmfs
     /*
     Basic receive method, usually called by available(), but can be called manually. Puts the radio in receive mode and gets message data if available
     */
-    const char *RFM69HCW::rx()
+    void RFM69HCW::rx()
     {
         if (this->mode != RM_RECEIVE)
         {
@@ -337,10 +337,11 @@ namespace mmfs
         {
             this->avail = false;
             if (!decode(this->msg, type, this->msgLen))
-                return 0;
+                return nullptr;
 
             return this->msg;
         }
+        return nullptr;
     }
 
     /*
@@ -352,6 +353,7 @@ namespace mmfs
         {
             this->checkModeReady();
             this->rx();
+            return this->avail; //?? Ik this will all be re-written so im not too worried, just trying to get rid of warnings
         }
         else
         {

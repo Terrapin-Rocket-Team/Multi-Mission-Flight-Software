@@ -49,7 +49,7 @@ namespace mmfs
         bool tx(const char *message, int len = -1) override;
         void txI();
         void txE();
-        const char *rx() override;
+        void rx() override;
         void rxI();
         bool encode(char *message, EncodingType type, int len = -1) override;
         bool decode(char *message, EncodingType type, int len = -1) override;
