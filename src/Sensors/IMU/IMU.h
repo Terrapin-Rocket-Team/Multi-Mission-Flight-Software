@@ -51,7 +51,5 @@ namespace mmfs
         double accel_best_filtering_at_static = 0.9; // [0, 1] Higher this number, the more you trust the accelerameter
         double mag_best_filtering_at_static = 0.9; // [0, 1] Higher this number, the more you trust the magnatometer
     };
-  
-    Vector<3> convertToEuler(const Quaternion &orientation);
 }
 #endif

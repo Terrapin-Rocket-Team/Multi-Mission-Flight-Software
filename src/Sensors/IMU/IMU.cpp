@@ -39,15 +39,6 @@ namespace mmfs
         return Vector<3>(accelInterial.x(), accelInterial.y(), accelInterial.z());
     }
 
-    Vector<3> convertToEuler(const Quaternion &orientation)
-
-    {
-        Vector<3> euler = orientation.toEuler();
-        // reverse the vector, since it returns in z, y, x
-        euler = Vector<3>(euler.x(), euler.y(), euler.z());
-        return euler;
-    }
-
     const char *IMU::getCsvHeader() const
     {   // incl I- for IMU
         return "I-AX (m/s/s),I-AY (m/s/s),I-AZ (m/s/s),I-ANGX (rad/s),I-ANGY (rad/s),I-ANGZ (rad/s),I-MAGX (uT),I-MAGY (uT),I-MAGZ (uT),I-QUATX,I-QUATY,I-QUATZ,I-QUATW,"; // trailing comma
