@@ -5,6 +5,8 @@
 #include <cstring>
 #include "../RecordData/Logger.h"
 
+class BBPattern; // foward declaration
+
 namespace mmfs {
 
 /** Enum for the different types of errors */

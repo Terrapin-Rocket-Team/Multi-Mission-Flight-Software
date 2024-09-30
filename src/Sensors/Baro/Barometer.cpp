@@ -99,7 +99,7 @@ namespace mmfs
                 {
                     read();
                     startPressure += pressure;
-#ifndef UNIT_TEST // Don't delay in unit tests
+#ifndef PIO_UNIT_TESTING // Don't delay in unit tests
                     delay(25);
 #endif
                 }

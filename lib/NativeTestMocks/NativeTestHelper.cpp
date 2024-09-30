@@ -5,6 +5,7 @@ uint8_t external_psram_size = 0;
 int allowed_pins[] = {13, 33};
 BlinkBuzz bb(allowed_pins, 2, true);
 mmfs::Logger logger;
+mmfs::ErrorHandler errorHandler;
 
 const int UPDATE_RATE = 10;
 const int SENSOR_BIAS_CORRECTION_DATA_IGNORE = 1;

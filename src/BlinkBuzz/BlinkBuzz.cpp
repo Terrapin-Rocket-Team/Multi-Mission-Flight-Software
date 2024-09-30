@@ -2,6 +2,14 @@
 #include "BlinkBuzz.h"
 #include "Error/ErrorHandler.h"
 
+#ifndef ARDUINO
+#include "NativeTestHelper.h"
+#else
+
+#include <Arduino.h>
+
+#endif // !ARDUINO
+
 BlinkBuzz::BlinkBuzz(int *allowedPins, const int numPins, bool enableAsync, int maxQueueSize)
 {
     this->enableAsync = enableAsync;
@@ -60,7 +68,7 @@ bool BlinkBuzz::isOn(int pin)
 {
     if (isAllowed(pin))
         return pinState[getPinIndex(pin)];
-    mmfs::errorHandler.addError(mmfs::ErrorType::NONCRITICAL_WARNING, "BlinkBuzz: Attempted to check the state of an unallowed pin", pin);
+    errorHandler.addError(mmfs::ErrorType::NONCRITICAL_WARNING, "BlinkBuzz: Attempted to check the state of an unallowed pin", pin);
     return false;
 }
 
@@ -75,7 +83,7 @@ bool BlinkBuzz::isAllowed(int pin)
         for (int i = 0; i < numPins; i++)
             if (allowedPins[i] == pin)
                 return true;
-    mmfs::errorHandler.addError(mmfs::ErrorType::NONCRITICAL_WARNING, "BlinkBuzz: Attempted to use an unallowed pin", pin);
+    errorHandler.addError(mmfs::ErrorType::NONCRITICAL_WARNING, "BlinkBuzz: Attempted to use an unallowed pin", pin);
     return false;
 }
 int BlinkBuzz::getPinIndex(int pin)
@@ -163,7 +171,7 @@ void BlinkBuzz::toggle(int pin)
 void BlinkBuzz::update(int curMS)
 {
     if (!enableAsync){
-        mmfs::errorHandler.addError(mmfs::ErrorType::NONCRITICAL_WARNING, "BlinkBuzz: Attempted to use an asynchronous function without enabling asynchronous mode.");
+        errorHandler.addError(mmfs::ErrorType::NONCRITICAL_WARNING, "BlinkBuzz: Attempted to use an asynchronous function without enabling asynchronous mode.");
         return;
     }
 
@@ -205,7 +213,7 @@ void BlinkBuzz::indefHelper(int pin, double curMS)
 void BlinkBuzz::aonoffhelper(int idx, int timeStamp)
 {
     if(pinQEnd[idx] == maxQueueSize - 1){ // if the queue is full, don't add anything
-        mmfs::errorHandler.addError(mmfs::ErrorType::NONCRITICAL_WARNING, "BlinkBuzz: A pin's queue has overflown.", allowed_pins[idx]);
+        errorHandler.addError(mmfs::ErrorType::NONCRITICAL_WARNING, "BlinkBuzz: A pin's queue has overflown.", allowed_pins[idx]);
         return;
     }
     pinQ[idx][pinQEnd[idx]] = timeStamp;

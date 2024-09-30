@@ -1,13 +1,7 @@
 #ifndef BLINKBUZZ_H
 #define BLINKBUZZ_H
 
-#ifndef ARDUINO
-#include "NativeTestHelper.h"
-#else
 
-#include <Arduino.h>
-
-#endif // !ARDUINO
 
 #include "BBPattern.h"
 
