@@ -91,8 +91,6 @@ public:
  * Singleton class for handling errors. Stores errors in a linked list.
 */
 class ErrorHandler {
-private:
-    Logger *logger;
 
 public:
     // Make a linked list of errors
@@ -101,9 +99,8 @@ public:
 
     /**
      * Constructor for the ErrorHandler class.
-     * @param logger Pointer to a logger object that will be used to log errors.
      */
-    ErrorHandler(Logger *logger);
+    ErrorHandler();
     ~ErrorHandler();
 
     /**
@@ -126,6 +123,16 @@ public:
      * @param error Pointer to the error object.
      */
     void addError(Error *error);
+
+    /**
+     * Add an error to the error handler with a pin number and BlinkBuzz pattern.
+     * @param type The type of the error.
+     * @param message The error message.
+     * @param errorLocation The location where the error occurred, or just a number designator for debugging.
+     * @param pinNum The pin number to output to using BlinkBuzz.
+     * @param pattern The BlinkBuzz pattern associated with the error.
+     */
+    void addError(ErrorType type, const char *message, int errorLocation, int pinNum, BBPattern *pattern);
 
     /**
      * Get the first error in the linked list.
