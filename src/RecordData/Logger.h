@@ -11,6 +11,7 @@
 
 #include "psram.h"
 #include "SdCardStorage.h"
+#include "../Constants.h"
 
 
 namespace mmfs {

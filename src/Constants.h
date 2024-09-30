@@ -1,6 +1,10 @@
 #ifndef CONSTANTS_H
 #define CONSTANTS_H
 
+#ifndef APP_VERSION
+#define APP_VERSION "0.0.0"
+#endif
+
 // ------------------- Number lengths -------------------
 
 // the number of digits in a number, used for string representations of values. These represent a potential "worst case" scenario.
