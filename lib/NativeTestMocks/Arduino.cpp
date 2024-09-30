@@ -39,9 +39,9 @@ void digitalWrite(int pin, int value) {
 
 void SerialClass::write(const char *data) {}
 
-void SerialClass::print(const char *data) {}
+void SerialClass::print(const char *data) { printf("%s", data); }
 
-void SerialClass::println(const char *data) {}
+void SerialClass::println(const char *data) { printf("%s\n", data); }
 
 void SerialClass::begin(int baud) {}
 
