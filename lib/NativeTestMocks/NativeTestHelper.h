@@ -14,10 +14,4 @@ extern int allowed_pins[];
 extern BlinkBuzz bb;
 extern mmfs::Logger logger;
 
-extern const int UPDATE_RATE;
-extern const int SENSOR_BIAS_CORRECTION_DATA_IGNORE;
-extern const int SENSOR_BIAS_CORRECTION_DATA_LENGTH;
-extern const int UPDATE_INTERVAL;
-extern const int BUZZER_PIN;
-
 #endif // NATIVE_TEST_HELPER_H

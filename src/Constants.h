@@ -17,8 +17,8 @@ constexpr int MAX_DIGITS_LAT_LON = 12; // 180.0000000
 extern const int BUZZER_PIN;
 extern const int BUILTIN_LED_PIN;
 constexpr double MEAN_SEA_LEVEL_PRESSURE_HPA = 1013.25;
-extern const int SENSOR_BIAS_CORRECTION_DATA_LENGTH; // in seconds
-extern const int SENSOR_BIAS_CORRECTION_DATA_IGNORE; // in seconds (how many seconds to ignore the most recent data for bias correction)
+inline int SENSOR_BIAS_CORRECTION_DATA_LENGTH = 2; // in seconds
+inline int SENSOR_BIAS_CORRECTION_DATA_IGNORE = 1; // in seconds (how many seconds to ignore the most recent data for bias correction)
 
 // ------------------------------------------------------
 

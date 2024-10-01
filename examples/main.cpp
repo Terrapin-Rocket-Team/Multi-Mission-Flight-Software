@@ -21,8 +21,6 @@ AvionicsKF kfilter;
 Logger logger;
 AvionicsState avionicsState(sensors, 3, &kfilter);
 
-const int SENSOR_BIAS_CORRECTION_DATA_LENGTH = 2;
-const int SENSOR_BIAS_CORRECTION_DATA_IGNORE = 1;
 const int UPDATE_RATE = 10;
 const int UPDATE_INTERVAL = 1000.0 / UPDATE_RATE;
 
@@ -30,6 +28,9 @@ const int UPDATE_INTERVAL = 1000.0 / UPDATE_RATE;
 
 void setup()
 {
+    //If you need to change these values, do that here (in setup, before anything else)
+    //SENSOR_BIAS_CORRECTION_DATA_LENGTH = 2;
+    //SENSOR_BIAS_CORRECTION_DATA_IGNORE = 1;
 
     logger.init();
 
