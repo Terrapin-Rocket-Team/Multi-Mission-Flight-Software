@@ -52,6 +52,7 @@ int main(int argc, char **argv)
 
     // Add your tests here
     // RUN_TEST(test_function_name); // no parentheses after function name
+    RUN_TEST(test_constants);
 
     UNITY_END();
 
