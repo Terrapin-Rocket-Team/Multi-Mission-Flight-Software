@@ -12,7 +12,7 @@ Error::Error(ErrorType type, const char *message, int errorLocation)
 
 Error::~Error()
 {
-    delete[] message;
+
 }
 
 const char *Error::getTypeString() const

@@ -5,6 +5,7 @@
 #include "../../src/Constants.h"
 #include "../../src/BlinkBuzz/BlinkBuzz.h"
 #include "../../src/RecordData/Logger.h"
+#include "../../src/Error/ErrorHandler.h"
 #include <string>
 #include <unity.h>
 
@@ -13,6 +14,7 @@
 extern int allowed_pins[];
 extern BlinkBuzz bb;
 extern mmfs::Logger logger;
+extern mmfs::ErrorHandler errorHandler;
 
 extern const int UPDATE_RATE;
 extern const int SENSOR_BIAS_CORRECTION_DATA_IGNORE;
