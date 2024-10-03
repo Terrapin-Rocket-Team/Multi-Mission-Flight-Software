@@ -1,6 +1,8 @@
 #include "NativeTestHelper.h"
 
-uint8_t external_psram_size = 0;
+extern "C" {
+    uint8_t external_psram_size = 0;
+}
 
 const int BUZZER_PIN = 14;
 const int LED_PIN = 13;
