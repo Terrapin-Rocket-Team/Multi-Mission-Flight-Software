@@ -10,14 +10,14 @@ This README covers the `StorageType`, `SdCardStorage`, `PSRAM`, and `Logger` cla
 
 ## Table of Contents
 
--   [StorageType](#storagetype)
+-   [StorageFile](#storagetype)
 -   [SdCardStorage](#sdcardstorage)
 -   [PSRAM](#psram)
 -   [Logger](#logger)
 
 ----------
 
-## StorageType
+## StorageFile
 
 ### Purpose
 

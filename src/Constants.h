@@ -1,6 +1,8 @@
 #ifndef CONSTANTS_H
 #define CONSTANTS_H
 
+#include <cstdint>
+
 // ------------------- Number lengths -------------------
 
 // the number of digits in a number, used for string representations of values. These represent a potential "worst case" scenario.
@@ -34,6 +36,16 @@ extern const int SENSOR_BIAS_CORRECTION_DATA_IGNORE; // in seconds (how many sec
 
 extern const int UPDATE_RATE; // in hz
 extern const int UPDATE_INTERVAL; // in ms
+
+// ------------------------------------------------------
+
+// ------------------ File Constants --------------------
+
+inline int MAX_FILE_NAME_SIZE = 64; // in characters (including null terminator)
+inline uintptr_t PSRAM_STARTING_ADDRESS = 0x70000000;
+inline int PSRAM_CLUSTER_SIZE = 1024; // in bytes
+inline int ONE_MB = 1048576; // in bytes
+inline int MAX_PSRAM_FILES = 5; // in files, defaulted low to save memory
 
 // ------------------------------------------------------
 

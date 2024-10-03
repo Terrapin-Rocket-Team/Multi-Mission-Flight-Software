@@ -17,7 +17,7 @@ extern FsFile flightDataFile;
 // could always reference with mmfs::SdCard,
 // but this is more convenient if you're using
 // `using namespace mmfs;`
-class SdCardStorage : public StorageType
+class SdCardStorage : public StorageFile
 {
 private:
     static constexpr int NAME_SIZE = 24;

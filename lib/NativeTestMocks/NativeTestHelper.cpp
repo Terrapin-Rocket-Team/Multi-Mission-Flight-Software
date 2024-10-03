@@ -6,6 +6,7 @@ int allowed_pins[] = {13, 33};
 BlinkBuzz bb(allowed_pins, 2, true);
 mmfs::Logger logger;
 mmfs::ErrorHandler errorHandler(&logger);
+mmfs::PSRAM *psram = new mmfs::PSRAM();
 
 const int UPDATE_RATE = 10;
 const int SENSOR_BIAS_CORRECTION_DATA_IGNORE = 1;
