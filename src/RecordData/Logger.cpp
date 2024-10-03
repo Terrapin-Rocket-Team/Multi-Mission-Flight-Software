@@ -23,6 +23,9 @@ void Logger::init() {
         sdCard.addFile("Log.txt");
         sdCard.addFile("FlightData.csv");
         sdCard.selectFile(0);       // since we dk the file name, we select the first file (Log.txt)
+        char data[100];
+        snprintf(data, 100, "This flight is running MMFS v%s", APP_VERSION);
+        sdCard.println("Log file created");
         SDready = true;
     }
 
