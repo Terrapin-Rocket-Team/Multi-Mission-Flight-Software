@@ -1,7 +1,6 @@
 #include <Arduino.h>
 #include "AvionicsState.h"
-#include "../src/BlinkBuzz/BlinkBuzz.h"
-#include "../src/Error/ErrorHandler.h"
+#include "MMFS.h"
 #include "../src/Sensors/GPS/MAX_M10S.h"
 #include "../src/Sensors/IMU/BNO055.h"
 #include "../src/Sensors/Baro/BMP390.h"
@@ -22,6 +21,7 @@ AvionicsKF kfilter;
 Logger logger;
 ErrorHandler errorHandler();
 AvionicsState avionicsState(sensors, 3, &kfilter);
+ErrorHandler errorHandler;
 
 const int SENSOR_BIAS_CORRECTION_DATA_LENGTH = 2;
 const int SENSOR_BIAS_CORRECTION_DATA_IGNORE = 1;
