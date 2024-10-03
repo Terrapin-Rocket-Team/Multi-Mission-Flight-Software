@@ -62,7 +62,7 @@ To use the `ErrorHandler`, you need to initialize it.
 #include "Logger.h"
 
 mmfs::Logger logger;
-mmfs::ErrorHandler errorHandler();
+mmfs::ErrorHandler errorHandler;
 ```
 
 Since the `ErrorHandler` class is a singleton, only one instance of it exists and needs to be created. This instance is declared as an extern in the header file, so it can be accessed from any file that includes the header, however, it must be initialized in the main file.
