@@ -93,8 +93,6 @@ $g = {I \atop }g_p = {B \atop I}q_{w,t_k}^{-1} * {B \atop }\hat{a} * {B \atop I}
 
 4. Determine delta acc orientation
 
-If g_z == -1, then TODO (shouldn't happen though).
-
 ![Equation 4](images/svg3.svg)
 
 5. To reduce effect of high frequency noise preform interpolation between delta q_acc and identity quaternion. Use adaptive gain for alpha. Unclear what to set alpha bar to, .9 seems reasonable though https://link.springer.com/article/10.1023/A:1024157310388)

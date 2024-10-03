@@ -1,4 +1,5 @@
 #include "IMU.h"
+#include "../../Error/ErrorHandler.h"
 
 namespace mmfs
 {
@@ -56,6 +57,47 @@ namespace mmfs
         return data;
     }
 
+    void IMU::quaternionBasedComplimentaryFilterSetup()
+    {   
+        // Find initial absolute orientation which is just q = q_acc * q_mag
+        
+        // Get Accelerometer Orientation
+        Quaternion a_b = Quaternion{0, accelerationVec};
+        if(!(a_b.magnitude() > 0)){
+            errorHandler.addError(GENERIC_ERROR, "Acceleration magnitude 0 while running quaternionBasedComplimentaryFilterSetup(). Need to record acceleration vector on setup before running this function.");
+            return;
+        }
+        a_b.normalize();
+
+        Quaternion q_acc;
+        if(a_b.z() > 0){
+            q_acc = Quaternion{sqrt((a_b.z()+1)/2), -a_b.y()/sqrt(2*(a_b.z()+1)), a_b.x()/sqrt(2*(a_b.z()+1)), 0};
+        } else {
+            q_acc = Quaternion{-a_b.y()/sqrt(2*(1-a_b.z())), sqrt((1-a_b.z())/2), 0, a_b.x()/sqrt(2*(1-a_b.z()))};
+        }
+
+        // Get Magnetometer Orientation
+        Quaternion m_b = Quaternion{0, magField};
+        if(!(m_b.magnitude() > 0)){
+            errorHandler.addError(GENERIC_ERROR, "Magnetic magnitude 0 while running quaternionBasedComplimentaryFilterSetup(). Need to record magnetometer vector on setup before running this function.");
+            return;
+        }
+        m_b.normalize();
+
+        double Gamma = m_b.x()*m_b.x() + m_b.y()*m_b.y();
+
+        Quaternion q_mag;
+        if(m_b.x() > 0){
+            q_mag = Quaternion{sqrt(Gamma + (m_b.x()*sqrt(Gamma)))/sqrt(2*Gamma), 0, 0, m_b.y()/sqrt(2*(Gamma+ (m_b.x()*sqrt(Gamma))))};
+        } else {
+            q_mag = Quaternion{m_b.y()/sqrt(2*(Gamma - (m_b.x()*sqrt(Gamma)))), 0, 0, sqrt(Gamma - (m_b.x()*sqrt(Gamma)))/sqrt(2*Gamma)};
+        }
+       
+        Quaternion q = q_acc * q_mag;
+
+        orientation = q.conjugate();
+    }
+    
     void IMU::quaternionBasedComplimentaryFilter(double dt)
     {
         // See the Readme for details.
@@ -84,17 +126,12 @@ namespace mmfs
         a_b.normalize();
         Quaternion g_p_I = q_w_BI.conjugate() * a_b * q_w_BI;
         // 4. Determine delta acc orientation
-        if(g_p_I.z() == -1){
-            // TODO this shouldn't happen though
-            // This prob needs some tolerance too
-            
-            // Temp solution (I just made this up lol)
-            g_p_I.z() = -.9;
-            g_p_I.w() = .01;
-            g_p_I.normalize();
+        Quaternion delta_q_acc;
+        if(g_p_I.z() > 0){
+            delta_q_acc = Quaternion{sqrt((g_p_I.z()+1)/2), -g_p_I.y()/sqrt(2*(g_p_I.z()+1)), g_p_I.x()/sqrt(2*(g_p_I.z()+1)), 0};
+        } else {
+            delta_q_acc = Quaternion{-g_p_I.y()/sqrt(2*(1-g_p_I.z())), sqrt((1-g_p_I.z())/2), 0, g_p_I.x()/sqrt(2*(1-g_p_I.z()))};
         }
-
-        Quaternion delta_q_acc = Quaternion{sqrt((g_p_I.z()+1)/2), -g_p_I.y()/sqrt(2*(g_p_I.z()+1)), g_p_I.x()/sqrt(2*(g_p_I.z()+1)), 0};
         
         // 5. Adaptive gain interpolation to reduce high freq noise
         double alpha = adaptiveAccelGain(accel_best_filtering_at_static, .1, .2);
@@ -120,7 +157,12 @@ namespace mmfs
         // 8. Determine delta mag orientation
         double Gamma = m_I.x()*m_I.x() + m_I.y()*m_I.y();
 
-        Quaternion delta_q_mag = Quaternion{sqrt(Gamma + (m_I.x()*sqrt(Gamma)))/sqrt(2*Gamma), 0, 0, m_I.y()/sqrt(2*(Gamma+ (m_I.x()*sqrt(Gamma))))};
+        Quaternion delta_q_mag;
+        if(m_I.x() > 0){
+            delta_q_mag = Quaternion{sqrt(Gamma + (m_I.x()*sqrt(Gamma)))/sqrt(2*Gamma), 0, 0, m_I.y()/sqrt(2*(Gamma+ (m_I.x()*sqrt(Gamma))))};
+        } else {
+            delta_q_mag = Quaternion{m_I.y()/sqrt(2*(Gamma - (m_I.x()*sqrt(Gamma)))), 0, 0, sqrt(Gamma - (m_I.x()*sqrt(Gamma)))/sqrt(2*Gamma)};
+        }
 
         // 9. Interpolation to reduce high freq noise 
         delta_q_mag = delta_q_mag.interpolation(Quaternion{1,0,0,0}, mag_best_filtering_at_static, .9);

@@ -33,6 +33,7 @@ namespace mmfs
         virtual bool begin(bool useBiasCorrection = true) override;
 
         double adaptiveAccelGain(double alphaBar, double t_1 = .1, double t_2 = .2);
+        virtual void quaternionBasedComplimentaryFilterSetup();
         virtual void quaternionBasedComplimentaryFilter(double dt);
 
     protected:
