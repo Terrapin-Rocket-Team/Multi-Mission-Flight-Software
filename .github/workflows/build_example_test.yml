@@ -20,5 +20,5 @@ jobs:
       - name: Install PlatformIO Core
         run: pip install --upgrade platformio
 
-      - name: Run Unity Tests
+      - name: Build Example Test
         run: pio run --environment teensy41 
