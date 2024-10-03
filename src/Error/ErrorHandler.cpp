@@ -1,4 +1,5 @@
 #include "ErrorHandler.h"
+#include "BlinkBuzz/BlinkBuzz.h"
 
 using namespace mmfs;
 
@@ -11,8 +12,7 @@ Error::Error(ErrorType type, const char *message, int errorLocation)
 }
 
 Error::~Error()
-{
-    delete[] message;
+{ // Don't delete message if it's a string literal
 }
 
 const char *Error::getTypeString() const
@@ -69,9 +69,9 @@ const char *Error::toString()
 }
 
 // Implementation of ErrorHandler class
-ErrorHandler::ErrorHandler(Logger *logger)
+ErrorHandler::ErrorHandler()
 {
-    this->logger = logger;
+
 }
 
 ErrorHandler::~ErrorHandler()
@@ -114,7 +114,24 @@ void ErrorHandler::addError(Error *error)
         errorTail = error;
     }
     // Log the error
-    logger->recordLogData(error->type == NONCRITICAL_WARNING ? WARNING_ : ERROR_, error->toString());
+    logger.recordLogData(error->type == NONCRITICAL_WARNING ? WARNING_ : ERROR_, error->toString());
+}
+
+void ErrorHandler::addError(ErrorType type, const char *message, int errorLocation, int pinNum, BBPattern *pattern)
+{
+    // Create a new error
+    Error *error = new Error(type, message, errorLocation);
+    
+    // Add the error to the list
+    addError(error);
+
+    //play the error using BlinkBuzz
+    if(bb.isUsingAsync()){
+        bb.aonoff(pinNum, *pattern);
+    }
+    else{
+        bb.onoff(pinNum, *pattern);
+    }
 }
 
 Error *ErrorHandler::getFirstError()

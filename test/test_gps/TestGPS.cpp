@@ -263,7 +263,5 @@ int main(int argc, char **argv)
     RUN_TEST(test_gps_mark_liftoff);
 
     UNITY_END();
-
-    return 0;
 }
 // ---
