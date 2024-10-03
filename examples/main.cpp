@@ -19,7 +19,6 @@ BMP390 baro;
 Sensor *sensors[3] = {&gps, &imu055, &baro};
 AvionicsKF kfilter;
 Logger logger;
-ErrorHandler errorHandler();
 AvionicsState avionicsState(sensors, 3, &kfilter);
 ErrorHandler errorHandler;
 
