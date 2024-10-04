@@ -167,7 +167,7 @@ namespace mmfs
             heading = 0;
         }
 
-        orientation = sensorOK(imu) ? imu->getOrientationGlobal() : Quaternion(1, 0, 0, 0);
+        orientation = sensorOK(imu) ? imu->getOrientation() : Quaternion(1, 0, 0, 0);
 
         setDataString();
         if (recordOwnFlightData)
