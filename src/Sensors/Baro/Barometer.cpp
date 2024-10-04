@@ -119,4 +119,17 @@ namespace mmfs
         // Equation from NOAA, but for meters: https://www.weather.gov/media/epz/wxcalc/pressureAltitude.pdf
         return 44307.69 * (1.0 - pow(pressure / MEAN_SEA_LEVEL_PRESSURE_HPA, 0.190284));
     }
+
+    void Barometer::packData()
+    {
+        int flt = sizeof(_Float16);
+        _Float16 p = _Float16(pressure);
+        _Float16 t = _Float16(temp);
+        _Float16 a = _Float16(altitudeASL);
+        _Float16 g = _Float16(altitudeAGL);
+        memcpy(packedData, &p, flt);
+        memcpy(packedData + flt, &t, flt);
+        memcpy(packedData + 2 * flt, &a, flt);
+        memcpy(packedData + 3 * flt, &g, flt);
+    }
 }

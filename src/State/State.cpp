@@ -171,7 +171,7 @@ namespace mmfs
 
         setDataString();
         if (recordOwnFlightData)
-            logger.recordFlightData(dataString);
+            logger.recordFlightData(*this);
     }
 
     void State::setCsvHeader()
@@ -195,6 +195,50 @@ namespace mmfs
             velocity.x(), velocity.y(), velocity.z(),
             acceleration.x(), acceleration.y(), acceleration.z());
         setCsvString(dataString, csvDataStart, dataStartSize, false);
+    }
+
+    void State::setPackedData(){
+        float t = currentTime;
+        float px = position.x();
+        float py = position.y();
+        float pz = position.z();
+        float vx = velocity.x();
+        float vy = velocity.y();
+        float vz = velocity.z();
+        float ax = acceleration.x();
+        float ay = acceleration.y();
+        float az = acceleration.z();
+        int size = sizeof(float) * 10;
+        for(int i = 0; i < numSensors; i++){
+            size += sensors[i]->getPackedDataSize();
+        }
+        delete[] packedData;
+        packedData = new uint8_t[size];
+        int cursor = 0;
+        memcpy(packedData + cursor, &t, sizeof(float));
+        cursor += sizeof(float);
+        memcpy(packedData + cursor, &px, sizeof(float));
+        cursor += sizeof(float);
+        memcpy(packedData + cursor, &py, sizeof(float));
+        cursor += sizeof(float);
+        memcpy(packedData + cursor, &pz, sizeof(float));
+        cursor += sizeof(float);
+        memcpy(packedData + cursor, &vx, sizeof(float));
+        cursor += sizeof(float);
+        memcpy(packedData + cursor, &vy, sizeof(float));
+        cursor += sizeof(float);
+        memcpy(packedData + cursor, &vz, sizeof(float));
+        cursor += sizeof(float);
+        memcpy(packedData + cursor, &ax, sizeof(float));
+        cursor += sizeof(float);
+        memcpy(packedData + cursor, &ay, sizeof(float));
+        cursor += sizeof(float);
+        memcpy(packedData + cursor, &az, sizeof(float));
+        cursor += sizeof(float);
+        for(int i = 0; i < numSensors; i++){
+            memcpy(packedData + cursor, sensors[i]->getPackedData(), sensors[i]->getPackedDataSize());
+            cursor += sensors[i]->getPackedDataSize();
+        }
     }
 
     char *State::getStateString()

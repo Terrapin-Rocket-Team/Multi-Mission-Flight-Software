@@ -52,7 +52,7 @@ void test_PSRAM_init()
 
 void test_PSRAM_open_create()
 {
-    PSRAMFile *file = psram->open("testfile", true);
+    PSRAMFile *file = psram->open("testfile", F_WRITE, true);
     TEST_ASSERT_NOT_NULL(file);
     TEST_ASSERT_EQUAL_STRING("testfile", file->getName());
     TEST_ASSERT_EQUAL(0, file->getSize());
@@ -60,22 +60,22 @@ void test_PSRAM_open_create()
     PSRAMFile *file2 = psram->open("testfile", false);
     TEST_ASSERT_EQUAL(file, file2);
 
-    PSRAMFile *file3 = psram->open(1);
+    PSRAMFile *file3 = psram->open(0, F_WRITE);
     TEST_ASSERT_EQUAL(file, file3);
 }
 
 void test_PSRAM_open_no_create()
 {
-    PSRAMFile *file = psram->open("testfile2", false);
+    PSRAMFile *file = psram->open("testfile2", F_WRITE, false);
     TEST_ASSERT_NULL(file);
 
-    PSRAMFile *file2 = psram->open(2);
+    PSRAMFile *file2 = psram->open(2, F_WRITE);
     TEST_ASSERT_NULL(file2);
 }
 
 void test_PSRAM_writeFile()
 {
-    PSRAMFile *file = psram->open("testfile", false);
+    PSRAMFile *file = psram->open("testfile", F_WRITE | F_READ, false);
     TEST_ASSERT_NOT_NULL(file);
 
     char data[] = "Hello, world!";
@@ -86,7 +86,7 @@ void test_PSRAM_writeFile()
 
 void test_PSRAM_write2()
 {
-    PSRAMFile *file = psram->open("testfile", false);
+    PSRAMFile *file = psram->open("testfile", F_APPEND | F_READ, false);
     TEST_ASSERT_NOT_NULL(file);
 
     char data[] = "Hello, world!";
@@ -97,7 +97,7 @@ void test_PSRAM_write2()
 
 void test_PSRAM_2ndFile()
 {
-    PSRAMFile *file = psram->open("testfile2", true);
+    PSRAMFile *file = psram->open("testfile2", F_APPEND | F_READ, true);
     TEST_ASSERT_NOT_NULL(file);
 
     char data[] = "Hello, world!";
@@ -108,7 +108,7 @@ void test_PSRAM_2ndFile()
 
 void test_PSRAM_multiple_clusters()
 {
-    PSRAMFile *file = psram->open("testfile", false);
+    PSRAMFile *file = psram->open("testfile", F_APPEND | F_READ, false);
     TEST_ASSERT_NOT_NULL(file);
 
     char data[256];
@@ -127,7 +127,7 @@ void test_PSRAM_multiple_clusters()
 
 void test_PSRAM_readFile()
 {
-    PSRAMFile *file = psram->open("testfile", false);
+    PSRAMFile *file = psram->open("testfile", F_READ, false);
     TEST_ASSERT_NOT_NULL(file);
 
     char data[282]; // 26 + 256
@@ -144,25 +144,27 @@ void test_PSRAM_readFile()
     data[281] = '\0';
     char readData[282];
     file->read(readData, 282);
+    readData[file->getSize()] = '\0';
 
     TEST_ASSERT_EQUAL_STRING(data, readData);
 }
 
 void test_PSRAM_read_file2()
 {
-    PSRAMFile *file = psram->open("testfile2", false);
+    PSRAMFile *file = psram->open("testfile2", F_READ, false);
     TEST_ASSERT_NOT_NULL(file);
 
     char data[] = "Hello, world!";
     char readData[14];
-    file->read(readData, 14);
+    file->read(readData, file->getSize());
+    readData[file->getSize()] = '\0';
 
     TEST_ASSERT_EQUAL_STRING(data, readData);
 }
 
 void test_PSRAM_read_next_cluster()
 {
-    PSRAMFile *file = psram->open("testfile", false);
+    PSRAMFile *file = psram->open("testfile", F_READ, false);
     TEST_ASSERT_NOT_NULL(file);
 
     char data[256];
@@ -184,12 +186,12 @@ void test_PSRAM_read_next_cluster()
     cluster = psram->readNextFileCluster(*file, size);
     TEST_ASSERT_EQUAL(25, size);
     memcpy(data, "\nxyzabcdef\nhijklmnop\nrstu", 26);
-    TEST_ASSERT_EQUAL_CHAR_ARRAY(data, cluster, 26);
+    TEST_ASSERT_EQUAL_CHAR_ARRAY(data, cluster, 25);
 }
 
 void test_PSRAM_3rdFile()
 {
-    PSRAMFile *file = psram->open("testfile3", true);
+    PSRAMFile *file = psram->open("testfile3", F_WRITE | F_READ, true);
     TEST_ASSERT_NOT_NULL(file);
 
     char data[] = "Hello, world!";
@@ -198,19 +200,22 @@ void test_PSRAM_3rdFile()
     TEST_ASSERT_EQUAL(13, file->getSize());
 
     char data2[14];
-    file->read(data2, 14);
+    file->restart();
+    file->read(data2, file->getSize());
+    data2[file->getSize()] = '\0';
 
     TEST_ASSERT_EQUAL_CHAR_ARRAY(data, data2, 14);
 }
 
 void test_PSRAM_read_next_cluster2()
 {
-    PSRAMFile *file = psram->open("testfile3", false);
+    PSRAMFile *file = psram->open("testfile3", F_READ, false);
     TEST_ASSERT_NOT_NULL(file);
 
     char data[] = "Hello, world!";
     char readData[14];
-    file->read(readData, 14);
+    file->read(readData, 13);
+    readData[13] = '\0';
 
     TEST_ASSERT_EQUAL_STRING(data, readData);
 
@@ -226,15 +231,14 @@ void test_PSRAM_read_next_cluster2()
 
 void test_file_create_no_space()
 {
-    PSRAMFile *file = psram->open("testfile4", true);
+    PSRAMFile *file = psram->open("testfile4", F_WRITE, true);
     TEST_ASSERT_NULL(file);
 }
 
 void test_write_file_no_space()
 {
-    PSRAMFile *file = psram->open("testfile3", false);
+    PSRAMFile *file = psram->open("testfile3", F_APPEND, false);
     TEST_ASSERT_NOT_NULL(file);
-    printf("File size: %d\n", file->getSize());
     char data[256];
     for (int i = 0; i < 256; i++)
     {
@@ -246,7 +250,74 @@ void test_write_file_no_space()
     data[255] = '\0';
     file->print(data);
 
-    // TEST_ASSERT_EQUAL(256, file->getSize());
+    TEST_ASSERT_EQUAL(256, file->getSize());
+}
+
+void test_file_open_close()
+{
+    PSRAMFile *file = psram->open("testfile2", F_READ, false);
+    TEST_ASSERT_NOT_NULL(file);
+    TEST_ASSERT_EQUAL(13, file->getSize());
+
+    file->close();
+    TEST_ASSERT_FALSE(file->isOpen());
+    char data[14];
+    data[0] = '\0';
+    file->read(data, file->getSize());
+    data[file->getSize()] = '\0';
+    TEST_ASSERT_EQUAL_STRING("", data); // can't read from a closed file
+
+    file->open(F_READ); // reopen the file
+    TEST_ASSERT_TRUE(file->isOpen());
+    file->read(data, file->getSize());
+    data[file->getSize()] = '\0';
+    TEST_ASSERT_EQUAL_STRING("Hello, world!", data);
+}
+
+void test_seek_read()
+{
+    PSRAMFile *file = psram->open("testfile2", F_READ, false);
+    TEST_ASSERT_NOT_NULL(file);
+    TEST_ASSERT_EQUAL(13, file->getSize());
+
+    char data[file->getSize() + 1];
+    file->seek(6);
+    file->read(data, file->getSize() - 6);
+    data[file->getSize() - 6] = '\0';
+    TEST_ASSERT_EQUAL_STRING(" world!", data);
+
+    file->seek(6, F_SEEK_END);
+    int rd = file->read(data, file->getSize());
+    data[rd] = '\0';
+    TEST_ASSERT_EQUAL_STRING("world!", data);
+
+    // NOT IMPLEMENTED
+    // file->seek(-9, F_SEEK_CUR);
+    // rd = file->read(data, file->getSize());
+    // data[rd] = '\0';
+    // TEST_ASSERT_EQUAL_STRING("lo, world!", data);
+}
+
+void test_seek_write()
+{
+    PSRAMFile *file = psram->open("testfile2", F_WRITE | F_READ, false);
+    TEST_ASSERT_NOT_NULL(file);
+    TEST_ASSERT_EQUAL(13, file->getSize());
+
+    char data[] = "Hello, world!";
+    file->print(data);
+
+    file->seek(7);
+    char data2[] = "everyone!";
+    file->print(data2);
+
+    TEST_ASSERT_EQUAL(16, file->getSize());
+
+    char readData[file->getSize() + 1];
+    file->restart();
+    file->read(readData, file->getSize());
+    readData[file->getSize()] = '\0';
+    TEST_ASSERT_EQUAL_STRING("Hello, everyone!", readData);
 }
 
 // ---
@@ -284,6 +355,9 @@ int main(int argc, char **argv)
     RUN_TEST(test_PSRAM_read_next_cluster2);
     RUN_TEST(test_file_create_no_space);
     RUN_TEST(test_write_file_no_space);
+    RUN_TEST(test_file_open_close);
+    RUN_TEST(test_seek_read);
+    RUN_TEST(test_seek_write);
 
     UNITY_END();
 }

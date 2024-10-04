@@ -7,7 +7,9 @@
 #include "../../src/RecordData/Logger.h"
 #include "../../src/Error/ErrorHandler.h"
 #include <string>
+#ifdef PIO_UNIT_TESTING
 #include <unity.h>
+#endif // PIO_UNIT_TESTING
 
 #define UNITY_INCLUDE_DOUBLE
 

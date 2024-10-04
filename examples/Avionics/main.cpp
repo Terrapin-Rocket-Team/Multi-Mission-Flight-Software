@@ -1,9 +1,9 @@
 #include <Arduino.h>
 #include "AvionicsState.h"
-#include "../src/BlinkBuzz/BlinkBuzz.h"
-#include "../src/Sensors/GPS/MAX_M10S.h"
-#include "../src/Sensors/IMU/BNO055.h"
-#include "../src/Sensors/Baro/BMP390.h"
+#include "../../src/BlinkBuzz/BlinkBuzz.h"
+#include "../../src/Sensors/GPS/MAX_M10S.h"
+#include "../../src/Sensors/IMU/BNO055.h"
+#include "../../src/Sensors/Baro/BMP390.h"
 #include "AvionicsKF.h"
 
 using namespace mmfs;

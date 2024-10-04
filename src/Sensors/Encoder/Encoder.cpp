@@ -30,4 +30,10 @@ namespace mmfs
         biasCorrectionMode = useBiasCorrection;
         return init();
     }
+
+    void Encoder::packData()
+    {
+        int offset = 0;
+        memcpy(packedData + offset, &currentRelativeSteps, sizeof(int));
+    }
 }

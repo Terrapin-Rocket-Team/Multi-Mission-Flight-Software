@@ -7,6 +7,7 @@ namespace mmfs
     {
         staticData = new char[60 + MAX_DIGITS_LAT_LON * 2 + MAX_DIGITS_FLOAT * 1];               // 60 chars for the string, 15 chars for the 2 floats, 12 chars for the float
         data = new char[MAX_DIGITS_LAT_LON * 2 + MAX_DIGITS_FLOAT * 4 + MAX_DIGITS_INT * 1 + 8]; // 15 chars for the 2 floats, 12 chars for the 4 floats, 10 chars for the time of day string, 10 for the int, 8 for the comma
+        setUpPackedData();
     }
 
     /*
@@ -150,5 +151,28 @@ namespace mmfs
         while (val < -180)
             val += 360;
         return val;
+    }
+
+    void GPS::packData()
+    {
+        _Float16 posz = _Float16(position.z());
+        _Float16 dispx = _Float16(displacement.x());
+        _Float16 dispy = _Float16(displacement.y());
+        _Float16 dispz = _Float16(displacement.z());
+        uint8_t fixQual = uint8_t(fixQual);
+        int offset = 0;
+        memcpy(packedData + offset, &position.x(), sizeof(double));
+        offset += sizeof(double);
+        memcpy(packedData + offset, &position.y(), sizeof(double));
+        offset += sizeof(double);
+        memcpy(packedData + offset, &posz, sizeof(_Float16));
+        offset += sizeof(_Float16);
+        memcpy(packedData + offset, &dispx, sizeof(_Float16));
+        offset += sizeof(_Float16);
+        memcpy(packedData + offset, &dispy, sizeof(_Float16));
+        offset += sizeof(_Float16);
+        memcpy(packedData + offset, &dispz, sizeof(_Float16));
+        offset += sizeof(_Float16);
+        memcpy(packedData + offset, &fixQual, sizeof(uint8_t));
     }
 }

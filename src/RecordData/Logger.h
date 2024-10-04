@@ -16,6 +16,7 @@
 #include "psram.h"
 #include "SdFat.h"
 #include "Arduino.h"
+#include "../Constants.h"
 
 /*
   Change the value of SD_CS_PIN if you are using SPI and
@@ -48,6 +49,7 @@ const uint8_t SD_CS_PIN = SDCARD_SS_PIN;
 
 namespace mmfs
 {
+    class State; // Forward declaration
 
     enum LogType
     {
@@ -94,17 +96,16 @@ namespace mmfs
 #endif // SD_FAT_TYPE
 
     public:
-        Logger(uint16_t bufferSize = 25000, int bufferInterval = 300);
+        Logger(uint16_t bufferTime = 30, int bufferInterval = 30, bool packData = true); // store 30 seconds, print to SD every 30 seconds
         virtual ~Logger();
 
-        virtual void init();
+        virtual bool init();
 
         virtual bool isPsramReady() const;
         virtual bool isSdCardReady() const;
         virtual bool isReady() const;
 
-        /** Takes the pointer to a null terminated character array and prints it to the appropriate destination based on the mode */
-        void recordFlightData(char *data);
+        void recordFlightData(State &state); // records  flight data
 
         void recordLogData(LogType type, const char *data, Dest dest = BOTH);
 
@@ -113,6 +114,19 @@ namespace mmfs
         void setRecordMode(Mode mode);
 
         void dumpData();
+
+    private:
+        Mode mode;
+        bool packData = true;
+        uint16_t bufferTime;
+        int bufferInterval = 0;
+        char *logFileName = nullptr;        // Name of the log file
+        char *flightDataFileName = nullptr; // Name of the flight data file
+        bool sdReady = false;               // Whether the SD card has been initialized
+        bool psramReady = false;            // Whether the PSRAM has been initialized
+        PSRAMFile *ramFlightDataFile = nullptr; // Pointer to the flight data file
+        PSRAMFile *ramLogFile = nullptr;        // Pointer to the log file
+        PSRAMFile *ramBufferFile = nullptr;     // Pointer to the buffer file
     };
 } // namespace mmfs
 

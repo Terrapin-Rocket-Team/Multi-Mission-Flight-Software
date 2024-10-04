@@ -10,6 +10,8 @@
 
 #define SdSpiConfig(int1, int2, int3) 1
 
+#include <cstdint>
+
 class FsFile
 {
 public:

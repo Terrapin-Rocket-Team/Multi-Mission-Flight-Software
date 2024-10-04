@@ -67,9 +67,12 @@ namespace mmfs
         char *csvHeader;
         char *dataString;
         char *stateString;
+        uint8_t *packedData;
+        int packedDataSize;
 
         virtual void setCsvHeader();
         virtual void setDataString();
+        virtual void setPackedData();
 
         virtual void updateSensors();
 

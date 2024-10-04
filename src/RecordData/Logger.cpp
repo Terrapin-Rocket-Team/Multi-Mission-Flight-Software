@@ -1,153 +1,164 @@
 #include "Logger.h"
+#include "../State/State.h"
+#include "PSRAMFile.h"
 
 using namespace mmfs;
-
-static constexpr int NAME_SIZE = 24;
-// SdFs sd;
-// FsFile logFile;  // File object to use for logging
-char logFileName[NAME_SIZE];        // Name of the log file
-char flightDataFileName[NAME_SIZE]; // Name of the flight data file
-bool sdReady = false;               // Whether the SD card has been initialized
 
 static const char *logTypeStrings[] = {"LOG", "ERROR", "WARNING", "INFO"};
 
 // Constructor for Logger class
-Logger::Logger(GroundDest groundDest, uint16_t bufferSize, int bufferInterval) {
-
-    this->groundDest = groundDest;
-    this->bufferSize = bufferSize;
+Logger::Logger(uint16_t bufferTime, int bufferInterval, bool packData)
+{
+    this->packData = packData;
+    this->bufferTime = bufferTime;
     this->bufferInterval = bufferInterval;
-    bufIdx = 0;
-    bufCount = 0;
-    dumped = false;
 }
 
-// Initializes the logger
-void Logger::init() {
+// Destructor for Logger class
+Logger::~Logger()
+{
+}
 
+// Returns whether the PSRAM is ready
+bool Logger::isPsramReady() const
+{
+    return false;
+}
 
-    if (sdCard.init()) {
-        sdCard.addFile("Log.txt");
-        sdCard.addFile("FlightData.csv");
-        sdCard.selectFile(0);       // since we dk the file name, we select the first file (Log.txt)
-        SDready = true;
+// Returns whether the SD card is ready
+bool Logger::isSdCardReady() const
+{
+    return false;
+}
+
+// Returns whether the logger is ready
+bool Logger::isReady() const
+{
+    return false;
+}
+
+// Initializes the logger, returning whether SD card is ready
+bool Logger::init()
+{
+
+    if (sd.begin(SD_CONFIG) || sd.restart())
+    {
+        sdReady = true;
+        char fileName[MAX_FILE_NAME_SIZE];
+        int fileNo = 0;
+        bool exists = true;
+        while (exists)
+        {
+            snprintf(fileName, MAX_FILE_NAME_SIZE, "%d_%s", ++fileNo, "FlightData.csv");
+            exists = sd.exists(fileName);
+        }
+        flightDataFile = sd.open(fileName, FILE_WRITE);
+        flightDataFile.close();
+        snprintf(fileName, MAX_FILE_NAME_SIZE, "%d_%s", fileNo, "Log.txt");
+        logFile = sd.open(fileName, FILE_WRITE);
+        logFile.close();
+    }
+    if (psram->init()){
+        ramLogFile = psram->open("Log", true);
+        ramFlightDataFile = psram->open("FlightData", true);
+        ramBufferFile = psram->open("Buffer", true);
+        if(ramLogFile && ramFlightDataFile && ramBufferFile){
+            psramReady = true;
+        }
     }
 
-    RAMready = ram.init();
-
-    setRecordMode(GROUND);
+    recordLogData(INFO_, "This is where the version # would go");
+    return sdReady;
 }
 
 // Records flight data to the SD card or PSRAM
-void Logger::recordFlightData(char *data) {
-    if (!sdCard.isReady()) {
-        return;
-    }
+void Logger::recordFlightData(State &state)
+{
 
-    if (mode == GROUND) {
-        if ((groundDest == BUFFER || groundDest == ALTERNATING_BOTH) && ram.isReady()) {
-            // Use PSRAM as a circular buffer
-            if (bufIdx + strlen(data) + 1 >= bufferSize) {
-                bufIdx = 0;
-                //ram.seek(0); // Seek to the beginning if we are going to overwrite the buffer
-            }
-            //ram.println(data);
-            bufIdx += strlen(data) + 1;
-            bufCount++;
-
-            if (groundDest == ALTERNATING_BOTH && bufCount >= bufferInterval) {
-                sdCard.selectFile(1);
-                sdCard.println(data);
-                sdCard.selectFile(0);
-                bufCount = 0;
-            }
-        } else {
-            sdCard.selectFile(1);
-            sdCard.println(data);
-            sdCard.selectFile(0);
-        }
-    } else if (ram.isReady()) {
-        //ram.println(data);
-    } else if (sdCard.isReady()) {
-        sdCard.selectFile(1);
-        sdCard.println(data);
-        sdCard.selectFile(0);
-    }
 }
 
 // Records log data with a timestamp and type
-void Logger::recordLogData(LogType type, const char *data, Dest dest) {
+void Logger::recordLogData(LogType type, const char *data, Dest dest)
+{
     recordLogData(millis() / 1000.0, type, data, dest);
 }
 
 // Records log data with a specific timestamp, type, and destination
-void Logger::recordLogData(double timeStamp, LogType type, const char *data, Dest dest) {
+void Logger::recordLogData(double timeStamp, LogType type, const char *data, Dest dest)
+{
     int size = 15 + 7; // 15 for the timestamp and extra chars, 7 for the log type
     char logPrefix[size];
     snprintf(logPrefix, size, "%.3f - [%s] ", timeStamp, logTypeStrings[type]);
 
-    if (dest == BOTH || dest == TO_USB) {
+    if (dest == BOTH || dest == TO_USB)
+    {
         Serial.print(logPrefix);
         Serial.println(data);
     }
-    if ((dest == BOTH || dest == TO_FILE) && sdCard.isReady()) {
-        if (mode == GROUND) {
-            sdCard.selectFile(0);
-            sdCard.print(logPrefix);
-            sdCard.println(data);
-        } else if (ram.isReady()) {
-            //ram.print(logPrefix, false);
-            //ram.println(data, false);
-        } else if (sdCard.isReady()) {
-            sdCard.selectFile(0);
-            sdCard.print(logPrefix);
-            sdCard.println(data);
+    if ((dest == BOTH || dest == TO_FILE) && sdReady)
+    {
+        if (mode == GROUND)
+        {
+            flightDataFile.open(flightDataFile.)
+        }
+        else if (psramReady)
+        {
+            // ram.print(logPrefix, false);
+            // ram.println(data, false);
+        }
+        else if (sdReady)
+        {
+            // sdCard.selectFile(0);
+            // sdCard.print(logPrefix);
+            // sdCard.println(data);
         }
     }
 }
 
 // Sets the recording mode and handles necessary transitions
-void Logger::setRecordMode(Mode m) {
-    if (mode == FLIGHT && m == GROUND) {
-        // Dump the PSRAM to the SD card
-        dumpData();
+void Logger::setRecordMode(Mode m)
+{
+    // if (mode == FLIGHT && m == GROUND) {
+    //     // Dump the PSRAM to the SD card
+    //     dumpData();
 
-        if (!ram.isReady())
-            ram.init();
+    //     if (!ram.isReady())
+    //         ram.init();
 
-        // Reinitialize files on mode change
-        if (sdCard.isReady()) {
-            sdCard.addFile("FlightData.csv");
-            sdCard.selectFile(1);
-        }
-        if (sdCard.isReady()) {
-            sdCard.addFile("Log.txt");
-            sdCard.selectFile(0);
-        }
-    }
-    mode = m;
+    //     // Reinitialize files on mode change
+    //     if (sdCard.isReady()) {
+    //         sdCard.addFile("FlightData.csv");
+    //         sdCard.selectFile(1);
+    //     }
+    //     if (sdCard.isReady()) {
+    //         sdCard.addFile("Log.txt");
+    //         sdCard.selectFile(0);
+    //     }
+    // }
+    // mode = m;
 }
 
 // Dumps data from PSRAM to the SD card
-void Logger::dumpData() {
-    char buffer[512];
-    int bytesRead = 0;
+void Logger::dumpData()
+{
+    // char buffer[512];
+    // int bytesRead = 0;
 
-    if (ram.isReady() && sdCard.isReady()) {
-        // Dump PSRAM to FlightData.csv
-        sdCard.selectFile(1);
-        //while ((bytesRead = ram.read(buffer, 512)) > 0) {
-            //sdCard.write(buffer, bytesRead);
-        //}
-    }
+    // if (ram.isReady() && sdCard.isReady()) {
+    //     // Dump PSRAM to FlightData.csv
+    //     sdCard.selectFile(1);
+    //     //while ((bytesRead = ram.read(buffer, 512)) > 0) {
+    //         //sdCard.write(buffer, bytesRead);
+    //     //}
+    // }
 
-    if (ram.isReady() && sdCard.isReady()) {
-        // Dump log data from the bottom of the PSRAM to Log.txt
-        sdCard.selectFile(0);
-        //ram.seekFromBottom(0);
-        //while ((bytesRead = ram.readFromBottom(buffer, 512)) > 0) {
-            //sdCard.write(buffer, bytesRead);
-        //}
-        dumped = true;
-    }
+    // if (ram.isReady() && sdCard.isReady()) {
+    //     // Dump log data from the bottom of the PSRAM to Log.txt
+    //     sdCard.selectFile(0);
+    //     //ram.seekFromBottom(0);
+    //     //while ((bytesRead = ram.readFromBottom(buffer, 512)) > 0) {
+    //         //sdCard.write(buffer, bytesRead);
+    //     //}
+    //     dumped = true;
+    // }
 }

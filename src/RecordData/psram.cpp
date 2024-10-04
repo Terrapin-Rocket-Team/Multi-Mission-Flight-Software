@@ -8,13 +8,9 @@ using namespace mmfs;
 PSRAM::PSRAM()
 {
     for (int i = 0; i < numClusters; i++)
-    {
         clusterMap[i] = 0;
-    }
     for (int i = 0; i < MAX_PSRAM_FILES; i++)
-    {
         fileMap[i] = 0;
-    }
 }
 
 PSRAM::~PSRAM()
@@ -38,37 +34,48 @@ bool PSRAM::isReady() const
 void PSRAM::writeFile(PSRAMFile &file, const char *data, int size)
 {
     while (size > 0)
-    {
-        int clusterOffset = file.endOfFile % PSRAM_CLUSTER_SIZE;
-        int spaceInCluster = PSRAM_CLUSTER_SIZE - clusterOffset;
+    {                                                            // cluster being written to in this cycle of the loop
+        int clusterOffset = file.cursor % PSRAM_CLUSTER_SIZE;    // how far into the cluster the cursor is (in bytes)
+        int spaceInCluster = PSRAM_CLUSTER_SIZE - clusterOffset; // how much space is left in the cluster (in bytes)
 
         // Write as much as will fit in the current cluster
-        int bytesToWrite = min(spaceInCluster, size);
-        write(file.currentCluster * PSRAM_CLUSTER_SIZE + clusterOffset, data, bytesToWrite);
+        int bytesToWrite = min(spaceInCluster, size);                                       // how many bytes will be written in this cycle of the loop
+        write(file.clusterCursor * PSRAM_CLUSTER_SIZE + clusterOffset, data, bytesToWrite); // write the data to the PSRAM
 
         // Update file position and remaining data
-        file.endOfFile += bytesToWrite;
         data += bytesToWrite;
         size -= bytesToWrite;
-        file.size += bytesToWrite;
+
+        file.cursor += bytesToWrite;
+        if (file.clusterCursor == file.eofCluster) // if we're writing to the cluster containing the EOF
+        {
+            if (file.cursor > file.endOfFile)
+            {
+                file.size += file.cursor - file.endOfFile;
+                file.endOfFile = file.cursor;
+            }
+        }
 
         // If the current cluster is full, move to the next one
-        if (file.endOfFile % PSRAM_CLUSTER_SIZE == 0)
+        if (file.cursor % PSRAM_CLUSTER_SIZE == 0)
         {
-            uint16_t nextCluster = getNextFreeCluster(file.currentCluster);
+            uint8_t nextCluster = getNextFreeCluster(file.eofCluster);
 
-            if (nextCluster == (uint16_t)-1) // No more free clusters (out of space)
-                return;            // TODO: Handle this case
-            else{
-                uint16_t ttt = nextCluster;
-                uint16_t ttt2 = (uint16_t)-1;
-                printf("Next cluster: %hd\n", nextCluster);
-                printf("-1: %hd\n", (uint16_t)-1);
+            if (nextCluster == (uint8_t)-1) // No more free clusters (out of space)
+                return;                     // TODO: Handle this case
+
+            // Change this cluster's next cluster to the new one, preserving the previous cluster
+            clusterMap[file.eofCluster] = (clusterMap[file.eofCluster] & 0xFF000000) | (nextCluster << 16) | file.id;
+            // set the next cluster's previous cluster to the current cluster
+            clusterMap[nextCluster] = (file.eofCluster << 24) | (0xFF << 16) | file.id; // there is no next cluster
+            if (size > 0)
+            {
+                // set eof to the address of nextCluster so it doesnt get left behind in this one as we continue writing
+                file.endOfFile = nextCluster * PSRAM_CLUSTER_SIZE;
+                file.clusterCursor = nextCluster;
+                file.eofCluster = nextCluster;
+                file.cursor = nextCluster * PSRAM_CLUSTER_SIZE;
             }
-
-            clusterMap[file.currentCluster] = nextCluster << 16 | file.id;
-            file.currentCluster = nextCluster;
-            clusterMap[file.currentCluster] = (0xFFFF << 16) | file.id; // there is no next cluster
         }
     }
 }
@@ -80,7 +87,7 @@ void PSRAM::write(uintptr_t address, const char *data, int size)
         *((char *)(PSRAM_STARTING_ADDRESS + address + i)) = data[i];
 }
 
-uint16_t PSRAM::getNextFreeCluster(uint16_t currentCluster)
+uint8_t PSRAM::getNextFreeCluster(uint8_t currentCluster)
 {
     for (int i = 0; i < numClusters; i++)
     {                                                         // Loop through numClusters steps
@@ -88,10 +95,10 @@ uint16_t PSRAM::getNextFreeCluster(uint16_t currentCluster)
         if (clusterMap[nextCluster] == 0)
             return nextCluster;
     }
-    return -1; // No free clusters (0xFFFF in uint16_t)a
+    return -1; // No free clusters (0xFF in uint8_t)
 }
 
-PSRAMFile *PSRAM::open(const char *name, bool create)
+PSRAMFile *PSRAM::open(const char *name, uint8_t mode, bool create)
 {
     // Find the file in the fileMap
     for (int i = 0; i < MAX_PSRAM_FILES; i++)
@@ -100,17 +107,23 @@ PSRAMFile *PSRAM::open(const char *name, bool create)
         {
             PSRAMFile *file = (PSRAMFile *)fileMap[i];
             if (strcmp(file->getName(), name) == 0)
+            {
+                file->open(mode);
                 return file;
+            }
         }
-        else if (create && getNextFreeCluster(0) != (uint16_t)-1) // Create a new file if it doesn't exist
+        else if (create && getNextFreeCluster(0) != (uint8_t)-1) // Create a new file if it doesn't exist
         {
             PSRAMFile *file = new PSRAMFile(name);
-            file->id = i + 1;
+            file->id = i;
             file->startCluster = getNextFreeCluster(0);
-            file->currentCluster = file->startCluster;
+            file->eofCluster = file->startCluster;
             file->clusterCursor = file->startCluster;
+            file->cursor = file->startCluster * PSRAM_CLUSTER_SIZE;
+            file->endOfFile = file->cursor;
             fileMap[i] = (uintptr_t)file;
-            clusterMap[file->startCluster] = (0xFFFF << 16) | file->id; // there is no next cluster yet
+            clusterMap[file->startCluster] = (0xFFFF << 16) | file->id; // there is no next or pervious cluster yet
+            file->open(mode);
             return file;
         }
         else
@@ -119,55 +132,84 @@ PSRAMFile *PSRAM::open(const char *name, bool create)
     return nullptr; // No free file slots
 }
 
-PSRAMFile *PSRAM::open(int index)
+PSRAMFile *PSRAM::open(int index, uint8_t mode)
 {
-    if (index < 1 || index > MAX_PSRAM_FILES)
+    if (index < 0 || index >= MAX_PSRAM_FILES)
         return nullptr;
 
-    if (fileMap[index - 1] != 0)
-        return (PSRAMFile *)fileMap[index - 1];
+    if (fileMap[index] != 0)
+    {
+        PSRAMFile *file = (PSRAMFile *)fileMap[index];
+        file->open(mode);
+        return file;
+    }
 
     return nullptr;
 }
 
 char *PSRAM::readNextFileCluster(PSRAMFile &file, int &size)
 {
-    if(file.clusterCursor == 0xFFFF){
+    if (file.clusterCursor == 0xFF)
+    {
         size = 0;
         return nullptr;
     }
-    if (file.currentCluster == file.clusterCursor)
+    if (file.eofCluster == file.clusterCursor)
         size = file.endOfFile % PSRAM_CLUSTER_SIZE;
     else
         size = PSRAM_CLUSTER_SIZE;
-    uintptr_t curCluster = file.clusterCursor;
+    uint8_t curCluster = file.clusterCursor;
 
-    if (file.clusterCursor == file.currentCluster) // If we're at the end of the file, start over
-        file.clusterCursor = 0xFFFF;
+    if (file.clusterCursor == file.eofCluster) // If we're at the end of the file, indicate it
+        file.clusterCursor = 0xFF;
     else
         file.clusterCursor = clusterMap[file.clusterCursor] >> 16;
 
     return (char *)(PSRAM_STARTING_ADDRESS + curCluster * PSRAM_CLUSTER_SIZE);
 }
 
-void PSRAM::readFile(PSRAMFile &file, char *data, int size)
+int PSRAM::readFile(PSRAMFile &file, char *data, int size)
 {
-    uintptr_t start = PSRAM_STARTING_ADDRESS + file.startCluster * PSRAM_CLUSTER_SIZE;
-    uint16_t nextCluster = clusterMap[file.startCluster] >> 16;
+    uintptr_t start = PSRAM_STARTING_ADDRESS + file.cursor;
+    uint8_t nextCluster = clusterMap[file.clusterCursor] >> 16;
     int i = 0;
-    for (i; i < size && i < file.size; i++)
+    for (i; i < size && !(file.clusterCursor == file.eofCluster && file.cursor >= file.endOfFile); i++)
     {
         data[i] = *((char *)(start + i % PSRAM_CLUSTER_SIZE));
-        if ((i+1) % PSRAM_CLUSTER_SIZE == 0)
+        file.cursor++;
+        if ((i + 1) % PSRAM_CLUSTER_SIZE == 0)
         {
-            if (nextCluster == 0xFFFF)
+            if (nextCluster == 0xFF)
                 break; // No more clusters for this file)
             start = PSRAM_STARTING_ADDRESS + nextCluster * PSRAM_CLUSTER_SIZE;
             nextCluster = clusterMap[nextCluster] >> 16;
+            file.clusterCursor = nextCluster;
+            file.cursor = nextCluster * PSRAM_CLUSTER_SIZE;
         }
     }
-    if (i < size - 1)
-        data[i] = '\0';
-    else
-        data[size - 1] = '\0';
+    return i;
+}
+
+void PSRAM::seekFile(PSRAMFile &file, int offset, uint8_t origin)
+{
+    switch (origin)
+    {
+    case F_SEEK_SET:
+    {
+        offset = min(file.size, max(0, offset));
+        int numClusters = offset / PSRAM_CLUSTER_SIZE;
+        file.clusterCursor = file.startCluster;
+        for (int i = 0; i < numClusters; i++)
+            file.clusterCursor = clusterMap[file.clusterCursor] >> 16;
+        file.cursor = file.clusterCursor * PSRAM_CLUSTER_SIZE + offset % PSRAM_CLUSTER_SIZE;
+        break;
+    }
+    // case F_SEEK_CUR:
+    // {
+    //     break;
+    // }
+    case F_SEEK_END:
+        seekFile(file, file.size - offset, F_SEEK_SET);
+        break;
+    }
 }

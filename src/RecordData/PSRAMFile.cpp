@@ -11,28 +11,38 @@ PSRAMFile::PSRAMFile(const char *name)
 
 void PSRAMFile::write(uint8_t *data, int size)
 {
+    if (!_open || openMode == F_READ)
+        return;
     psram->writeFile(*this, (const char *)data, size);
 }
 
 void PSRAMFile::print(const char *data)
 {
+    if (!_open || openMode == F_READ)
+        return;
     psram->writeFile(*this, data, strlen(data));
+
 }
 
 void PSRAMFile::println(const char *data)
 {
+    if (!_open || openMode == F_READ)
+        return;
     psram->writeFile(*this, data, strlen(data));
     psram->writeFile(*this, "\n", 1);
 }
 
-void PSRAMFile::read(char *data, int size)
+int PSRAMFile::read(char *data, int size)
 {
-    psram->readFile(*this, data, size);
+    if (!_open || !(openMode & F_READ))
+        return 0;
+    int i = psram->readFile(*this, data, size);
+    return i;
 }
 
 void PSRAMFile::readTo(char *data, char endChar)
 {
-// unimplemented
+    // unimplemented
 }
 
 void PSRAMFile::setName(const char *name)
@@ -53,5 +63,40 @@ int PSRAMFile::getSize()
 void PSRAMFile::restart()
 {
     clusterCursor = startCluster;
+    cursor = startCluster * PSRAM_CLUSTER_SIZE;
 }
 
+void PSRAMFile::toEnd()
+{
+    cursor = endOfFile;
+    clusterCursor = eofCluster;
+}
+
+void PSRAMFile::seek(int offset, uint8_t origin)
+{
+    psram->seekFile(*this, offset, origin);
+}
+
+void PSRAMFile::close()
+{
+    _open = false;
+}
+
+void PSRAMFile::open(uint8_t mode)
+{
+    openMode = mode;
+    if (mode & F_APPEND)
+    {
+        toEnd();
+    }
+    else if ((mode & F_READ) || (mode & F_WRITE))
+    {
+        restart();
+    }
+    _open = true;
+}
+
+bool PSRAMFile::isOpen() const
+{
+    return _open;
+}

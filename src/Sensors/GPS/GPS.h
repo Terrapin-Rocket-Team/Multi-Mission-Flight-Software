@@ -25,7 +25,15 @@ namespace mmfs
         virtual bool begin(bool useBiasCorrection = true) override;
 
         virtual const char *getTypeString() const override { return "GPS"; }
-        virtual SensorType getType() const override { return GPS_; }
+        virtual const SensorType getType() const override { return GPS_; }
+
+        virtual const int getNumPackedDataPoints() const override { return 7; }
+        virtual const PackedType *getPackingOrder() const override
+        {
+            static const PackedType order[] = {DOUBLE, DOUBLE, FLOAT, FLOAT, FLOAT, FLOAT, BYTE};
+            return order;
+        }
+        virtual void packData();
 
     protected:
         GPS();

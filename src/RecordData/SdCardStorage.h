@@ -1,7 +1,6 @@
 #ifndef SD_CARD_STORAGE_H
 #define SD_CARD_STORAGE_H
 
-#include "StorageType.h"
 #include "SdFat.h"
 #include <cstring> // For strncpy and strcmp
 #include <Arduino.h>
@@ -17,7 +16,7 @@ extern FsFile flightDataFile;
 // could always reference with mmfs::SdCard,
 // but this is more convenient if you're using
 // `using namespace mmfs;`
-class SdCardStorage : public StorageFile
+class SdCardStorage
 {
 private:
     static constexpr int NAME_SIZE = 24;
@@ -41,19 +40,19 @@ public:
     SdCardStorage();
     ~SdCardStorage();
 
-    bool init() override;
+    bool init();
     bool init(const char *fileSuffix);
 
-    bool isReady() const override;
+    bool isReady() const;
 
-    void write(char *data, int size) override;
+    void write(char *data, int size);
     void print(const char *data);
     void println(const char *data);
 
-    int read(char *data, int size) override;
-    int readTo(char *data, char endChar) override;
+    int read(char *data, int size);
+    int readTo(char *data, char endChar);
 
-    bool seek(uint64_t offset) override;
+    bool seek(uint64_t offset);
 
     bool addFile(const char* fileName);
     bool selectFile(const char* fileName);

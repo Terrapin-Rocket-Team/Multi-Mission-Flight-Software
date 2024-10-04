@@ -21,15 +21,24 @@ namespace mmfs
         virtual const char *getDataString() const override;
         virtual const char *getStaticDataString() const override;
         virtual const char *getTypeString() const override { return "Barometer"; }
-        virtual SensorType getType() const override { return BAROMETER_; }
+        virtual const SensorType getType() const override { return BAROMETER_; }
         virtual void update() override;
         virtual bool begin(bool useBiasCorrection = true) override;
+
+        virtual const int getNumPackedDataPoints() const override { return 4; }
+        virtual const PackedType *getPackingOrder() const override
+        {
+            static const PackedType order[] = {FLOAT, FLOAT, FLOAT, FLOAT};
+            return order;
+        }
+        virtual void packData();
 
     protected:
         Barometer()
         {                                                     // Protected constructor to prevent instantiation
             staticData = new char[25 + MAX_DIGITS_FLOAT * 1]; // 25 chars for the string, 12 chars for 1x float
             data = new char[MAX_DIGITS_FLOAT * 4 + 5];        // 12 chars for the 4x floats, 5 for the comma/null/buffer
+            setUpPackedData();
         }
 
         // Hardware data
