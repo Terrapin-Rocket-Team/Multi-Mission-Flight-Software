@@ -99,7 +99,7 @@ void Logger::recordLogData(double timeStamp, LogType type, const char *data, Des
     {
         if (mode == GROUND)
         {
-            flightDataFile.open(flightDataFile.)
+           // flightDataFile.open(flightDataFile.)
         }
         else if (psramReady)
         {

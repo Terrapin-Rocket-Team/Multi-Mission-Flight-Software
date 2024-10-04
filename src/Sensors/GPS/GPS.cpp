@@ -155,24 +155,24 @@ namespace mmfs
 
     void GPS::packData()
     {
-        _Float16 posz = _Float16(position.z());
-        _Float16 dispx = _Float16(displacement.x());
-        _Float16 dispy = _Float16(displacement.y());
-        _Float16 dispz = _Float16(displacement.z());
+        float posz = float(position.z());
+        float dispx = float(displacement.x());
+        float dispy = float(displacement.y());
+        float dispz = float(displacement.z());
         uint8_t fixQual = uint8_t(fixQual);
         int offset = 0;
         memcpy(packedData + offset, &position.x(), sizeof(double));
         offset += sizeof(double);
         memcpy(packedData + offset, &position.y(), sizeof(double));
         offset += sizeof(double);
-        memcpy(packedData + offset, &posz, sizeof(_Float16));
-        offset += sizeof(_Float16);
-        memcpy(packedData + offset, &dispx, sizeof(_Float16));
-        offset += sizeof(_Float16);
-        memcpy(packedData + offset, &dispy, sizeof(_Float16));
-        offset += sizeof(_Float16);
-        memcpy(packedData + offset, &dispz, sizeof(_Float16));
-        offset += sizeof(_Float16);
+        memcpy(packedData + offset, &posz, sizeof(float));
+        offset += sizeof(float);
+        memcpy(packedData + offset, &dispx, sizeof(float));
+        offset += sizeof(float);
+        memcpy(packedData + offset, &dispy, sizeof(float));
+        offset += sizeof(float);
+        memcpy(packedData + offset, &dispz, sizeof(float));
+        offset += sizeof(float);
         memcpy(packedData + offset, &fixQual, sizeof(uint8_t));
     }
 }

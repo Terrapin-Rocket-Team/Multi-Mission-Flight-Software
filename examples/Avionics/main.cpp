@@ -20,6 +20,7 @@ Sensor *sensors[3] = {&gps, &imu055, &baro};
 AvionicsKF kfilter;
 Logger logger;
 AvionicsState avionicsState(sensors, 3, &kfilter);
+PSRAM *psram;
 
 const int SENSOR_BIAS_CORRECTION_DATA_LENGTH = 2;
 const int SENSOR_BIAS_CORRECTION_DATA_IGNORE = 1;
@@ -30,7 +31,7 @@ const int UPDATE_INTERVAL = 1000.0 / UPDATE_RATE;
 
 void setup()
 {
-
+    psram = new PSRAM();
     logger.init();
 
 

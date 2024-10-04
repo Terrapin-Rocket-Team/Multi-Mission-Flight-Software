@@ -122,11 +122,11 @@ namespace mmfs
 
     void Barometer::packData()
     {
-        int flt = sizeof(_Float16);
-        _Float16 p = _Float16(pressure);
-        _Float16 t = _Float16(temp);
-        _Float16 a = _Float16(altitudeASL);
-        _Float16 g = _Float16(altitudeAGL);
+        int flt = sizeof(float);
+        float p = float(pressure);
+        float t = float(temp);
+        float a = float(altitudeASL);
+        float g = float(altitudeAGL);
         memcpy(packedData, &p, flt);
         memcpy(packedData + flt, &t, flt);
         memcpy(packedData + 2 * flt, &a, flt);

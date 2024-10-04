@@ -173,7 +173,7 @@ int PSRAM::readFile(PSRAMFile &file, char *data, int size)
     uintptr_t start = PSRAM_STARTING_ADDRESS + file.cursor;
     uint8_t nextCluster = clusterMap[file.clusterCursor] >> 16;
     int i = 0;
-    for (i; i < size && !(file.clusterCursor == file.eofCluster && file.cursor >= file.endOfFile); i++)
+    for (; i < size && !(file.clusterCursor == file.eofCluster && file.cursor >= file.endOfFile); i++)
     {
         data[i] = *((char *)(start + i % PSRAM_CLUSTER_SIZE));
         file.cursor++;
