@@ -12,7 +12,6 @@ namespace mmfs
         stateString = nullptr;
         dataString = nullptr;
         csvHeader = nullptr;
-        numSensors = 0;
         this->maxNumSensors = numSensors;
         this->sensors = sensors;
         recordOwnFlightData = stateRecordsOwnData;
