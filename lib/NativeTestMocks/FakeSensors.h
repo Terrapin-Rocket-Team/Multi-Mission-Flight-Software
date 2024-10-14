@@ -78,16 +78,23 @@ public:
     FakeIMU() : IMU() { initialized = true; setName("FakeIMU"); }
     ~FakeIMU() {}
 
-    void read() override { }
-    void set(Vector<3> acc, Vector<3> mag, Vector<3> gyro)
+    void read() override 
     {
-        measuredAcc = acc;
-        measuredMag = mag;
-        measuredGyro = gyro;
+
+    }
+    void set(Vector<3> acc, Vector<3> gyro, Vector<3> mag)
+    {
+        accelerationVec = acc;
+        angularVelocity = gyro;
+        magField = mag;
     }
 
     bool init() override
     {
+        accelerationVec = Vector<3>{0,0,0};
+        angularVelocity = Vector<3>{0,0,0};
+        magField = Vector<3>{0,0,0};
+        orientation = Quaternion{1,0,0,0};
         return initialized;
     }
 };
