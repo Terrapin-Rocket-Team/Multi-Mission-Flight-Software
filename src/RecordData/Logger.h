@@ -9,8 +9,6 @@
 #ifndef LOGGER_H
 #define LOGGER_H
 
-// SD_FAT_TYPE = 0 for SdFat/File as defined in SdFatConfig.h,
-// 1 for FAT16/FAT32, 2 for exFAT, 3 for FAT16/FAT32 and exFAT.
 #define SD_FAT_TYPE 3
 
 #include "psram.h"
@@ -72,40 +70,31 @@ namespace mmfs
         FLIGHT
     };
 
+    enum GroundMode
+    {
+        SD_,
+        PSRAM_,
+        ALTERNATE_
+    };
+
     class Logger
     {
     private:
-#if SD_FAT_TYPE == 0
-        SdFat sd;
-        File logFile;
-        File flightDataFile;
-#elif SD_FAT_TYPE == 1
-        SdFat32 sd;
-        File32 logFile;
-        File32 flightDataFile;
-#elif SD_FAT_TYPE == 2
-        SdExFat sd;
-        ExFile logFile;
-        ExFile flightDataFile;
-#elif SD_FAT_TYPE == 3
         SdFs sd;
         FsFile logFile;
         FsFile flightDataFile;
-#else // SD_FAT_TYPE
-#error Invalid SD_FAT_TYPE
-#endif // SD_FAT_TYPE
 
     public:
-        Logger(uint16_t bufferTime = 30, int bufferInterval = 30, bool packData = true); // store 30 seconds, print to SD every 30 seconds
+        Logger(uint16_t bufferTime = 30, int bufferInterval = 30, bool packData = true, GroundMode mode = ALTERNATE_); // store 30 seconds, print to SD every 30 seconds
         virtual ~Logger();
 
-        virtual bool init();
+        virtual bool init(State *state);
 
         virtual bool isPsramReady() const;
         virtual bool isSdCardReady() const;
         virtual bool isReady() const;
 
-        void recordFlightData(State &state); // records  flight data
+        void recordFlightData(); // records  flight data
 
         void recordLogData(LogType type, const char *data, Dest dest = BOTH);
 
@@ -117,16 +106,23 @@ namespace mmfs
 
     private:
         Mode mode;
+        State *state;
+        GroundMode groundMode;
         bool packData = true;
         uint16_t bufferTime;
         int bufferInterval = 0;
-        char *logFileName = nullptr;        // Name of the log file
-        char *flightDataFileName = nullptr; // Name of the flight data file
-        bool sdReady = false;               // Whether the SD card has been initialized
-        bool psramReady = false;            // Whether the PSRAM has been initialized
+        char *logFileName = nullptr;            // Name of the log file
+        char *flightDataFileName = nullptr;     // Name of the flight data file
+        bool sdReady = false;                   // Whether the SD card has been initialized
+        bool psramReady = false;                // Whether the PSRAM has been initialized
         PSRAMFile *ramFlightDataFile = nullptr; // Pointer to the flight data file
         PSRAMFile *ramLogFile = nullptr;        // Pointer to the log file
         PSRAMFile *ramBufferFile = nullptr;     // Pointer to the buffer file
+
+        int numBufferLines = 0;
+        int bufferIterations = 0;
+
+        void unpackData(char *dest);
     };
 } // namespace mmfs
 

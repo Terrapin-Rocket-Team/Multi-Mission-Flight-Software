@@ -1,10 +1,7 @@
 #include <Arduino.h>
 #include "AvionicsState.h"
-#include "../../src/BlinkBuzz/BlinkBuzz.h"
-#include "../../src/Sensors/GPS/MAX_M10S.h"
-#include "../../src/Sensors/IMU/BNO055.h"
-#include "../../src/Sensors/Baro/BMP390.h"
 #include "AvionicsKF.h"
+#include "MMFS.h"
 
 using namespace mmfs;
 const int BUZZER_PIN = 33;
@@ -32,7 +29,7 @@ const int UPDATE_INTERVAL = 1000.0 / UPDATE_RATE;
 void setup()
 {
     psram = new PSRAM();
-    logger.init();
+    logger.init(avionicsState);
 
 
     if (!(logger.isSdCardReady()))

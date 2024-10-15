@@ -20,7 +20,7 @@ void PSRAMFile::print(const char *data)
 {
     if (!_open || openMode == F_READ)
         return;
-    psram->writeFile(*this, data, strlen(data));
+    psram->writeFile(*this, data, strlen(data)); // TODO: avoid 2x loops using a while loop
 
 }
 

@@ -31,25 +31,32 @@ namespace mmfs
         virtual Vector<3> getAccReading();
         virtual const SensorType getType() const override { return IMU_; }
         virtual const char *getTypeString() const override { return "IMU"; }
-        virtual const char *getCsvHeader() const override;
-        virtual const char *getDataString() const override;
-        virtual const char *getStaticDataString() const override;
         virtual void update() override;
         virtual bool begin(bool useBiasCorrection = true) override;
 
         virtual const int getNumPackedDataPoints() const override { return 7; }
-        virtual const PackedType *getPackingOrder() const override
+        virtual const PackedType *getPackedOrder() const override
         {
             static const PackedType order[] = {FLOAT, FLOAT, FLOAT, FLOAT, FLOAT, FLOAT, FLOAT};
             return order;
+        }
+        virtual const char **getPackedDataLabels() const override
+        {
+            static const char *labels[] = {
+                "AccX",
+                "AccY",
+                "AccZ",
+                "QuatX",
+                "QuatY",
+                "QuatZ",
+                "QuatW"};
+            return labels;
         }
         virtual void packData();
 
     protected:
         IMU()
-        {                                       // Protected constructor to prevent instantiation
-            staticData = new char[30 + MAX_DIGITS_FLOAT * 3]; // 30 chars for the string, 12 chars for the 3 floats
-            data = new char[MAX_DIGITS_FLOAT * 10 + 10];      // 10x floats + buffer space
+        {
             setUpPackedData();
         }
         // Hardware data

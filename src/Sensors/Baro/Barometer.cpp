@@ -3,61 +3,40 @@
 namespace mmfs
 {
 
-    double Barometer::getPressure() const
+#pragma region Barometer Specific Functions
+    Barometer::Barometer() { setUpPackedData(); }
+
+    Barometer::~Barometer() {}
+
+    double Barometer::getPressure() const { return pressure; }
+
+    double Barometer::getTemp() const { return temp; }
+
+    double Barometer::getTempF() const { return (temp * 9.0 / 5.0) + 32.0; }
+
+    double Barometer::getPressureAtm() const { return pressure / MEAN_SEA_LEVEL_PRESSURE_HPA; }
+
+    double Barometer::getASLAltFt() const { return altitudeASL * 3.28084; }
+
+    double Barometer::getASLAltM() const { return altitudeASL; }
+
+    double Barometer::getAGLAltM() const { return altitudeAGL; }
+
+    double Barometer::getAGLAltFt() const { return altitudeAGL * 3.28084; }
+
+    double Barometer::calcAltitude(double pressure)
     {
-        return pressure;
+        // Equation from NOAA, but for meters: https://www.weather.gov/media/epz/wxcalc/pressureAltitude.pdf
+        return 44307.69 * (1.0 - pow(pressure / MEAN_SEA_LEVEL_PRESSURE_HPA, 0.190284));
     }
 
-    double Barometer::getTemp() const
-    {
-        return temp;
-    }
+#pragma endregion // Barometer Specific Functions
 
-    double Barometer::getTempF() const
-    {
-        return (temp * 9.0 / 5.0) + 32.0;
-    }
+#pragma region Sensor Virtual Function Implementations
 
-    double Barometer::getPressureAtm() const
-    {
-        return pressure / MEAN_SEA_LEVEL_PRESSURE_HPA;
-    }
+    const char *Barometer::getTypeString() const { return "Barometer"; }
 
-    double Barometer::getAGLAltM() const
-    {
-        return altitudeAGL;
-    }
-
-    double Barometer::getAGLAltFt() const
-    {
-        return altitudeAGL * 3.28084;
-    }
-
-    double Barometer::getASLAltM() const
-    {
-        return altitudeASL;
-    }
-
-    double Barometer::getASLAltFt() const
-    {
-        return altitudeASL * 3.28084;
-    }
-    const char *Barometer::getCsvHeader() const
-    {                                                                  // incl  B- to indicate Barometer data  vvvv Why is this in ft and not m?
-        return "B-Pres (hPa),B-Temp (C),B-AltASL (ft),B-AltAGL (ft),"; // trailing commas are very important
-    }
-
-    const char *Barometer::getDataString() const
-    {
-        sprintf(data, "%.2f,%.2f,%.2f,%.2f,", pressure, temp, getASLAltFt(), getAGLAltFt()); // trailing comma
-        return data;
-    }
-
-    const char *Barometer::getStaticDataString() const
-    {
-        sprintf(staticData, "Ground Pressure (hPa): %.2f\n", groundPressure);
-        return staticData;
-    }
+    const SensorType Barometer::getType() const { return BAROMETER_; }
 
     void Barometer::update()
     {
@@ -78,6 +57,7 @@ namespace mmfs
         }
 
         altitudeAGL = altitudeASL - groundAltitude;
+        packData();
     }
 
     bool Barometer::begin(bool useBiasCorrection)
@@ -99,7 +79,7 @@ namespace mmfs
                 {
                     read();
                     startPressure += pressure;
-#ifndef UNIT_TEST // Don't delay in unit tests
+#ifndef PIO_UNIT_TESTING // Don't delay in unit tests
                     delay(25);
 #endif
                 }
@@ -114,10 +94,20 @@ namespace mmfs
         return false;
     }
 
-    double Barometer::calcAltitude(double pressure)
+#pragma region Data Reporting
+
+    const int Barometer::getNumPackedDataPoints() const { return 4; }
+
+    const PackedType *Barometer::getPackedOrder() const
     {
-        // Equation from NOAA, but for meters: https://www.weather.gov/media/epz/wxcalc/pressureAltitude.pdf
-        return 44307.69 * (1.0 - pow(pressure / MEAN_SEA_LEVEL_PRESSURE_HPA, 0.190284));
+        static const PackedType order[] = {FLOAT, FLOAT, FLOAT, FLOAT};
+        return order;
+    }
+
+    const char **Barometer::getPackedDataLabels() const
+    {
+        static const char *labels[] = {"Pres (hPa)", "Temp (C)", "Alt ASL (ft)", "Alt AGL (ft)"};
+        return labels;
     }
 
     void Barometer::packData()
@@ -132,4 +122,10 @@ namespace mmfs
         memcpy(packedData + 2 * flt, &a, flt);
         memcpy(packedData + 3 * flt, &g, flt);
     }
+
+    // const char *Barometer::getStaticDataString() const
+    // {
+    //     sprintf(staticData, "Ground Pressure (hPa): %.2f\n", groundPressure);
+    //     return staticData;
+    // }
 }
