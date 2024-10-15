@@ -12,6 +12,7 @@ namespace mmfs
         this->maxNumSensors = numSensors;
         this->sensors = sensors;
         this->filter = filter;
+        setUpPackedData();
     }
 
     State::~State()
@@ -60,7 +61,6 @@ namespace mmfs
             size += sensors[i]->getPackedDataSize();
 
         initialized = true;
-        setUpPackedData();
         return good == tryNumSensors;
     }
 

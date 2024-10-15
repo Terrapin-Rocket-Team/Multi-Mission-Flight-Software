@@ -40,13 +40,14 @@ void DataFormatter::toCSVRow(char *dest, int destLen, State *state, void *data)
 
 void DataFormatter::getCSVHeader(char *dest, int destLen, State *state)
 {
+    int offset = 0;
     // state first
     const char **labels = state->getPackedDataLabels();
     for (int i = 0; i < state->getNumPackedDataPoints() && destLen > 0; i++)
     {
         int len = strlen(labels[i]) + 1;
-        snprintf(dest, destLen, "%s,", labels[i]);
-        dest += len;
+        snprintf(dest + offset, destLen, "%s,", labels[i]);
+        offset += len;
         destLen -= len;
     }
 
@@ -58,9 +59,9 @@ void DataFormatter::getCSVHeader(char *dest, int destLen, State *state)
         labels = state->getSensors()[i]->getPackedDataLabels();
         for (int j = 0; j < state->getSensors()[i]->getNumPackedDataPoints() && destLen > 0; j++)
         {
-            int len = strlen(labels[i]) + 1;
-            snprintf(dest, destLen, "%s,", labels[j]);
-            dest += len;
+            int len = strlen(labels[j]) + 1;
+            snprintf(dest + offset, destLen, "%s,", labels[j]);
+            offset += len;
             destLen -= len;
         }
     }
