@@ -8,7 +8,8 @@ namespace mmfs
     {
         baroOldAltitude = 0;
         baroVelocity = 0;
-
+        lastTime = 0;
+        currentTime = 0;
         this->maxNumSensors = numSensors;
         this->sensors = sensors;
         this->filter = filter;
@@ -160,6 +161,51 @@ namespace mmfs
         packData();
     }
 
+    Sensor *State::getSensor(SensorType type, int sensorNum) const
+    {
+        for (int i = 0; i < maxNumSensors; i++)
+            if (sensors[i] && type == sensors[i]->getType() && --sensorNum == 0)
+                return sensors[i];
+        return nullptr;
+    }
+
+#pragma region Helper Functions
+
+    bool State::sensorOK(const Sensor *sensor) const
+    {
+        if (sensor && *sensor) // not nullptr and initialized
+            return true;
+        return false;
+    }
+#pragma endregion
+
+#pragma region DataReporter Functions
+
+    const int State::getNumPackedDataPoints() const { return 10; }
+
+    const PackedType *State::getPackedOrder() const
+    {
+        static const PackedType order[10] = {
+            FLOAT, FLOAT, FLOAT, FLOAT, FLOAT, FLOAT, FLOAT, FLOAT, FLOAT, FLOAT};
+        return order;
+    }
+
+    const char **State::getPackedDataLabels() const
+    {
+        static const char *labels[] = {
+            "Time",
+            "PX",
+            "PY",
+            "PZ",
+            "VX",
+            "VY",
+            "VZ",
+            "AX",
+            "AY",
+            "AZ"};
+        return labels;
+    }
+
     void State::packData()
     {
         float t = currentTime;
@@ -194,54 +240,5 @@ namespace mmfs
         cursor += sizeof(float);
         memcpy(packedData + cursor, &az, sizeof(float));
         cursor += sizeof(float);
-    }
-
-    Sensor *State::getSensor(SensorType type, int sensorNum) const
-    {
-        for (int i = 0; i < maxNumSensors; i++)
-            if (sensors[i] && type == sensors[i]->getType() && --sensorNum == 0)
-                return sensors[i];
-        return nullptr;
-    }
-
-#pragma region Helper Functions
-
-    bool State::sensorOK(const Sensor *sensor) const
-    {
-        if (sensor && *sensor) // not nullptr and initialized
-            return true;
-        return false;
-    }
-#pragma endregion
-
-#pragma region DataReporter Functions
-
-    const int State::getNumPackedDataPoints() const
-    {
-        return 11;
-    }
-
-    const PackedType *State::getPackedOrder() const
-    {
-        static const PackedType order[] = {
-            FLOAT, FLOAT, FLOAT, FLOAT, FLOAT, FLOAT, FLOAT, FLOAT, FLOAT, FLOAT, FLOAT};
-        return order;
-    }
-
-    const char **State::getPackedDataLabels() const
-    {
-        static const char *labels[] = {
-            "Time",
-            "Stage",
-            "PX",
-            "PY",
-            "PZ",
-            "VX",
-            "VY",
-            "VZ",
-            "AX",
-            "AY",
-            "AZ"};
-        return labels;
     }
 } // namespace mmfs

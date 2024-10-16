@@ -20,7 +20,7 @@ namespace mmfs
         static void getCSVHeader(char *dest, int destLen, State *state);
 
     private:
-        static uintptr_t toCSVSection(char *dest, int &destLen, void *data, DataReporter *d);
+        static uintptr_t toCSVSection(char *dest, int &destLen, void *data, int &dataOffset, DataReporter *d);
     };
 }
 

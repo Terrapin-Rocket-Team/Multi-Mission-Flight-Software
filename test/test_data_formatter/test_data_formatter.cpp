@@ -31,10 +31,11 @@ void tearDown(void)
 
 // Test functions must be void and take no arguments, put them here
 
-void test_packData()
+void test_packUnpackData()
 {
     gps.set(0, 0, 0);
-    baro.set(0, 0);
+    baro.set(1001.28948, 25); // HPA for 100 ft ASL
+    state.updateState(1);
     char dest[500];
     uintptr_t destPtr = (uintptr_t)dest;
     destPtr = mmfs::DataFormatter::packData(destPtr, &state);
@@ -48,19 +49,60 @@ void test_packData()
             expectedSize += state.PackedTypeToSize(state.getSensors()[i]->getPackedOrder()[j]);
 
     TEST_ASSERT_EQUAL_INT(expectedSize, destPtr - (uintptr_t)dest);
+
+    // now unpack
+    char dest2[500];
+    mmfs::DataFormatter::toCSVRow(dest2, 500, &state, dest);
+    TEST_ASSERT_EQUAL_STRING(
+        "1.000,0.000,0.000,0.000,0.000,0.000,0.000,0.000,0.000,0.000," // state
+        "1001.289,25.000,100.000,0.000," // baro
+        "0.000,0.000,0.000,0.000,0.000,0.000,0", // gps
+        dest2);
 }
 
 void test_packData2()
 {
+    gps.set(0, 0, 0);
+    baro.set(1001.28948, 25); // HPA for 100 ft ASL
+    state.updateState(2);
+    char dest[500];
+    uintptr_t destPtr = (uintptr_t)dest;
+    destPtr = mmfs::DataFormatter::packData(destPtr, &state);
+    int packedDataSize = destPtr - (uintptr_t)dest;
+    baro.set(0, 0);
+    gps.set(180, 180, 1000);
+    state.updateState(3);
+    destPtr = mmfs::DataFormatter::packData(destPtr, &state);
+
+    // now unpack
+    char dest2[500];
+    mmfs::DataFormatter::toCSVRow(dest2, 500, &state, dest);
+    TEST_ASSERT_EQUAL_STRING(
+        "2.000,0.000,0.000,0.000,0.000,0.000,0.000,0.000,0.000,0.000," // state
+        "1001.289,25.000,100.000,0.000,"                               // baro
+        "0.000,0.000,0.000,0.000,0.000,0.000,0",                       // gps
+        dest2);
+
+    char *newPos = dest + packedDataSize;
+    mmfs::DataFormatter::toCSVRow(dest2, 500, &state, newPos);
+    TEST_ASSERT_EQUAL_STRING(
+        "3.000,0.000,0.000,40925.168,0.000,0.000,40925.168,0.000,0.000,0.000,"
+        "0.000,0.000,44307.691,40925.168,"
+        "180.000,180.000,1000.000,0.000,0.000,666.667,0",
+        dest2);
 }
 
 void test_setCSVHeader()
 {
     char dest[500];
-    for(int i = 0; i < 500; i++)
+    for (int i = 0; i < 500; i++)
         dest[i] = 0;
     mmfs::DataFormatter::getCSVHeader(dest, 500, &state);
-    printf("%s\n", dest);
+    TEST_ASSERT_EQUAL_STRING(
+        "Time,PX,PY,PZ,VX,VY,VZ,AX,AY,AZ,"
+        "Pres (hPa),Temp (C),Alt ASL (ft),Alt AGL (ft),"
+        "Lat,Lon,Alt,Disp X,Disp Y,Disp Z,Fix Quality",
+        dest);
 }
 
 // ---
@@ -72,7 +114,7 @@ int main(int argc, char **argv)
 
     // Add your tests here
     // RUN_TEST(test_function_name); // no parentheses after function name
-    RUN_TEST(test_packData);
+    RUN_TEST(test_packUnpackData);
     RUN_TEST(test_packData2);
     RUN_TEST(test_setCSVHeader);
 
