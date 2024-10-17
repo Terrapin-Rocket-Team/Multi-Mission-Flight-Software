@@ -19,7 +19,7 @@ namespace mmfs
     private:
         bool ready = false;
         int size = external_psram_size * ONE_MB; // in bytes
-        uint8_t numClusters = size / PSRAM_CLUSTER_SIZE;
+        uint8_t numClusters = size / PSRAM_CLUSTER_SIZE; //TODO: Allow more clusters
         uint32_t *clusterMap = new uint32_t[numClusters]; // first 8 bits are the previous cluster's # (0 indexed), then 8 bits the next cluster, then 8 bits for the file id, then 8 bits are reserved (0 if cluster is free)
         uintptr_t *fileMap = new uintptr_t[MAX_PSRAM_FILES];    // index is file id, value is file pointer
         uint8_t getNextFreeCluster(uint8_t currentCluster);

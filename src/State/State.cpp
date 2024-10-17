@@ -13,6 +13,7 @@ namespace mmfs
         this->maxNumSensors = numSensors;
         this->sensors = sensors;
         this->filter = filter;
+        useFilter = filter != nullptr;
         setUpPackedData();
     }
 

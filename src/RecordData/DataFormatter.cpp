@@ -76,6 +76,8 @@ void DataFormatter::toCSVRow(char *dest, int destLen, State *state, void *data)
     {
         if (!state->sensorOK(state->getSensors()[i]))
             continue;
+            if(data == nullptr)
+                dataOffset = 0;
         cursor = toCSVSection((char *)cursor, destLen, data == nullptr ? state->getSensors()[i]->getPackedData() : (void *)data, dataOffset, state->getSensors()[i]);
     }
     ((char *)cursor)[-1] = '\0';

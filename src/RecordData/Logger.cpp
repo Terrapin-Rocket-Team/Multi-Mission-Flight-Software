@@ -111,7 +111,7 @@ void Logger::recordFlightData()
                 if (++bufferIterations % numBufferLines == 0)
                     ramBufferFile->restart();
 
-                if (groundMode == ALTERNATE_)
+                if (groundMode == ALTERNATE_ && bufferIterations % (bufferInterval * UPDATE_RATE) == 0)
                 // TODO: This prints the most recent data. We really want it to print the oldest data in the buffer
                 // because when the buffer is dumped, it will start at the oldest data. This will result in one of the lines
                 // being out of time order. This is a minor issue, but it would be nice to fix it.

@@ -71,7 +71,7 @@ public:
         for (int j = 0; j < i && *size < 1000; j++)
         {
             arr[*cursor] = data[j];
-            if ((*cursor)++ > *size)
+            if (++(*cursor) > *size)
                 *size = *cursor;
         }
         return true;

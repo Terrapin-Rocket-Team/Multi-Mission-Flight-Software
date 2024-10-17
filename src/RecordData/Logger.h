@@ -79,10 +79,6 @@ namespace mmfs
 
     class Logger
     {
-    private:
-        SdFs sd;
-        FsFile logFile;
-        FsFile flightDataFile;
 
     public:
         Logger(uint16_t bufferTime = 30, int bufferInterval = 30, bool packData = true, GroundMode mode = ALTERNATE_); // store 30 seconds, print to SD every 30 seconds
@@ -104,20 +100,27 @@ namespace mmfs
 
         void dumpData();
 
-        SdFs *getSdFs() { return &sd; }   // Returns the SdFs object for testing
+    protected:
+        SdFs sd;
+        FsFile logFile;
+        FsFile flightDataFile;
 
-    private:
+        //
+
         Mode mode = GROUND;
         State *state = nullptr;
         GroundMode groundMode = ALTERNATE_;
         bool packData = true;
         uint16_t bufferTime;
         int bufferInterval = 0;
-        char *logFileName = nullptr;            // Name of the log file
-        char *flightDataFileName = nullptr;     // Name of the flight data file
-        bool sdReady = false;                   // Whether the SD card has been initialized
-        bool psramReady = false;                // Whether the PSRAM has been initialized
-        bool ready = false;                     // Whether the logger is ready
+        char *logFileName = nullptr;        // Name of the log file
+        char *flightDataFileName = nullptr; // Name of the flight data file
+        bool sdReady = false;               // Whether the SD card has been initialized
+        bool psramReady = false;            // Whether the PSRAM has been initialized
+        bool ready = false;                 // Whether the logger is ready
+
+        //
+
         PSRAMFile *ramFlightDataFile = nullptr; // Pointer to the flight data file
         PSRAMFile *ramLogFile = nullptr;        // Pointer to the log file
         PSRAMFile *ramBufferFile = nullptr;     // Pointer to the buffer file

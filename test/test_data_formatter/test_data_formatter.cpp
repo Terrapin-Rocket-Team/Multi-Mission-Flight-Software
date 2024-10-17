@@ -31,6 +31,17 @@ void tearDown(void)
 
 // Test functions must be void and take no arguments, put them here
 
+void test_getPackedLen()
+{
+    TEST_ASSERT_EQUAL_INT(
+        sizeof(float) * 10 +
+            sizeof(float) * 4 +
+            sizeof(double) * 2 +
+            sizeof(float) * 4 +
+            sizeof(uint8_t) * 1,
+        mmfs::DataFormatter::getPackedLen(&state));
+}
+
 void test_packUnpackData()
 {
     gps.set(0, 0, 0);
@@ -55,8 +66,8 @@ void test_packUnpackData()
     mmfs::DataFormatter::toCSVRow(dest2, 500, &state, dest);
     TEST_ASSERT_EQUAL_STRING(
         "1.000,0.000,0.000,0.000,0.000,0.000,0.000,0.000,0.000,0.000," // state
-        "1001.289,25.000,100.000,0.000," // baro
-        "0.000,0.000,0.000,0.000,0.000,0.000,0", // gps
+        "1001.289,25.000,100.000,0.000,"                               // baro
+        "0.000,0.000,0.000,0.000,0.000,0.000,0",                       // gps
         dest2);
 }
 
@@ -114,6 +125,7 @@ int main(int argc, char **argv)
 
     // Add your tests here
     // RUN_TEST(test_function_name); // no parentheses after function name
+    RUN_TEST(test_getPackedLen);
     RUN_TEST(test_packUnpackData);
     RUN_TEST(test_packData2);
     RUN_TEST(test_setCSVHeader);
