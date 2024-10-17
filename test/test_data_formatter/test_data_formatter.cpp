@@ -99,9 +99,9 @@ void test_setCSVHeader()
         dest[i] = 0;
     mmfs::DataFormatter::getCSVHeader(dest, 500, &state);
     TEST_ASSERT_EQUAL_STRING(
-        "Time,PX,PY,PZ,VX,VY,VZ,AX,AY,AZ,"
+        "Time (s),PX (m),PY (m),PZ (m),VX (m/s),VY (m/s),VZ (m/s),AX (m/s/s),AY (m/s/s),AZ (m/s/s),"
         "Pres (hPa),Temp (C),Alt ASL (ft),Alt AGL (ft),"
-        "Lat,Lon,Alt,Disp X,Disp Y,Disp Z,Fix Quality",
+        "Lat,Lon,Alt (m),Disp X (m),Disp Y (m),Disp Z (m),Fix Quality",
         dest);
 }
 

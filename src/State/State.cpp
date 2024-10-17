@@ -193,16 +193,16 @@ namespace mmfs
     const char **State::getPackedDataLabels() const
     {
         static const char *labels[] = {
-            "Time",
-            "PX",
-            "PY",
-            "PZ",
-            "VX",
-            "VY",
-            "VZ",
-            "AX",
-            "AY",
-            "AZ"};
+            "Time (s)",
+            "PX (m)",
+            "PY (m)",
+            "PZ (m)",
+            "VX (m/s)",
+            "VY (m/s)",
+            "VZ (m/s)",
+            "AX (m/s/s)",
+            "AY (m/s/s)",
+            "AZ (m/s/s)"};
         return labels;
     }
 

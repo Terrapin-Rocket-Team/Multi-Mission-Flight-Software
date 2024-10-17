@@ -130,7 +130,7 @@ namespace mmfs
     }
     const char **GPS::getPackedDataLabels() const
     {
-        static const char *labels[] = {"Lat", "Lon", "Alt", "Disp X", "Disp Y", "Disp Z", "Fix Quality"};
+        static const char *labels[] = {"Lat", "Lon", "Alt (m)", "Disp X (m)", "Disp Y (m)", "Disp Z (m)", "Fix Quality"};
         return labels;
     }
     void GPS::packData()
