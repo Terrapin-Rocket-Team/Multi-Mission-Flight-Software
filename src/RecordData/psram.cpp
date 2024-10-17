@@ -180,7 +180,7 @@ int PSRAM::readFile(PSRAMFile &file, char *data, int size)
         if ((i + 1) % PSRAM_CLUSTER_SIZE == 0)
         {
             if (nextCluster == 0xFF)
-                break; // No more clusters for this file)
+                break; // No more clusters for this file
             start = PSRAM_STARTING_ADDRESS + nextCluster * PSRAM_CLUSTER_SIZE;
             nextCluster = clusterMap[nextCluster] >> 16;
             file.clusterCursor = nextCluster;

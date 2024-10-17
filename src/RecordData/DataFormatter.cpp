@@ -5,7 +5,7 @@
 
 using namespace mmfs;
 
-uintptr_t DataFormatter::packData(uintptr_t dest, State *state)
+uint8_t *DataFormatter::packData(uint8_t *dest, State *state)
 {
     // pack state data
     memcpy((void *)dest, state->getPackedData(), state->getPackedDataSize());
@@ -21,6 +21,18 @@ uintptr_t DataFormatter::packData(uintptr_t dest, State *state)
     }
 
     return dest;
+}
+
+int DataFormatter::getPackedLen(State *state)
+{
+    int len = state->getPackedDataSize();
+    for (int i = 0; i < state->getNumMaxSensors(); i++)
+    {
+        if (!state->sensorOK(state->getSensors()[i]))
+            continue;
+        len += state->getSensors()[i]->getPackedDataSize();
+    }
+    return len;
 }
 
 void DataFormatter::getCSVHeader(char *dest, int destLen, State *state)
@@ -44,7 +56,7 @@ void DataFormatter::getCSVHeader(char *dest, int destLen, State *state)
         labels = state->getSensors()[i]->getPackedDataLabels();
         for (int j = 0; j < state->getSensors()[i]->getNumPackedDataPoints() && destLen > 0; j++)
         {
-            
+
             int len = snprintf(dest + offset, destLen, "%s,", labels[j]);
             offset += len;
             destLen -= len;

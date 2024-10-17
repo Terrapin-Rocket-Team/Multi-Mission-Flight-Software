@@ -36,8 +36,8 @@ void test_packUnpackData()
     gps.set(0, 0, 0);
     baro.set(1001.28948, 25); // HPA for 100 ft ASL
     state.updateState(1);
-    char dest[500];
-    uintptr_t destPtr = (uintptr_t)dest;
+    uint8_t dest[500];
+    uint8_t *destPtr = dest;
     destPtr = mmfs::DataFormatter::packData(destPtr, &state);
 
     int expectedSize = 0;
@@ -48,7 +48,7 @@ void test_packUnpackData()
         for (int j = 0; j < state.getSensors()[i]->getNumPackedDataPoints(); j++)
             expectedSize += state.PackedTypeToSize(state.getSensors()[i]->getPackedOrder()[j]);
 
-    TEST_ASSERT_EQUAL_INT(expectedSize, destPtr - (uintptr_t)dest);
+    TEST_ASSERT_EQUAL_INT(expectedSize, destPtr - dest);
 
     // now unpack
     char dest2[500];
@@ -65,10 +65,10 @@ void test_packData2()
     gps.set(0, 0, 0);
     baro.set(1001.28948, 25); // HPA for 100 ft ASL
     state.updateState(2);
-    char dest[500];
-    uintptr_t destPtr = (uintptr_t)dest;
+    uint8_t dest[500];
+    uint8_t *destPtr = dest;
     destPtr = mmfs::DataFormatter::packData(destPtr, &state);
-    int packedDataSize = destPtr - (uintptr_t)dest;
+    int packedDataSize = destPtr - dest;
     baro.set(0, 0);
     gps.set(180, 180, 1000);
     state.updateState(3);
@@ -83,7 +83,7 @@ void test_packData2()
         "0.000,0.000,0.000,0.000,0.000,0.000,0",                       // gps
         dest2);
 
-    char *newPos = dest + packedDataSize;
+    char *newPos = (char *)dest + packedDataSize;
     mmfs::DataFormatter::toCSVRow(dest2, 500, &state, newPos);
     TEST_ASSERT_EQUAL_STRING(
         "3.000,0.000,0.000,40925.168,0.000,0.000,40925.168,0.000,0.000,0.000,"

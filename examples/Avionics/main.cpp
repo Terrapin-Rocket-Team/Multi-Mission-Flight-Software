@@ -29,7 +29,7 @@ const int UPDATE_INTERVAL = 1000.0 / UPDATE_RATE;
 void setup()
 {
     psram = new PSRAM();
-    logger.init(avionicsState);
+    logger.init(&avionicsState);
 
 
     if (!(logger.isSdCardReady()))

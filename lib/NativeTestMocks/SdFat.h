@@ -12,6 +12,15 @@
 
 #include <cstdint>
 
+#define O_RDONLY 0 /* +1 == FREAD */
+#define O_WRONLY 1 /* +1 == FWRITE */
+#define O_RDWR 2   /* +1 == FREAD|FWRITE */
+#define O_APPEND 8
+#define O_CREAT 9
+#define O_TRUNC 10
+#define O_EXCL 11
+#define O_SYNC 12
+
 class FsFile
 {
 public:
