@@ -104,10 +104,12 @@ namespace mmfs
 
         void dumpData();
 
+        SdFs *getSdFs() { return &sd; }   // Returns the SdFs object for testing
+
     private:
-        Mode mode;
-        State *state;
-        GroundMode groundMode;
+        Mode mode = GROUND;
+        State *state = nullptr;
+        GroundMode groundMode = ALTERNATE_;
         bool packData = true;
         uint16_t bufferTime;
         int bufferInterval = 0;
@@ -115,14 +117,13 @@ namespace mmfs
         char *flightDataFileName = nullptr;     // Name of the flight data file
         bool sdReady = false;                   // Whether the SD card has been initialized
         bool psramReady = false;                // Whether the PSRAM has been initialized
+        bool ready = false;                     // Whether the logger is ready
         PSRAMFile *ramFlightDataFile = nullptr; // Pointer to the flight data file
         PSRAMFile *ramLogFile = nullptr;        // Pointer to the log file
         PSRAMFile *ramBufferFile = nullptr;     // Pointer to the buffer file
 
         int numBufferLines = 0;
         int bufferIterations = 0;
-
-        void unpackData(char *dest);
     };
 } // namespace mmfs
 

@@ -25,19 +25,19 @@ Logger::~Logger()
 // Returns whether the PSRAM is ready
 bool Logger::isPsramReady() const
 {
-    return false;
+    return psramReady;
 }
 
 // Returns whether the SD card is ready
 bool Logger::isSdCardReady() const
 {
-    return false;
+    return sdReady;
 }
 
 // Returns whether the logger is ready
 bool Logger::isReady() const
 {
-    return false;
+    return ready;
 }
 
 // Initializes the logger, returning whether SD card is ready
@@ -68,15 +68,17 @@ bool Logger::init(State *state)
     }
     if (psram->init())
     {
-        ramLogFile = psram->open("Log", true);
-        ramFlightDataFile = psram->open("FlightData", true);
-        ramBufferFile = psram->open("Buffer", true);
+        ramLogFile = psram->open("Log", F_WRITE, true);
+        ramFlightDataFile = psram->open("FlightData", F_WRITE, true);
+        ramBufferFile = psram->open("Buffer", F_WRITE, true);
         if (ramLogFile && ramFlightDataFile && ramBufferFile)
             psramReady = true;
     }
     this->state = state;
-
+#ifndef PIO_UNIT_TESTING
     recordLogData(INFO_, "This is where the version # would go");
+#endif
+    ready = true;
     return sdReady;
 }
 
