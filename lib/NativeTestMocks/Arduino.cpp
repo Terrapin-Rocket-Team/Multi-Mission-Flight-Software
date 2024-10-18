@@ -51,13 +51,13 @@ void SerialClass::write(const char *data, int i)
 void SerialClass::print(const char *data)
 {
     write(data, strlen(data));
-}
+ printf("%s", data); }
 
 void SerialClass::println(const char *data)
 {
     print(data);
     print("\n");
-}
+ printf("%s\n", data); }
 
 void SerialClass::begin(int baud) {}
 

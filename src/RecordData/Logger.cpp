@@ -76,7 +76,9 @@ bool Logger::init(State *state)
     }
     this->state = state;
 #ifndef PIO_UNIT_TESTING
-    recordLogData(INFO_, "This is where the version # would go");
+    char data[100];
+    snprintf(data, 100, "This flight is running MMFS v%s", APP_VERSION);
+    recordLogData(INFO_, data);
 #endif
     ready = true;
     return sdReady;

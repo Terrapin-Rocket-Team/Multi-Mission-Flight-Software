@@ -3,19 +3,15 @@
 
 // include other headers you need to test here
 
-#include "../../src/......"
+#include "../../src/Constants.h"
 
 // ---
-
-
 
 // Set up and global variables or mocks for testing here
 
 
 
 // ---
-
-
 
 // These two functions are called before and after each test function, and are required in unity, even if empty.
 void setUp(void)
@@ -29,8 +25,6 @@ void tearDown(void)
 }
 // ---
 
-
-
 // Test functions must be void and take no arguments, put them here
 
 // void test_function_name() {
@@ -38,9 +32,18 @@ void tearDown(void)
 //     TEST_ASSERT_EQUAL_FLOAT(expected, actual);
 // }
 
+//verify redefining of constants
+
+void test_constants() {
+
+    SENSOR_BIAS_CORRECTION_DATA_LENGTH = 10;
+    SENSOR_BIAS_CORRECTION_DATA_IGNORE = 50;
+    
+    TEST_ASSERT_EQUAL_INT(10, SENSOR_BIAS_CORRECTION_DATA_LENGTH);
+    TEST_ASSERT_EQUAL_INT(50, SENSOR_BIAS_CORRECTION_DATA_IGNORE);
+}
+
 // ---
-
-
 
 // This is the main function that runs all the tests. It should be the last thing in the file.
 int main(int argc, char **argv)
@@ -49,8 +52,10 @@ int main(int argc, char **argv)
 
     // Add your tests here
     // RUN_TEST(test_function_name); // no parentheses after function name
-
+    RUN_TEST(test_constants);
 
     UNITY_END();
+
+    return 0;
 }
 // ---
