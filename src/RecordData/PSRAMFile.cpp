@@ -100,3 +100,8 @@ bool PSRAMFile::isOpen() const
 {
     return _open;
 }
+
+int PSRAMFile::getCursor() const
+{
+    return cursor;
+}

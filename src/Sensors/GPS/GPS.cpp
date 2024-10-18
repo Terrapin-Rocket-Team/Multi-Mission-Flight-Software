@@ -139,7 +139,7 @@ namespace mmfs
         float dispx = float(displacement.x());
         float dispy = float(displacement.y());
         float dispz = float(displacement.z());
-        uint8_t fixQual = uint8_t(fixQual);
+        uint8_t fixQual = uint8_t(this->fixQual);
         int offset = 0;
         memcpy(packedData + offset, &position.x(), sizeof(double));
         offset += sizeof(double);

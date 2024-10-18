@@ -17,7 +17,7 @@ uint8_t *DataFormatter::packData(uint8_t *dest, State *state)
     {
         if (!state->sensorOK(state->getSensors()[i]))
             continue;
-        memcpy((void *)dest + offset, state->getSensors()[i]->getPackedData(), state->getSensors()[i]->getPackedDataSize());
+        memcpy((uint8_t *)dest + offset, state->getSensors()[i]->getPackedData(), state->getSensors()[i]->getPackedDataSize());
         offset += state->getSensors()[i]->getPackedDataSize();
     }
 

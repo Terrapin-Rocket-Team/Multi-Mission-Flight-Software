@@ -56,6 +56,8 @@ namespace mmfs
         bool isOpen() const;
 
         void open(uint8_t mode);
+
+        int getCursor() const;
     };
 
 } // namespace mmfs

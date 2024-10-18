@@ -34,9 +34,9 @@ namespace mmfs
         Vector<3> position;     // latitude, longitude, alt
         Vector<3> displacement; // displacement from starting location
         Vector<3> origin;       // lat(deg), long(deg), alt(m) of the original location
-        int fixQual;            // number of satellite connections
+        int fixQual = 0;            // number of satellite connections
         bool hasFirstFix;       // whether or not GPS has reached at least 3 satellites since restart
-        double heading;
+        double heading = 0;
 
         // Distance-related calculations
         void calcInitialValuesForDistance();

@@ -68,9 +68,9 @@ bool Logger::init(State *state)
     }
     if (psram->init())
     {
-        ramLogFile = psram->open("Log", F_WRITE, true);
-        ramFlightDataFile = psram->open("FlightData", F_WRITE, true);
-        ramBufferFile = psram->open("Buffer", F_WRITE, true);
+        ramLogFile = psram->open("Log", F_WRITE | F_READ, true);
+        ramFlightDataFile = psram->open("FlightData", F_WRITE | F_READ, true);
+        ramBufferFile = psram->open("Buffer", F_WRITE | F_READ, true);
         if (ramLogFile && ramFlightDataFile && ramBufferFile)
             psramReady = true;
     }
