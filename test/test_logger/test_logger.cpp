@@ -136,7 +136,9 @@ void test_recordFlightData_in_flight()
 void test_dumpData()
 {
     testLogger.setRecordMode(GROUND); // dump the data
-    
+    printf("Flight Data:\n");
+    flightFile.arr[*flightFile.size] = '\0';
+    printf("%s\n", flightFile.arr);
 }
 
 // ---
@@ -162,6 +164,7 @@ int main(int argc, char **argv)
     RUN_TEST(test_recordLogData_on_ground);
     RUN_TEST(test_recordFlightData_on_ground);
     RUN_TEST(test_recordFlightData_in_flight);
+    RUN_TEST(test_dumpData);
 
     UNITY_END();
 

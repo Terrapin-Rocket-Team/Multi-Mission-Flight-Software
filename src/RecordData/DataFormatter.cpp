@@ -7,20 +7,21 @@ using namespace mmfs;
 
 uint8_t *DataFormatter::packData(uint8_t *dest, State *state)
 {
+    int offset = 0;
     // pack state data
     memcpy((void *)dest, state->getPackedData(), state->getPackedDataSize());
-    dest += state->getPackedDataSize();
+    offset += state->getPackedDataSize();
 
     // pack sensor data
     for (int i = 0; i < state->getNumMaxSensors(); i++)
     {
         if (!state->sensorOK(state->getSensors()[i]))
             continue;
-        memcpy((void *)dest, state->getSensors()[i]->getPackedData(), state->getSensors()[i]->getPackedDataSize());
-        dest += state->getSensors()[i]->getPackedDataSize();
+        memcpy((void *)dest + offset, state->getSensors()[i]->getPackedData(), state->getSensors()[i]->getPackedDataSize());
+        offset += state->getSensors()[i]->getPackedDataSize();
     }
 
-    return dest;
+    return dest + offset;
 }
 
 int DataFormatter::getPackedLen(State *state)
@@ -76,8 +77,8 @@ void DataFormatter::toCSVRow(char *dest, int destLen, State *state, void *data)
     {
         if (!state->sensorOK(state->getSensors()[i]))
             continue;
-            if(data == nullptr)
-                dataOffset = 0;
+        if (data == nullptr)
+            dataOffset = 0;
         cursor = toCSVSection((char *)cursor, destLen, data == nullptr ? state->getSensors()[i]->getPackedData() : (void *)data, dataOffset, state->getSensors()[i]);
     }
     ((char *)cursor)[-1] = '\0';

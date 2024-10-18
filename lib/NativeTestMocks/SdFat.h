@@ -28,14 +28,14 @@ class FsFile
 public:
     FsFile()
     {
-        arr = new char[1000]; // arbitrary size
+        arr = new char[10000]; // arbitrary size
         size = new int(0);
         cursor = new int(0);
         name = nullptr;
     }
     FsFile(const char *name)
     {
-        arr = new char[1000]; // arbitrary size
+        arr = new char[10000]; // arbitrary size
         size = new int(0);
         cursor = new int(0);
         this->name = new char[strlen(name) + 1];
@@ -68,7 +68,7 @@ public:
     }
     bool write(const char *data, int i)
     {
-        for (int j = 0; j < i && *size < 1000; j++)
+        for (int j = 0; j < i && *size < 10000; j++)
         {
             arr[*cursor] = data[j];
             if (++(*cursor) > *size)
