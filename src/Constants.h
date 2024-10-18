@@ -47,7 +47,7 @@ extern const int UPDATE_INTERVAL; // in ms
 
 inline int MAX_FILE_NAME_SIZE = 64; // in characters (including null terminator)
 inline uintptr_t PSRAM_STARTING_ADDRESS = 0x70000000;
-inline int PSRAM_CLUSTER_SIZE = 32768; // in bytes (32 KB because we are limited to 256 clusters (TODO))
+inline int PSRAM_CLUSTER_SIZE = 62500; // in bytes (32 KB because we are limited to 256 clusters (TODO))
 inline int ONE_MB = 1048576; // in bytes
 inline int MAX_PSRAM_FILES = 5; // in files, defaulted low to save memory
 

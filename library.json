@@ -57,7 +57,7 @@
         },
         {
             "name": "SparkFun u-blox GNSS v3",
-            "version": "3.1.7"
+            "version": "3.1.5"
         },
         {
             "name": "RTClib",
