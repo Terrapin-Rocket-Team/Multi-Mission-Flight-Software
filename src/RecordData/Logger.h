@@ -81,7 +81,7 @@ namespace mmfs
     {
 
     public:
-        Logger(uint16_t bufferTime = 30, int bufferInterval = 30, bool packData = true, GroundMode mode = ALTERNATE_); // store 30 seconds, print to SD every 30 seconds
+        Logger(uint16_t bufferTime = 30, int bufferInterval = 30); // store 30 seconds, print to SD every 30 seconds
         virtual ~Logger();
 
         virtual bool init(State *state);

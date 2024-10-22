@@ -8,12 +8,12 @@ using namespace mmfs;
 static const char *logTypeStrings[] = {"LOG", "ERROR", "WARNING", "INFO"};
 
 // Constructor for Logger class
-Logger::Logger(uint16_t bufferTime, int bufferInterval, bool packData, GroundMode groundMode)
+Logger::Logger(uint16_t bufferTime, int bufferInterval)
 {
-    this->packData = packData;
+    this->packData = bufferTime > 0;
     this->bufferTime = bufferTime;
     this->bufferInterval = bufferInterval;
-    this->groundMode = groundMode;
+    this->groundMode = bufferInterval > 0 ? ALTERNATE_ : bufferInterval == 0 ? SD_ : PSRAM_;
     numBufferLines = bufferTime * UPDATE_RATE;
 }
 
@@ -75,7 +75,7 @@ bool Logger::init(State *state)
             psramReady = true;
     }
     this->state = state;
-#ifndef PIO_UNIT_TESTING
+#ifndef PIO_UNIT_TESTING // This is a workaround because testing this logger is hard when it's writing its own variable data to the log file
     char data[100];
     snprintf(data, 100, "This flight is running MMFS v%s", APP_VERSION);
     recordLogData(INFO_, data);
@@ -227,7 +227,7 @@ void Logger::dumpData()
     // FLIGHT DATA FILE
     flightDataFile = sd.open(flightDataFileName, FILE_WRITE);
 
-    if (packData)
+    if (packData) // buffer data is packed
     {
         if (groundMode != SD_) // if set to sd or not packing data, there is no buffer here.
         {
@@ -246,7 +246,8 @@ void Logger::dumpData()
     }
     // Now, the real flight data can be read chunk by chunk
     ramFlightDataFile->restart();
-    if(!packData)
+
+    if (!packData) // if the data wasn't packed, then just directly read it from memory to the SD card. It's already in CSV format.
     {
         size = 1;
         while (size > 0)
@@ -255,12 +256,12 @@ void Logger::dumpData()
             flightDataFile.write(data, size);
         }
     }
-    else
+    else // unpack the data
     {
         int len = DataFormatter::getPackedLen(state);
         char packed[len];
         char unpacked[500];
-        while(ramFlightDataFile->read(packed, len) > 0)
+        while (ramFlightDataFile->read(packed, len) > 0)
         {
             DataFormatter::toCSVRow(unpacked, 500, state, packed);
             flightDataFile.println(unpacked);
@@ -271,7 +272,7 @@ void Logger::dumpData()
 
 void Logger::writeCsvHeader()
 {
-    char header[500];
+    char header[500]; // 500 is arbitrary, but should be enough for basically any header
     DataFormatter::getCSVHeader(header, 500, state);
     flightDataFile = sd.open(flightDataFileName, FILE_WRITE);
     flightDataFile.println(header);
