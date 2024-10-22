@@ -97,7 +97,7 @@ void Logger::recordFlightData()
         {
             char dest[500];
             DataFormatter::toCSVRow(dest, 500, state);
-            flightDataFile = sd.open(flightDataFileName, O_APPEND);
+            flightDataFile = sd.open(flightDataFileName, FILE_WRITE);
             flightDataFile.println(dest);
             flightDataFile.close();
         }
@@ -120,7 +120,7 @@ void Logger::recordFlightData()
                 {
                     char dest[500];
                     DataFormatter::toCSVRow(dest, 500, state);
-                    flightDataFile = sd.open(flightDataFileName, O_APPEND);
+                    flightDataFile = sd.open(flightDataFileName, FILE_WRITE);
                     flightDataFile.println(dest);
                     flightDataFile.close();
                 }
@@ -150,7 +150,7 @@ void Logger::recordFlightData()
         {
             char dest[500];
             DataFormatter::toCSVRow(dest, 500, state);
-            flightDataFile = sd.open(flightDataFileName, O_APPEND);
+            flightDataFile = sd.open(flightDataFileName, FILE_WRITE);
             flightDataFile.println(dest);
             flightDataFile.close();
         }
@@ -184,7 +184,7 @@ void Logger::recordLogData(double timeStamp, LogType type, const char *data, Des
         }
         else
         {
-            logFile = sd.open(logFileName, O_APPEND);
+            logFile = sd.open(logFileName, FILE_WRITE);
             logFile.print(logPrefix);
             logFile.println(data);
             logFile.close();
@@ -214,7 +214,7 @@ void Logger::dumpData()
 
     // LOG FILE
     ramLogFile->restart();
-    logFile = sd.open(logFileName, O_APPEND);
+    logFile = sd.open(logFileName, FILE_WRITE);
     int size = 1;
     while (size > 0)
     {
@@ -225,7 +225,7 @@ void Logger::dumpData()
     // LOG FILE
 
     // FLIGHT DATA FILE
-    flightDataFile = sd.open(flightDataFileName, O_APPEND);
+    flightDataFile = sd.open(flightDataFileName, FILE_WRITE);
 
     if (packData)
     {
@@ -266,5 +266,14 @@ void Logger::dumpData()
             flightDataFile.println(unpacked);
         }
     }
+    flightDataFile.close();
+}
+
+void Logger::writeCsvHeader()
+{
+    char header[500];
+    DataFormatter::getCSVHeader(header, 500, state);
+    flightDataFile = sd.open(flightDataFileName, FILE_WRITE);
+    flightDataFile.println(header);
     flightDataFile.close();
 }

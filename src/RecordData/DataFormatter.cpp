@@ -98,7 +98,7 @@ uintptr_t DataFormatter::toCSVSection(char *dest, int &destLen, void *data, int 
             printedSize = snprintf(dest + strSize, destLen, "%.3f,", *(float *)dataPtr);
             break;
         case DOUBLE:
-            printedSize = snprintf(dest + strSize, destLen, "%.3f,", *(double *)dataPtr);
+            printedSize = snprintf(dest + strSize, destLen, "%.7f,", *(double *)dataPtr);
             break;
         case BYTE:
             printedSize = snprintf(dest + strSize, destLen, "%hhd,", *(uint8_t *)dataPtr);

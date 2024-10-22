@@ -41,6 +41,7 @@ namespace mmfs
     void IMU::update()
     {
         read();
+        packData();
     }
 
     bool IMU::begin(bool useBiasCorrection)

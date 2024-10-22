@@ -100,6 +100,8 @@ namespace mmfs
 
         void dumpData();
 
+        void writeCsvHeader();
+
     protected:
         SdFs sd;
         FsFile logFile;

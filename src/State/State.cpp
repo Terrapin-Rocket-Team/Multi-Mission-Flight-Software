@@ -113,14 +113,14 @@ namespace mmfs
             stateVars[4] = velocity.y();
             stateVars[5] = velocity.z();
 
-            double *predictions = filter->iterate(currentTime - lastTime, stateVars, measurements, inputs);
+            filter->iterate(currentTime - lastTime, stateVars, measurements, inputs);
             // pos x, y, z, vel x, y, z
-            position.x() = predictions[0];
-            position.y() = predictions[1];
-            position.z() = predictions[2];
-            velocity.x() = predictions[3];
-            velocity.y() = predictions[4];
-            velocity.z() = predictions[5];
+            position.x() = stateVars[0];
+            position.y() = stateVars[1];
+            position.z() = stateVars[2];
+            velocity.x() = stateVars[3];
+            velocity.y() = stateVars[4];
+            velocity.z() = stateVars[5];
 
             if (sensorOK(baro))
             {
@@ -128,7 +128,7 @@ namespace mmfs
                 baroOldAltitude = baro->getAGLAltM();
             }
 
-            delete[] predictions;
+            delete[] stateVars;
         }
         else
         {
@@ -138,6 +138,7 @@ namespace mmfs
             }
             if (sensorOK(baro))
             {
+                position.z() = baro->getAGLAltM();
                 baroVelocity = velocity.z() = (baro->getAGLAltM() - baroOldAltitude) / (currentTime - lastTime);
                 baroOldAltitude = position.z() = baro->getAGLAltM();
             }
