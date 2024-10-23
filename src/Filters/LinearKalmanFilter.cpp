@@ -37,7 +37,7 @@ Matrix LinearKalmanFilter::iterate(double dt, Matrix measurement, Matrix control
 
 double* LinearKalmanFilter::iterate(double dt, double* state, double* measurements, double* controlVars) {
     // Convert arrays to matrices
-    Matrix stateMatrix(stateSize, 1, state);
+    // Matrix stateMatrix(stateSize, 1, state);
     Matrix measurementMatrix(measurementSize, 1, measurements);
     Matrix controlMatrix(controlSize, 1, controlVars);
 

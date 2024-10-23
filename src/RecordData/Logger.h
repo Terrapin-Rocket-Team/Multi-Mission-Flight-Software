@@ -4,95 +4,134 @@
  * Based on the mode, the Logger class will write data to the PSRAM or the SD card, writing to the SD card when the mode is GROUND
  * and writing to the PSRAM when the mode is FLIGHT. The Logger class will also write data to the USB serial port when connected if
  * the destination is set to TO_USB or BOTH, which it is by default.
-*/
+ */
 
 #ifndef LOGGER_H
 #define LOGGER_H
 
+#define SD_FAT_TYPE 3
+
 #include "psram.h"
-#include "SdCardStorage.h"
+#include "SdFat.h"
+#include "Arduino.h"
 #include "../Constants.h"
 
+/*
+  Change the value of SD_CS_PIN if you are using SPI and
+  your hardware does not use the default value, SS.
+  Common values are:
+  Arduino Ethernet shield: pin 4
+  Sparkfun SD shield: pin 8
+  Adafruit SD shields and modules: pin 10
+*/
 
-namespace mmfs {
+// SDCARD_SS_PIN is defined for the built-in SD on some boards.
+#ifndef SDCARD_SS_PIN
+const uint8_t SD_CS_PIN = SS;
+#else  // SDCARD_SS_PIN
+// Assume built-in SD is used.
+const uint8_t SD_CS_PIN = SDCARD_SS_PIN;
+#endif // SDCARD_SS_PIN
 
-enum LogType {
-    LOG_,
-    ERROR_,
-    WARNING_,
-    INFO_
-};
+// Try max SPI clock for an SD. Reduce SPI_CLOCK if errors occur.
+#define SPI_CLOCK SD_SCK_MHZ(50)
 
-enum Dest {
-    TO_FILE,
-    TO_USB,
-    BOTH
-};
+// Try to select the best SD card configuration.
+#if HAS_SDIO_CLASS
+#define SD_CONFIG SdioConfig(FIFO_SDIO)
+#elif ENABLE_DEDICATED_SPI
+#define SD_CONFIG SdSpiConfig(SD_CS_PIN, DEDICATED_SPI, SPI_CLOCK)
+#else // HAS_SDIO_CLASS
+#define SD_CONFIG SdSpiConfig(SD_CS_PIN, SHARED_SPI, SPI_CLOCK)
+#endif // HAS_SDIO_CLASS
 
-enum Mode {
-    GROUND,
-    FLIGHT
-};
+namespace mmfs
+{
+    class State; // Forward declaration
 
-enum GroundDest {
-    BUFFER,
-    ALTERNATING_BOTH
-};
+    enum LogType
+    {
+        LOG_,
+        ERROR_,
+        WARNING_,
+        INFO_
+    };
 
-class Logger {
-private:
-    PSRAM ram;
-    SdCardStorage sdCard;
-    bool SDready;
-    bool RAMready;
-    bool dumped;
-    GroundDest groundDest;
-    /** The buffer size of the circular buffer, in bytes, for preflight */
-    uint16_t bufferSize;
-    /** If groundDest is ALTERNATING_BOTH, this is the number of data entries to be put to the PSRAM between each write to the file */
-    unsigned int bufferInterval;
-    uint32_t bufIdx;
-    uint32_t bufCount;
-    Mode mode;
+    enum Dest
+    {
+        TO_FILE,
+        TO_USB,
+        BOTH
+    };
 
-public:
+    enum Mode
+    {
+        GROUND,
+        FLIGHT
+    };
 
-    Logger(GroundDest groundDest = ALTERNATING_BOTH, uint16_t bufferSize = 25000, int bufferInterval = 300);
+    enum GroundMode
+    {
+        SD_,
+        PSRAM_,
+        ALTERNATE_
+    };
 
-    void init();
+    class Logger
+    {
 
-    bool isPsramReady() const { return RAMready; }
-    bool isSdCardReady() const { return SDready; }
-    bool isReady() const { return RAMready && SDready; }
+    public:
+        Logger(uint16_t bufferTime = 30, int bufferInterval = 30); // store 30 seconds, print to SD every 30 seconds
+        virtual ~Logger();
 
-    /** Takes the pointer to a null terminated character array and prints it to the appropriate destination based on the mode */
-    void recordFlightData(char *data); 
-    /** 
-     * Takes the type of log, a pointer to a null terminated character array, and the destination and prints it to the appropriate destination based on the mode.
-     * This data is treated as a log, and thus will be written to the bottom of the PSRAM if the mode is FLIGHT, and to the SD card if the mode is GROUND.
-     */
-    void recordLogData(LogType type, const char *data, Dest dest = BOTH);
-    /** 
-     * Takes the timestamp, the type of log, a pointer to a null terminated character array, and the destination and prints it to the appropriate destination based on the mode.
-     * This data is treated as a log, and thus will be written to the bottom of the PSRAM if the mode is FLIGHT, and to the SD card if the mode is GROUND.
-     */
-    void recordLogData(double timeStamp, LogType type, const char *data, Dest dest = BOTH);
-    /** 
-     * Takes the mode and enables or disables the PSRAM based on the mode. If mode is GROUND, PSRAM will be disabled and all data in PSRAM will be written to the SD card. 
-     * If mode is FLIGHT, PSRAM will be enabled. Switching the mode from FLIGHT to GROUND will cause all data in PSRAM to be dumped to the SD card, creating a data and log file.
-     */
-    void setRecordMode(Mode mode);
-    /**
-     * Dumps existing data from the PSRAM to the data file and log file on the SD card.
-     */
-    void dumpData();
-    
+        virtual bool init(State *state);
 
-};
+        virtual bool isPsramReady() const;
+        virtual bool isSdCardReady() const;
+        virtual bool isReady() const;
 
+        void recordFlightData(); // records  flight data
 
+        void recordLogData(LogType type, const char *data, Dest dest = BOTH);
+
+        void recordLogData(double timeStamp, LogType type, const char *data, Dest dest = BOTH);
+
+        void setRecordMode(Mode mode);
+
+        void dumpData();
+
+        void writeCsvHeader();
+
+    protected:
+        SdFs sd;
+        FsFile logFile;
+        FsFile flightDataFile;
+
+        //
+
+        Mode mode = GROUND;
+        State *state = nullptr;
+        GroundMode groundMode = ALTERNATE_;
+        bool packData = true;
+        uint16_t bufferTime;
+        int bufferInterval = 0;
+        char *logFileName = nullptr;        // Name of the log file
+        char *flightDataFileName = nullptr; // Name of the flight data file
+        bool sdReady = false;               // Whether the SD card has been initialized
+        bool psramReady = false;            // Whether the PSRAM has been initialized
+        bool ready = false;                 // Whether the logger is ready
+
+        //
+
+        PSRAMFile *ramFlightDataFile = nullptr; // Pointer to the flight data file
+        PSRAMFile *ramLogFile = nullptr;        // Pointer to the log file
+        PSRAMFile *ramBufferFile = nullptr;     // Pointer to the buffer file
+
+        int numBufferLines = 0;
+        int bufferIterations = 0;
+    };
 } // namespace mmfs
 
 extern mmfs::Logger logger;
 
-#endif //LOGGER_H
+#endif // LOGGER_H

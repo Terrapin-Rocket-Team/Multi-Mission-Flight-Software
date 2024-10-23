@@ -1,10 +1,7 @@
 #include <Arduino.h>
 #include "AvionicsState.h"
-#include "MMFS.h"
-#include "../src/Sensors/GPS/MAX_M10S.h"
-#include "../src/Sensors/IMU/BNO055.h"
-#include "../src/Sensors/Baro/BMP390.h"
 #include "AvionicsKF.h"
+#include "MMFS.h"
 
 using namespace mmfs;
 const int BUZZER_PIN = 33;
@@ -20,6 +17,7 @@ Sensor *sensors[3] = {&gps, &imu055, &baro};
 AvionicsKF kfilter;
 Logger logger;
 AvionicsState avionicsState(sensors, 3, &kfilter);
+PSRAM *psram;
 ErrorHandler errorHandler;
 
 const int UPDATE_RATE = 10;
@@ -32,8 +30,8 @@ void setup()
     //If you need to change these values, do that here (in setup, before anything else)
     //SENSOR_BIAS_CORRECTION_DATA_LENGTH = 2;
     //SENSOR_BIAS_CORRECTION_DATA_IGNORE = 1;
-
-    logger.init();
+    psram = new PSRAM();
+    logger.init(&avionicsState);
 
 
     if (!(logger.isSdCardReady()))

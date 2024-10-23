@@ -9,7 +9,7 @@
 #include <string>
 #ifdef PIO_UNIT_TESTING
 #include <unity.h>
-#endif
+#endif // PIO_UNIT_TESTING
 
 #define UNITY_INCLUDE_DOUBLE
 

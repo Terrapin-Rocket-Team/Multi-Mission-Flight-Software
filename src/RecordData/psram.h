@@ -1,156 +1,50 @@
 #ifndef PSRAM_H
 #define PSRAM_H
 
-#include "StorageType.h"
 #include <cstdint>
+#include "../Constants.h"
 
-namespace mmfs {
-
-extern "C" uint8_t external_psram_size;
-class PSRAM: public StorageType
+extern "C" uint8_t external_psram_size; // in MB
+namespace mmfs
 {
+    class PSRAMFile;
+    class PSRAM
+    {
 
-private:
-    bool ready;
-    bool dumped;
-    char *cursorStart; // for flight data
-    char *cursorEnd; // for log data
-    char *memBegin; // start of memory
-    char *memEnd; // end of memory
+        friend class PSRAMFile;
 
-public:
-    /**
-     * Constructor for PSRAM.
-     */
-    PSRAM();
+        inline int min(int a, int b) { return a < b ? a : b; }
+        inline int max(int a, int b) { return a > b ? a : b; }
 
-    /**
-     * Initialize the PSRAM.
-     * @return true if initialization was successful, false otherwise.
-     */
-    bool init() override;
+    private:
+        bool ready = false;
+        int size = external_psram_size * ONE_MB; // in bytes
+        uint8_t numClusters = size / PSRAM_CLUSTER_SIZE; //TODO: Allow more clusters
+        uint32_t *clusterMap = new uint32_t[numClusters]; // first 8 bits are the previous cluster's # (0 indexed), then 8 bits the next cluster, then 8 bits for the file id, then 8 bits are reserved (0 if cluster is free)
+        uintptr_t *fileMap = new uintptr_t[MAX_PSRAM_FILES];    // index is file id, value is file pointer
+        uint8_t getNextFreeCluster(uint8_t currentCluster);
 
-    /**
-     * Check if the PSRAM is ready for read/write operations.
-     * @return true if the PSRAM is ready, false otherwise.
-     */
-    bool isReady() const override;
+        void write(uintptr_t address, const char *data, int size);
 
-    /**
-     * Write data to the PSRAM.
-     * @param data The data to be written.
-     * @param size The size of the data to be written.
-     */
-    void write(char *data, int size) override;
+        void seekFile(PSRAMFile &file, int offset, uint8_t origin);
+        int readFile(PSRAMFile &file, char *data, int size);
+        void writeFile(PSRAMFile &file, const char *data, int size);
 
-    /**
-     * Write data to the PSRAM with an option to write to the top.
-     * @param data The data to be written.
-     * @param size The size of the data to be written.
-     * @param writeToTop If true, write to the top of the memory. If false, write to the bottom in reverse.
-     */
-    void write(char *data, int size, bool writeToTop);
+    public:
+        PSRAM();
+        virtual ~PSRAM();
+        bool init();
+        bool isReady() const;
+        PSRAMFile *open(const char *name, uint8_t mode, bool create = false);
+        PSRAMFile *open(int index, uint8_t mode); // 1 indexed, faster than name if you know the index
 
-    /**
-     * Print a string to the PSRAM.
-     * @param data The string to be printed. Takes a pointer to a null-terminated character array.
-     */
-    void print(const char *data) { print(data, true); };
+        char *readNextFileCluster(PSRAMFile &file, int &size); // returns a pointer to actual memory, without copying to a buffer
 
-    /**
-     * Print a string to the PSRAM with an option to write to the top.
-     * @param data The string to be printed. Takes a pointer to a null-terminated character array.
-     * @param writeToTop If true, write to the top of the memory. If false, write to the bottom in reverse.
-     */
-    void print(const char *data, bool writeToTop);
-
-    /**
-     * Print a string to the PSRAM followed by a newline.
-     * @param data The string to be printed. Takes a pointer to a null-terminated character array.
-     */
-    void println(const char *data) { println(data, true); };
-
-    /**
-     * Print a string to the PSRAM followed by a newline with an option to write to the top.
-     * @param data The string to be printed.
-     * @param writeToTop If true, write to the top of the memory. If false, write to the bottom in reverse.
-     */
-    void println(const char *data, bool writeToTop);
-
-    /**
-     * Get the amount of free space in the PSRAM.
-     * @return The amount of free space in bytes.
-     */
-    int getFreeSpace() const;
-
-    /**
-     * Get the amount of data space used in the PSRAM.
-     * @return The amount of data space used in bytes.
-     */
-    int getDataSpace() const;
-
-    /**
-     * Get the amount of log space used in the PSRAM. Checks from the bottom of the memory.
-     * @return The amount of log space used in bytes.
-     */
-    int getLogSpace() const;
-
-    /**
-     * Read data from the PSRAM.
-     * @param data The buffer to store the read data.
-     * @param size The size of the data to be read, in bytes.
-     * @return The number of bytes read. If unsuccessful, returns -1.
-     */
-    int read(char *data, int size) override;
-
-    /**
-     * Read data from the PSRAM. Reads all the filled in data.
-     * @param data The buffer to store the read data.
-     * @return The number of bytes read. If unsuccessful, returns -1.
-     */
-    int read(char *data);
-
-    /**
-     * Read data from the PSRAM until a specified end character is encountered.
-     * @param data The buffer to store the read data.
-     * @param endChar The character to stop reading at.
-     * @return The number of bytes read. If unsuccessful, returns -1.
-     */
-    int readTo(char *data, char endChar) override;
-
-    /**
-     * Read data from the bottom of the PSRAM.
-     * @param data The buffer to store the read data.
-     * @param size The size of the data to be read.
-     * @return The number of bytes read. If unsuccessful, returns -1.
-     */
-    int readFromBottom(char *data, int size);
-
-    /**
-     * Read all the filled in data from the bottom of the PSRAM.
-     * @param data The buffer to store the read data.
-     * @return The number of bytes read. If unsuccessful, returns -1.
-     */
-    int readFromBottom(char *data);
-
-    /**
-     * Seek to a specific offset in the PSRAM.
-     * @param offset The offset to seek to, relative to the beginning of the memory.
-     * @return true if the seek operation was successful, false otherwise.
-     */
-    bool seek(uint64_t offset) override;
-
-    /**
-     * Seek to a specific offset from the bottom in the PSRAM.
-     * @param offset The offset to seek to, relative to the bottom of the memory.
-     * @return true if the seek operation was successful, false otherwise.
-     */
-    bool seekFromBottom(uint64_t offset);
-};
-
-
-
+        int getSize() { return size; }
+    };
 
 } // namespace mmfs
 
-#endif //PSRAM_H
+extern mmfs::PSRAM *psram;
+
+#endif // PSRAM_H

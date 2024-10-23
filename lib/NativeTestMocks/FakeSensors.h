@@ -37,7 +37,7 @@ public:
 class FakeGPS : public GPS
 {
 public:
-    FakeGPS() : GPS() { initialized = true; setName("FakeGPS"); }
+    FakeGPS() : GPS() { initialized = true; setName("FakeGPS"); hasFirstFix = true; }
     ~FakeGPS() {}
 
     void read() override {}

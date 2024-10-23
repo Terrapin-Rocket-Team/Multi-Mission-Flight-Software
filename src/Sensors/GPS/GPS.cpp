@@ -3,116 +3,26 @@
 namespace mmfs
 {
 
+#pragma region GPS Specific Functions
+
     GPS::GPS()
     {
-        staticData = new char[60 + MAX_DIGITS_LAT_LON * 2 + MAX_DIGITS_FLOAT * 1];               // 60 chars for the string, 15 chars for the 2 floats, 12 chars for the float
-        data = new char[MAX_DIGITS_LAT_LON * 2 + MAX_DIGITS_FLOAT * 4 + MAX_DIGITS_INT * 1 + 8]; // 15 chars for the 2 floats, 12 chars for the 4 floats, 10 chars for the time of day string, 10 for the int, 8 for the comma
+        setUpPackedData();
     }
 
-    /*
-    returns the lat and long of the rocket and the altitude
-    */
-    Vector<3> GPS::getPos() const
-    {
-        return position;
-    }
+    GPS::~GPS() {}
 
-    double GPS::getHeading() const
-    {
-        return heading;
-    }
+    Vector<3> GPS::getPos() const { return position; }
 
-    /*
-    return the displacement from the origin in meters
-    */
-    Vector<3> GPS::getDisplacement() const
-    {
-        return displacement;
-    }
+    double GPS::getHeading() const { return heading; }
 
-    /*
-    returns vector of orginal position in lat(deg), lat(deg), and alti(m)
-    */
-    Vector<3> GPS::getOrigin() const
-    {
-        return origin;
-    }
+    Vector<3> GPS::getDisplacement() const { return displacement; }
 
-    bool GPS::getHasFirstFix() const
-    {
-        return hasFirstFix;
-    }
+    Vector<3> GPS::getOrigin() const { return origin; }
 
-    /*
-    return the number of satellites to indicate quality of data
-    */
-    int GPS::getFixQual() const
-    {
-        return fixQual;
-    }
+    bool GPS::getHasFirstFix() const { return hasFirstFix; }
 
-    const char *GPS::getCsvHeader() const
-    {                                                                                                // incl G- for GPS
-        return "G-Lat (deg),G-Lon (deg),G-Alt (m),G-DispX (m),G-DispY (m),G-DispZ (m),G-# of Sats,"; // trailing comma
-    }
-
-    const char *GPS::getDataString() const
-    {
-        sprintf(data, "%.10f,%.10f,%.2f,%.2f,%.2f,%.2f,%d,", position.x(), position.y(), position.z(), displacement.x(), displacement.y(), displacement.z(), fixQual); // trailing comma
-        return data;
-    }
-
-    const char *GPS::getStaticDataString() const
-    {
-        sprintf(staticData, "Original Latitude (m): %.10f\nOriginal Longitude (m): %.10f\nOriginal Altitude (m): %.2f\n", origin.x(), origin.y(), origin.z());
-        return staticData;
-    }
-
-    void GPS::update()
-    {
-        read();
-
-        if (!hasFirstFix && fixQual >= 3)
-        {
-            logger.recordLogData(INFO_, "GPS has first fix.");
-
-            bb.aonoff(BUZZER_PIN, 1000);
-            hasFirstFix = true;
-            origin.x() = position.x();
-            origin.y() = position.y();
-            origin.z() = position.z();
-
-            calcInitialValuesForDistance();
-        }
-        if (hasFirstFix)
-        {
-            if(biasCorrectionMode){
-                originBuffer.push(position);
-                Vector<3> sum = Vector<3>(0, 0, 0);
-                int valsToCount = std::min(originBuffer.getCount(), CIRC_BUFFER_LENGTH - CIRC_BUFFER_IGNORE);
-                for (int i = 0; i < valsToCount; i++)
-                {
-                    sum += originBuffer[i];
-                }
-                origin = sum / valsToCount / 1.0;
-            }
-            calcDistance();
-            displacement.z() = (position.z() - origin.z());
-        }
-    }
-
-    bool GPS::begin(bool useBiasCorrection)
-    {
-        biasCorrectionMode = useBiasCorrection;
-        position = Vector<3>(0, 0, 0);
-        displacement = Vector<3>(0, 0, 0);
-        origin = Vector<3>(0, 0, 0);
-        originBuffer.clear();
-        fixQual = 0;
-        hasFirstFix = false;
-        heading = 0;
-        return init();
-    }
+    int GPS::getFixQual() const { return fixQual; }
 
     // Taken from this article and repo. As I understand it, it's an accurate approximation of the Vincenty formulae to find the distance between two points on the earth
     //  https://github.com/mapbox/cheap-ruler/blob/main/index.js#L475
@@ -151,4 +61,108 @@ namespace mmfs
             val += 360;
         return val;
     }
+
+#pragma endregion // GPS Specific Functions
+
+#pragma region Sensor Virtual Function Implementations
+
+    const char *GPS::getTypeString() const { return "GPS"; }
+
+    const SensorType GPS::getType() const { return GPS_; }
+
+    void GPS::update()
+    {
+        read();
+
+        if (!hasFirstFix && fixQual >= 3)
+        {
+            logger.recordLogData(INFO_, "GPS has first fix.");
+
+            bb.aonoff(BUZZER_PIN, 1000);
+            hasFirstFix = true;
+            origin.x() = position.x();
+            origin.y() = position.y();
+            origin.z() = position.z();
+
+            calcInitialValuesForDistance();
+        }
+        if (hasFirstFix)
+        {
+            if (biasCorrectionMode)
+            {
+                originBuffer.push(position);
+                Vector<3> sum = Vector<3>(0, 0, 0);
+                int valsToCount = std::min(originBuffer.getCount(), CIRC_BUFFER_LENGTH - CIRC_BUFFER_IGNORE);
+                for (int i = 0; i < valsToCount; i++)
+                {
+                    sum += originBuffer[i];
+                }
+                origin = sum / valsToCount / 1.0;
+            }
+            calcDistance();
+            displacement.z() = (position.z() - origin.z());
+        }
+
+        packData();
+    }
+
+    bool GPS::begin(bool useBiasCorrection)
+    {
+        biasCorrectionMode = useBiasCorrection;
+        position = Vector<3>(0, 0, 0);
+        displacement = Vector<3>(0, 0, 0);
+        origin = Vector<3>(0, 0, 0);
+        originBuffer.clear();
+        fixQual = 0;
+        hasFirstFix = false;
+        heading = 0;
+        return init();
+    }
+
+#pragma region Packed Data Functions
+
+    const int GPS::getNumPackedDataPoints() const { return 7; }
+
+    const PackedType *GPS::getPackedOrder() const
+    {
+        static const PackedType order[] = {DOUBLE, DOUBLE, FLOAT, FLOAT, FLOAT, FLOAT, BYTE};
+        return order;
+    }
+    const char **GPS::getPackedDataLabels() const
+    {
+        static const char *labels[] = {"Lat", "Lon", "Alt (m)", "Disp X (m)", "Disp Y (m)", "Disp Z (m)", "Fix Quality"};
+        return labels;
+    }
+    void GPS::packData()
+    {
+        float posz = float(position.z());
+        float dispx = float(displacement.x());
+        float dispy = float(displacement.y());
+        float dispz = float(displacement.z());
+        uint8_t fixQual = uint8_t(this->fixQual);
+        int offset = 0;
+        memcpy(packedData + offset, &position.x(), sizeof(double));
+        offset += sizeof(double);
+        memcpy(packedData + offset, &position.y(), sizeof(double));
+        offset += sizeof(double);
+        memcpy(packedData + offset, &posz, sizeof(float));
+        offset += sizeof(float);
+        memcpy(packedData + offset, &dispx, sizeof(float));
+        offset += sizeof(float);
+        memcpy(packedData + offset, &dispy, sizeof(float));
+        offset += sizeof(float);
+        memcpy(packedData + offset, &dispz, sizeof(float));
+        offset += sizeof(float);
+        memcpy(packedData + offset, &fixQual, sizeof(uint8_t));
+    }
+
+    // const char *GPS::getStaticDataString() const
+    // {
+    //     sprintf(staticData, "Original Latitude (m): %.10f\nOriginal Longitude (m): %.10f\nOriginal Altitude (m): %.2f\n", origin.x(), origin.y(), origin.z());
+    //     return staticData;
+    // }
+
+#pragma endregion // Packed Data Functions
+
+#pragma endregion // Sensor Virtual Function Implementations
 }
