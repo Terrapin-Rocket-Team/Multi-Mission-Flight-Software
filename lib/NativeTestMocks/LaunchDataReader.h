@@ -14,7 +14,7 @@ private:
     size_t lineIdx;
     const std::filesystem::path& filePath;  //fs::path is cross-platform,
                                             //should be easier to work with
-    std::iostream<char> fileStream;
+    std::ifstream<char> fileStream;
     size_t numColumns;
 public:
     LaunchDataReader(const std::filesystem::path& filePath);
