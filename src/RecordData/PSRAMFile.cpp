@@ -9,6 +9,11 @@ PSRAMFile::PSRAMFile(const char *name)
     setName(name);
 }
 
+PSRAMFile::~PSRAMFile()
+{
+    delete[] name;
+}
+
 void PSRAMFile::write(uint8_t *data, int size)
 {
     if (!_open || openMode == F_READ)
@@ -47,7 +52,7 @@ void PSRAMFile::readTo(char *data, char endChar)
 
 void PSRAMFile::setName(const char *name)
 {
-    strncpy(this->name, name, MAX_FILE_NAME_SIZE);
+    snprintf(this->name, MAX_FILE_NAME_SIZE, "%s", name);
 }
 
 const char *PSRAMFile::getName()

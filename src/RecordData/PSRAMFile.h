@@ -3,6 +3,7 @@
 
 #include <cstdint>
 #include "../Constants.h"
+#include <stdio.h>
 
 namespace mmfs
 {
@@ -33,6 +34,7 @@ namespace mmfs
 
     public:
         PSRAMFile(const char *name);
+        ~PSRAMFile();
 
         void write(uint8_t *data, int size);
         void print(const char *data);
