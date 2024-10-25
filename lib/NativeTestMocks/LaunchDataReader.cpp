@@ -12,20 +12,25 @@ LaunchDataReader::LaunchDataReader(const std::filesystem::path &filePath) : file
         std::cerr << "LaunchDataReader: Failed to open data file at " << filePath << std::endl;
         initialized = false;
     } else {
+        lineIdx = 0;
         initialized = true;
     }
 }
 
-bool LaunchDataReader::read_column_header(int &numCols, char **colNames) {
+bool LaunchDataReader::read_column_header(int &numCols, std::string colNames[]) {
     if(lineIdx == 0) {
         std::string line;
         std::getline(fileStream, line);
+
+        if(line[line.size()] != ',') line+=",";
+
         std::istringstream headerStream = std::istringstream(line);
 
         std::string col;
         numCols = 0;
-        while(std::getline(headerStream, col, ',')) {
-            strcpy(colNames[numCols], col.c_str());
+        while(std::getline(headerStream, col, ',').good()) {
+            // std::cout << "Column " << numCols << ": " << col << std::endl;
+            colNames[numCols] = col;
             numCols++;
         }
 
@@ -40,6 +45,9 @@ bool LaunchDataReader::read_column_header(int &numCols, char **colNames) {
 bool LaunchDataReader::read(float *data) {
     std::string line;
     std::getline(fileStream, line);
+
+    if(!fileStream.good()) return false;
+
     std::istringstream lineStream = std::istringstream(line);
 
     std::string col;
@@ -53,7 +61,7 @@ bool LaunchDataReader::read(float *data) {
 
     lineIdx++;
 
-    return true;
+    return i > 0;
 }
 
 

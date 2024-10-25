@@ -41,20 +41,27 @@ void test_reader_init() {
 
 void test_read_header() {
      LaunchDataReader reader("test/test_launch_data_reader/test.csv");
-     char *cols[10];
-     for(int i = 0; i < 10; i++) {
-       cols[i] = (char*) malloc(1024 * sizeof(char));
-     }
-
+     std::string cols[3];
      int numCols;
-     bool res = reader.read_column_header(numCols, cols);
-//     TEST_ASSERT_EQUAL(true, reader.is_initialized());
 
-     std::cout << "Number of columns: " << numCols << std::endl;
-     std::cout << "col 1: " << cols[0] << std::endl;
-     TEST_ASSERT_EQUAL(0, strcmp(cols[0], "col1"));
+     bool res = reader.read_column_header(numCols, cols);
+     TEST_ASSERT_EQUAL(true, res);
+
+//     std::cout << "Number of columns: " << numCols << std::endl;
+     std::string expectedCols[3] = {
+       "col1",
+       "col2",
+       "col3"
+     };
+
+     for(int i = 0; i < numCols; i++) {
+     	TEST_ASSERT_EQUAL(true, cols[i] == expectedCols[i]);
+     }
 }
 
+void test_read_line() {
+
+}
 // ---
 
 

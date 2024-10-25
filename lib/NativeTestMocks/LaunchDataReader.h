@@ -21,7 +21,7 @@ public:
 
     //reads header of the CSV, sets numCols to number of columns and colNames
     //returns true if successful, false otherwise
-    bool read_column_header(int& numCols, char** colNames);
+    bool read_column_header(int& numCols, std::string colNames[]);
 
     //reads next line in CSV, sets data to be an array of sensor observations
     //the order is consistent with colNames in read_column_header
