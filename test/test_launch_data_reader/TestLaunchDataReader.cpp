@@ -34,8 +34,13 @@ void tearDown(void)
 
 // Test functions must be void and take no arguments, put them here
 
+void test_reader_init() {
+	LaunchDataReader reader("test/test_launch_data_reader/test.csv");
+    TEST_ASSERT_EQUAL(true, reader.is_initialized());
+}
+
 void test_read_header() {
-     LaunchDataReader reader("./test/test_launch_data_reader/test.csv");
+     LaunchDataReader reader("test/test_launch_data_reader/test.csv");
      char *cols[10];
      for(int i = 0; i < 10; i++) {
        cols[i] = (char*) malloc(1024 * sizeof(char));
@@ -60,6 +65,7 @@ int main(int argc, char **argv)
     UNITY_BEGIN();
 
     // Add your tests here
+    RUN_TEST(test_reader_init); // no parentheses after function name
     RUN_TEST(test_read_header); // no parentheses after function name
 
 
