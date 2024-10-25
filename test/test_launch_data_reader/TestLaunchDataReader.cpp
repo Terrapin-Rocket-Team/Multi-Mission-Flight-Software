@@ -50,8 +50,8 @@ void test_read_header() {
      bool res = reader.read_column_header(numCols, cols);
 //     TEST_ASSERT_EQUAL(true, reader.is_initialized());
 
-//     std::cout << "Number of columns: " << numCols << std::endl;
-//     std::cout << "col 1" << cols[0] << std::endl;
+     std::cout << "Number of columns: " << numCols << std::endl;
+     std::cout << "col 1: " << cols[0] << std::endl;
      TEST_ASSERT_EQUAL(0, strcmp(cols[0], "col1"));
 }
 

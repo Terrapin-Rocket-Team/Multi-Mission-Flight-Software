@@ -11,11 +11,10 @@
 class LaunchDataReader {
 private:
     bool initialized = false;
-    size_t lineIdx;
+    size_t lineIdx = 0;
     const std::filesystem::path& filePath;  //fs::path is cross-platform,
                                             //should be easier to work with
     std::ifstream fileStream;
-    size_t numColumns;
 public:
     LaunchDataReader(const std::filesystem::path& filePath);
     bool is_initialized() const;
