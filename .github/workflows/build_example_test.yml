@@ -19,6 +19,9 @@ jobs:
           python-version: '3.11'
       - name: Install PlatformIO Core
         run: pip install --upgrade platformio
-
+      - name: Check Directory
+        run: pwd
+      - name: Check Test File
+        run: cat ./test/test_launch_data_reader/test.csv
       - name: Build Example Test
         run: pio run --environment teensy41 
