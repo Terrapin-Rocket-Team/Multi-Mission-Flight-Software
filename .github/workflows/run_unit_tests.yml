@@ -20,4 +20,4 @@ jobs:
       - name: Install PlatformIO Core
         run: pip install --upgrade platformio
       - name: Run Unity Tests
-        run: pio test -e native
+        run: pio test -e native -v
