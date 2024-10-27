@@ -60,7 +60,29 @@ void test_read_header() {
 }
 
 void test_read_line() {
+     LaunchDataReader reader("test/test_launch_data_reader/test.csv");
+     std::string cols[3];
+     int numCols = 0;
 
+     bool res = reader.read_column_header(numCols, cols);
+
+     float* measurements = (float*) malloc(numCols * sizeof(float));
+
+     int line = 0;
+     while(reader.read(measurements)) {
+        std::cout << "[" << line << "] " << "START" << std::endl;
+        std::cout << "[" << line << "] " << measurements[0] << std::endl;
+        std::cout << "[" << line << "] " << measurements[1] << std::endl;
+        std::cout << "[" << line << "] " << measurements[2] << std::endl;
+        std::cout << "[" << line << "] " << "END" << std::endl;
+
+        TEST_ASSERT_EQUAL_FLOAT(1.0f, measurements[0]);
+        TEST_ASSERT_EQUAL_FLOAT(2.0f, measurements[1]);
+        TEST_ASSERT_EQUAL_FLOAT(3.0f, measurements[2]);
+        line++;
+     }
+
+     TEST_ASSERT_EQUAL(1, line);
 }
 // ---
 
@@ -74,6 +96,7 @@ int main(int argc, char **argv)
     // Add your tests here
     RUN_TEST(test_reader_init); // no parentheses after function name
     RUN_TEST(test_read_header); // no parentheses after function name
+    RUN_TEST(test_read_line); // no parentheses after function name
 
 
     UNITY_END();

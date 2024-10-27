@@ -43,19 +43,20 @@ bool LaunchDataReader::read_column_header(int &numCols, std::string colNames[]) 
 }
 
 bool LaunchDataReader::read(float *data) {
+    if(!fileStream.good()) return false;
+
     std::string line;
     std::getline(fileStream, line);
+    if(line[line.size()] != ',') line+=",";
 
-    if(!fileStream.good()) return false;
+    std::cout << "LINE " << lineIdx << ": " << line << std::endl;
 
     std::istringstream lineStream = std::istringstream(line);
 
-    std::string col;
     size_t i = 0;
-    while(lineStream.good()) {
-        float measurement;
-        lineStream >> measurement;
-        data[i] = measurement;
+    std::string col;
+    while(std::getline(lineStream, col, ',').good()) {
+        data[i] = static_cast<float>(strtod(col.c_str(), nullptr));
         i++;
     }
 
