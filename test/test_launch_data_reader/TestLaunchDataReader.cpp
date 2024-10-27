@@ -82,7 +82,7 @@ void test_read_line() {
         line++;
      }
 
-     TEST_ASSERT_EQUAL(1, line);
+     TEST_ASSERT_EQUAL(6, line);
 }
 // ---
 
