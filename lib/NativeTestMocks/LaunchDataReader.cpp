@@ -17,7 +17,7 @@ LaunchDataReader::LaunchDataReader(const std::filesystem::path &filePath) : file
     }
 }
 
-bool LaunchDataReader::read_column_header(int &numCols, std::string colNames[]) {
+bool LaunchDataReader::readColumnHeader(int &numCols, std::string colNames[]) {
     if(lineIdx == 0) {
         std::string line;
         std::getline(fileStream, line);
@@ -42,14 +42,12 @@ bool LaunchDataReader::read_column_header(int &numCols, std::string colNames[]) 
     }
 }
 
-bool LaunchDataReader::read(float *data) {
+bool LaunchDataReader::readLine(float *data) {
     if(!fileStream.good()) return false;
 
     std::string line;
     std::getline(fileStream, line);
     if(line[line.size()] != ',') line+=",";
-
-    std::cout << "LINE " << lineIdx << ": " << line << std::endl;
 
     std::istringstream lineStream = std::istringstream(line);
 
@@ -66,11 +64,15 @@ bool LaunchDataReader::read(float *data) {
 }
 
 
-bool LaunchDataReader::is_initialized() const {
+bool LaunchDataReader::isInit() const {
     return initialized;
 }
 
-LaunchDataReader::~LaunchDataReader() {
+void LaunchDataReader::close() {
     fileStream.close();
+}
+
+LaunchDataReader::~LaunchDataReader() {
+    close();
 }
 

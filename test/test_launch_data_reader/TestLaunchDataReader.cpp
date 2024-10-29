@@ -36,7 +36,7 @@ void tearDown(void)
 
 void test_reader_init() {
 	LaunchDataReader reader("test/test_launch_data_reader/test.csv");
-    TEST_ASSERT_EQUAL(true, reader.is_initialized());
+    TEST_ASSERT_EQUAL(true, reader.isInit());
 }
 
 void test_read_header() {
@@ -44,7 +44,7 @@ void test_read_header() {
      std::string cols[3];
      int numCols;
 
-     bool res = reader.read_column_header(numCols, cols);
+     bool res = reader.readColumnHeader(numCols, cols);
      TEST_ASSERT_EQUAL(true, res);
 
 //     std::cout << "Number of columns: " << numCols << std::endl;
@@ -64,12 +64,12 @@ void test_read_line() {
      std::string cols[3];
      int numCols = 0;
 
-     bool res = reader.read_column_header(numCols, cols);
+     bool res = reader.readColumnHeader(numCols, cols);
 
      float* measurements = (float*) malloc(numCols * sizeof(float));
 
      int line = 0;
-     while(reader.read(measurements)) {
+     while(reader.readLine(measurements)) {
         std::cout << "[" << line << "] " << "START" << std::endl;
         std::cout << "[" << line << "] " << measurements[0] << std::endl;
         std::cout << "[" << line << "] " << measurements[1] << std::endl;
