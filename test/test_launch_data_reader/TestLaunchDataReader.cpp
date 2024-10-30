@@ -30,17 +30,17 @@ void tearDown(void)
 }
 // ---
 
-
+std::filesystem::path TEST_PATH_DATA = std::filesystem::path("test_data") / "test.csv";
 
 // Test functions must be void and take no arguments, put them here
 
 void test_reader_init() {
-	LaunchDataReader reader("test/test_launch_data_reader/test.csv");
+	LaunchDataReader reader(TEST_PATH_DATA);
     TEST_ASSERT_EQUAL(true, reader.isInit());
 }
 
 void test_read_header() {
-     LaunchDataReader reader("test/test_launch_data_reader/test.csv");
+     LaunchDataReader reader(TEST_PATH_DATA);
      std::string cols[3];
      int numCols;
 
@@ -49,9 +49,9 @@ void test_read_header() {
 
 //     std::cout << "Number of columns: " << numCols << std::endl;
      std::string expectedCols[3] = {
-       "col1",
-       "col2",
-       "col3"
+       "pres",
+       "temp",
+       "smth"
      };
 
      for(int i = 0; i < numCols; i++) {
@@ -60,7 +60,7 @@ void test_read_header() {
 }
 
 void test_read_line() {
-     LaunchDataReader reader("test/test_launch_data_reader/test.csv");
+     LaunchDataReader reader(TEST_PATH_DATA);
      std::string cols[3];
      int numCols = 0;
 

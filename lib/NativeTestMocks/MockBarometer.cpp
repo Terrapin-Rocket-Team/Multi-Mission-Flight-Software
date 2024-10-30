@@ -6,10 +6,13 @@
 
 #include <iostream>
 
-MockBarometer::MockBarometer(const std::filesystem::path &dataPath, const std::string &pressureColName, const std::string &temperatureColName) :
-    dataReader(dataPath), pressureColName(pressureColName), temperatureColName(temperatureColName) {}
+MockBarometer::MockBarometer(const std::filesystem::path &dataPath, const std::string& pressureColName, const std::string& temperatureColName) :
+    dataReader(dataPath), pressureColName(pressureColName), temperatureColName(temperatureColName) {
+}
 
 bool MockBarometer::init() {
+    std::cout << "pressureColName: " << pressureColName << std::endl;
+    std::cout << "tempColName: " << temperatureColName << std::endl;
     if(!dataReader.isInit()) return false;
 
     int numCols = -1;
@@ -43,6 +46,8 @@ bool MockBarometer::init() {
 
 void MockBarometer::read() {
     dataReader.readLine(launchData);
+    std::cout << "pressure: " << launchData[pressureColIndex] << std::endl;
+    std::cout << "temp: " << launchData[temperatureColIndex] << std::endl;
 
     pressure = launchData[pressureColIndex];
     temp = launchData[temperatureColIndex];
