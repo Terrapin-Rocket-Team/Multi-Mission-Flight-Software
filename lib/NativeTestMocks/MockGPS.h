@@ -5,7 +5,7 @@
 #ifndef MOCKGPS_H
 #define MOCKGPS_H
 #include <LaunchDataReader.h>
-#include <Sensors/GPS/GPS.h>
+#include "../../src/Sensors/GPS/GPS.h"
 
 
 class MockGPS : mmfs::GPS {

@@ -71,17 +71,14 @@ bool MockGPS::init() {
 }
 
 void MockGPS::read() {
-    position.x() = launchData[posXColName];
-    position.y() = launchData[posYColName];
-    position.z() = launchData[posZColName];
+    position.x() = launchData[posXColIdx];
+    position.y() = launchData[posYColIdx];
+    position.z() = launchData[posZColIdx];
 
-    heading = launchData[headingColName];
-    fixQual = launchData[fixQualityColName];
+    heading = launchData[headingColIdx];
+    fixQual = launchData[fixQualityColIdx];
 }
 
 MockGPS::~MockGPS() {
     dataReader.close();
 }
-
-
-
