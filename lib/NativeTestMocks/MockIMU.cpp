@@ -64,7 +64,7 @@ void MockIMU::read() {
     for(int i = 0; i < 3; i++) {
         measuredAcc[i] = launchData[accIndices[i]];
         measuredGyro[i] = launchData[gyroIndices[i]];
-        measuredMag[i] = launchData[measuredMag[i]];
+        measuredMag[i] = launchData[magIndices[i]];
     }
 }
 
