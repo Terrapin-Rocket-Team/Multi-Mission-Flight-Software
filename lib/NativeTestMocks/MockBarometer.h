@@ -10,11 +10,14 @@
 class MockBarometer : public mmfs::Barometer {
 private:
     LaunchDataReader dataReader;
-    size_t pressureColIndex = -1;
-    size_t temperatureColIndex = -1;
+
+    int pressureColIndex = -1;
+    int temperatureColIndex = -1;
+
     const std::string pressureColName;
     const std::string temperatureColName;
-    float launchData[MAX_NUM_COLS]{};
+
+    float launchData[MAX_NUM_COLS]{0.0f};
 public:
     MockBarometer(const std::filesystem::path& dataPath, const std::string& pressureColName, const std::string& temperatureColName);
     ~MockBarometer() override;

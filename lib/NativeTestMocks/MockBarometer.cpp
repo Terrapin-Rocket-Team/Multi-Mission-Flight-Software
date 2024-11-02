@@ -11,8 +11,8 @@ MockBarometer::MockBarometer(const std::filesystem::path &dataPath, const std::s
 }
 
 bool MockBarometer::init() {
-    std::cout << "pressureColName: " << pressureColName << std::endl;
-    std::cout << "tempColName: " << temperatureColName << std::endl;
+    // std::cout << "pressureColName: " << pressureColName << std::endl;
+    // std::cout << "tempColName: " << temperatureColName << std::endl;
     if(!dataReader.isInit()) return false;
 
     int numCols = -1;
