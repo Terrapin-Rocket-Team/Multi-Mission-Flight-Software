@@ -8,6 +8,7 @@
 
 MockBarometer::MockBarometer(const std::filesystem::path &dataPath, const std::string& pressureColName, const std::string& temperatureColName) :
     dataReader(dataPath), pressureColName(pressureColName), temperatureColName(temperatureColName) {
+    Sensor::setName("MockBarometer");
 }
 
 bool MockBarometer::init() {

@@ -17,7 +17,9 @@ MockGPS::MockGPS(const std::filesystem::path &dataPath,
     posYColName(posYColName),
     posZColName(posZColName),
     headingColName(headingColName),
-    fixQualityColName(fixQualityColName) {}
+    fixQualityColName(fixQualityColName) {
+    Sensor::setName("MockGPS");
+}
 
 bool MockGPS::init() {
 
