@@ -17,12 +17,12 @@ LaunchDataReader::LaunchDataReader(const std::filesystem::path &filePath) : file
     }
 }
 
-bool LaunchDataReader::readColumnHeader(int &numCols, std::string colNames[]) {
+bool LaunchDataReader::readColumnHeaders(int &numCols, std::string colNames[]) {
     if(lineIdx == 0) {
         std::string line;
         std::getline(fileStream, line);
 
-        if(line[line.size()] != ',') line+=",";
+        if(line[line.size()-1] != ',') line+=",";
 
         std::istringstream headerStream = std::istringstream(line);
 

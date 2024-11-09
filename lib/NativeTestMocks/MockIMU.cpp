@@ -21,7 +21,7 @@ bool MockIMU::init() {
 
     int numCols = -1;
     std::string colNames[MAX_NUM_COLS];
-    dataReader.readColumnHeader(numCols, colNames);
+    dataReader.readColumnHeaders(numCols, colNames);
 
     if(numCols == -1 || numCols > MAX_NUM_COLS) {
         std::cerr << "[MockIMU]: Invalid number of columns read: " << numCols << std::endl;
