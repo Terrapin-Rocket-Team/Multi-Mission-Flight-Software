@@ -73,6 +73,7 @@ bool MockGPS::init() {
 }
 
 void MockGPS::read() {
+    dataReader.readLine(launchData);
     position.x() = launchData[posXColIdx];
     position.y() = launchData[posYColIdx];
     position.z() = launchData[posZColIdx];

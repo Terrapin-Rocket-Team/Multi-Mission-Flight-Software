@@ -47,9 +47,6 @@ bool MockBarometer::init() {
 
 void MockBarometer::read() {
     dataReader.readLine(launchData);
-    std::cout << "pressure: " << launchData[pressureColIndex] << std::endl;
-    std::cout << "temp: " << launchData[temperatureColIndex] << std::endl;
-
     pressure = launchData[pressureColIndex];
     temp = launchData[temperatureColIndex];
 }
