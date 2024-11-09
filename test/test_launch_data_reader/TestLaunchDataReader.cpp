@@ -44,7 +44,7 @@ void test_read_header() {
      std::string cols[3];
      int numCols;
 
-     bool res = reader.readColumnHeader(numCols, cols);
+     bool res = reader.readColumnHeaders(numCols, cols);
      TEST_ASSERT_EQUAL(true, res);
 
 //     std::cout << "Number of columns: " << numCols << std::endl;
@@ -64,7 +64,7 @@ void test_read_line() {
      std::string cols[3];
      int numCols = 0;
 
-     bool res = reader.readColumnHeader(numCols, cols);
+     bool res = reader.readColumnHeaders(numCols, cols);
 
      float* measurements = (float*) malloc(numCols * sizeof(float));
 
@@ -76,9 +76,9 @@ void test_read_line() {
         std::cout << "[" << line << "] " << measurements[2] << std::endl;
         std::cout << "[" << line << "] " << "END" << std::endl;
 
-        TEST_ASSERT_EQUAL_FLOAT(1.0f, measurements[0]);
-        TEST_ASSERT_EQUAL_FLOAT(2.0f, measurements[1]);
-        TEST_ASSERT_EQUAL_FLOAT(3.0f, measurements[2]);
+        TEST_ASSERT_EQUAL_FLOAT(1.0f+line, measurements[0]);
+        TEST_ASSERT_EQUAL_FLOAT(2.0f+line, measurements[1]);
+        TEST_ASSERT_EQUAL_FLOAT(3.0f+line, measurements[2]);
         line++;
      }
 
