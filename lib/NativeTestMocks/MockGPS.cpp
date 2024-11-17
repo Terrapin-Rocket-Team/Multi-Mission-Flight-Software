@@ -79,8 +79,21 @@ void MockGPS::read() {
     position.z() = launchData[posZColIdx];
 
     heading = launchData[headingColIdx];
-    fixQual = launchData[fixQualityColIdx];
+    fixQual = static_cast<int>(launchData[fixQualityColIdx]);
 }
+
+mmfs::Vector<3> MockGPS::getPos() const {
+    return GPS::getPos();
+}
+
+double MockGPS::getHeading() const {
+    return GPS::getHeading();
+}
+
+int MockGPS::getFixQual() const {
+    return GPS::getFixQual();
+}
+
 
 MockGPS::~MockGPS() {
     dataReader.close();

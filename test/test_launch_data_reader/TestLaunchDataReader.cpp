@@ -41,7 +41,7 @@ void test_reader_init() {
 
 void test_read_header() {
      LaunchDataReader reader(TEST_PATH_DATA);
-     std::string cols[3];
+     std::string cols[1024];
      int numCols;
 
      bool res = reader.readColumnHeaders(numCols, cols);
@@ -54,14 +54,14 @@ void test_read_header() {
        "smth"
      };
 
-     for(int i = 0; i < numCols; i++) {
+     for(int i = 0; i < 3; i++) {
      	TEST_ASSERT_EQUAL(true, cols[i] == expectedCols[i]);
      }
 }
 
 void test_read_line() {
      LaunchDataReader reader(TEST_PATH_DATA);
-     std::string cols[3];
+     std::string cols[1024];
      int numCols = 0;
 
      bool res = reader.readColumnHeaders(numCols, cols);

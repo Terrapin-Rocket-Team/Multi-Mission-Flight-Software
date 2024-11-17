@@ -61,6 +61,7 @@ bool MockIMU::init() {
 }
 
 void MockIMU::read() {
+    dataReader.readLine(launchData);
     for(int i = 0; i < 3; i++) {
         measuredAcc[i] = launchData[accIndices[i]];
         measuredGyro[i] = launchData[gyroIndices[i]];
