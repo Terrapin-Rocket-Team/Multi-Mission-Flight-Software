@@ -13,6 +13,10 @@ MockIMU::MockIMU(const std::filesystem::path &dataPath, const std::string accCol
         this->accColNames[i] = accColNames[i];
         this->gyroColNames[i] = gyroColNames[i];
         this->magColNames[i] = magColNames[i];
+
+        this->accIndices[i] = -1;
+        this->gyroIndices[i] = -1;
+        this->magIndices[i] = -1;
     }
 }
 
@@ -61,7 +65,10 @@ bool MockIMU::init() {
 }
 
 void MockIMU::read() {
-    dataReader.readLine(launchData);
+    if(!dataReader.readLine(launchData)) {
+        std::cerr << "[MockIMU]: Failed to read data from file!" << std::endl;
+        return;
+    }
     for(int i = 0; i < 3; i++) {
         measuredAcc[i] = launchData[accIndices[i]];
         measuredGyro[i] = launchData[gyroIndices[i]];

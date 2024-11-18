@@ -17,9 +17,9 @@ private:
     std::string gyroColNames[3];
     std::string magColNames[3];
 
-    int accIndices[3] = {-1};
-    int gyroIndices[3] = {-1};
-    int magIndices[3] = {-1};
+    int accIndices[3];
+    int gyroIndices[3];
+    int magIndices[3];
 
     float launchData[MAX_NUM_COLS]{0.0f};
 public:

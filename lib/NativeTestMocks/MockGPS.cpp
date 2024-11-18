@@ -73,7 +73,9 @@ bool MockGPS::init() {
 }
 
 void MockGPS::read() {
-    dataReader.readLine(launchData);
+    if(!dataReader.readLine(launchData)) {
+        std::cerr << "[MockGPS]: Failed to read data from file!" << std::endl;
+    }
     position.x() = launchData[posXColIdx];
     position.y() = launchData[posYColIdx];
     position.z() = launchData[posZColIdx];

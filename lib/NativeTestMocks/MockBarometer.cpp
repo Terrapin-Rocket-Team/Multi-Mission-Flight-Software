@@ -38,7 +38,7 @@ bool MockBarometer::init() {
         return false;
     }
     if(temperatureColIndex == -1) {
-        std::cerr << "[MockBarometer]: Failed to find temperature column index for name: " << pressureColName << std::endl;
+        std::cerr << "[MockBarometer]: Failed to find temperature column index for name: " << temperatureColName << std::endl;
         return false;
     }
 
@@ -46,7 +46,10 @@ bool MockBarometer::init() {
 }
 
 void MockBarometer::read() {
-    dataReader.readLine(launchData);
+    if(!dataReader.readLine(launchData)) {
+        std::cerr << "[MockBarometer]: Failed to read data from file!" << std::endl;
+        return;
+    }
     pressure = launchData[pressureColIndex];
     temp = launchData[temperatureColIndex];
 }

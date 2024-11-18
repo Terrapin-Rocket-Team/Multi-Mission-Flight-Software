@@ -20,6 +20,7 @@
 
 
 std::filesystem::path TEST_PATH_DATA = std::filesystem::path("test_data") / "test_new.csv";
+std::filesystem::path BAD_TEST_PATH_DATA = std::filesystem::path("test_data") / "bad.csv";
 
 MockBarometer mockBarometer(TEST_PATH_DATA, "pres", "temp");
 MockGPS mockGPS(TEST_PATH_DATA,
@@ -66,6 +67,11 @@ void test_baro_init() {
     TEST_ASSERT_EQUAL(true, mockBarometer.init());
 }
 
+void test_baro_init_fail() {
+    MockBarometer badMockBaro(BAD_TEST_PATH_DATA, "pres", "temp");
+    TEST_ASSERT_EQUAL(false, badMockBaro.init());
+}
+
 void test_baro_read() {
   	for(int i = 0; i < 6; i++) {
         mockBarometer.read();
@@ -78,6 +84,16 @@ void test_baro_read() {
 
 void test_gps_init() {
     TEST_ASSERT_EQUAL(true, mockGPS.init());
+}
+
+void test_gps_init_fail() {
+    MockGPS badMockGPS(BAD_TEST_PATH_DATA,
+            "lat",
+            "lon",
+            "alt",
+            "head",
+            "fixQ");
+    TEST_ASSERT_EQUAL(false, badMockGPS.init());
 }
 
 void test_gps_read() {
@@ -93,6 +109,11 @@ void test_gps_read() {
 
 void test_imu_init() {
     TEST_ASSERT_EQUAL(true, mockIMU.init());
+}
+
+void test_imu_init_fail() {
+    MockIMU badMockIMU(BAD_TEST_PATH_DATA, accCols, gyroCols, magColNames);
+    TEST_ASSERT_EQUAL(false, badMockIMU.init());
 }
 
 void test_imu_read() {
@@ -113,12 +134,19 @@ int main(int argc, char **argv)
 {
     UNITY_BEGIN();
 
-    // Add your tests here
-    RUN_TEST(test_baro_init); // no parentheses after function name
-    RUN_TEST(test_baro_read); // no parentheses after function name
+    //baro
+    RUN_TEST(test_baro_init);
+    RUN_TEST(test_baro_init_fail);
+    RUN_TEST(test_baro_read);
+
+    //gps
     RUN_TEST(test_gps_init);
+    RUN_TEST(test_gps_init_fail);
     RUN_TEST(test_gps_read);
+
+    //imu
     RUN_TEST(test_imu_init);
+    RUN_TEST(test_imu_init_fail);
     RUN_TEST(test_imu_read);
 
     UNITY_END();
