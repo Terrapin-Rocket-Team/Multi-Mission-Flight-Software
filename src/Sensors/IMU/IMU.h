@@ -24,13 +24,30 @@ namespace mmfs
         virtual void setAccelBestFilteringAtStatic(double a) {accel_best_filtering_at_static = a;};
         virtual double getMagBestFilteringAtStatic() {return mag_best_filtering_at_static;};
         virtual void setMagBestFilteringAtStatic(double m) {mag_best_filtering_at_static = m;};
-        virtual SensorType getType() const override { return IMU_; }
+        virtual const SensorType getType() const override { return IMU_; }
         virtual const char *getTypeString() const override { return "IMU"; }
-        virtual const char *getCsvHeader() const override;
-        virtual const char *getDataString() const override;
-        virtual const char *getStaticDataString() const override;
         virtual void update() override;
         virtual bool begin(bool useBiasCorrection = true) override;
+
+        virtual const int getNumPackedDataPoints() const override { return 7; }
+        virtual const PackedType *getPackedOrder() const override
+        {
+            static const PackedType order[] = {FLOAT, FLOAT, FLOAT, FLOAT, FLOAT, FLOAT, FLOAT};
+            return order;
+        }
+        virtual const char **getPackedDataLabels() const override
+        {
+            static const char *labels[] = {
+                "AccX",
+                "AccY",
+                "AccZ",
+                "QuatX",
+                "QuatY",
+                "QuatZ",
+                "QuatW"};
+            return labels;
+        }
+        virtual void packData();
 
         double adaptiveAccelGain(double alphaBar, double t_1 = .1, double t_2 = .2);
         virtual void quaternionBasedComplimentaryFilterSetup();
@@ -38,10 +55,9 @@ namespace mmfs
 
     protected:
         IMU()
-        {                                       // Protected constructor to prevent instantiation
-            staticData = new char[30 + MAX_DIGITS_FLOAT * 3]; // 30 chars for the string, 12 chars for the 3 floats
-            data = new char[MAX_DIGITS_FLOAT * 10 + 10];      // 10x floats + buffer space
-        };
+        {
+            setUpPackedData();
+        }
 
         Vector<3> accelerationVec = Vector<3>(0, 0, 0); // Body frame acceleration in m/s/s
         Vector<3> orientationEuler = Vector<3>(0, 0, 0);

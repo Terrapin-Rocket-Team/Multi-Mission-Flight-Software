@@ -1,6 +1,6 @@
 {
     "name": "TRT-MMFS",
-    "version": "2.1.0",
+    "version": "2.2.0",
     "description": "Terrapin Rocket Team's Multi-Mission Flight Software. Designed to be used with any FC and any sensor suite.",
     "keywords": "MMFS, TRT, Terrapin Rocket Team, Flight Software",
     "repository": 
@@ -57,7 +57,7 @@
         },
         {
             "name": "SparkFun u-blox GNSS v3",
-            "version": "https://github.com/sparkfun/SparkFun_u-blox_GNSS_v3.git#v3.1.1"
+            "version": "3.1.5"
         },
         {
             "name": "RTClib",
@@ -78,6 +78,7 @@
         [
             "+<*>"
         ],
-        "flags": "-Wno-unknown-pragmas"
+        "flags": "-Wno-unknown-pragmas",
+        "extraScript": "get_version.py"
     }
 }
