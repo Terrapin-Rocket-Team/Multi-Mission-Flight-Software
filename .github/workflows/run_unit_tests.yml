@@ -19,6 +19,5 @@ jobs:
           python-version: '3.11'
       - name: Install PlatformIO Core
         run: pip install --upgrade platformio
-
       - name: Run Unity Tests
         run: pio test -e native
