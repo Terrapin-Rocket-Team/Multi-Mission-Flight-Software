@@ -9,26 +9,21 @@
 namespace mmfs
 {
 
-    // TODO:
-    // - Implement Global and Local orientations
-    // - Implement Global and Local accelerations
-    // - Implement Magnetometer reading fusion
-    // - Revisit naming conventions
-    // - Revisit necessary functions/variables
-
     class IMU : public Sensor
     {
     public:
         virtual ~IMU(){};
 
         //local represents the orientation off of the intial angle. Global represents the orientation with repesct to gravity
-        virtual Quaternion getOrientationLocal();
-        virtual Quaternion getOrientationGlobal();
-        virtual Vector<3> getAccelerationLocal();
+        virtual Quaternion getOrientation();
+        virtual Vector<3> getAngularVelocity();
+        virtual Vector<3> getMagField();
+        virtual Vector<3> getAcceleration();
         virtual Vector<3> getAccelerationGlobal();
-        virtual Vector<3> getMagnetometerReading();
-        virtual Vector<3> getGyroReading();
-        virtual Vector<3> getAccReading();
+        virtual double getAccelBestFilteringAtStatic() {return accel_best_filtering_at_static;};
+        virtual void setAccelBestFilteringAtStatic(double a) {accel_best_filtering_at_static = a;};
+        virtual double getMagBestFilteringAtStatic() {return mag_best_filtering_at_static;};
+        virtual void setMagBestFilteringAtStatic(double m) {mag_best_filtering_at_static = m;};
         virtual const SensorType getType() const override { return IMU_; }
         virtual const char *getTypeString() const override { return "IMU"; }
         virtual void update() override;
@@ -54,28 +49,24 @@ namespace mmfs
         }
         virtual void packData();
 
+        double adaptiveAccelGain(double alphaBar, double t_1 = .1, double t_2 = .2);
+        virtual void quaternionBasedComplimentaryFilterSetup();
+        virtual void quaternionBasedComplimentaryFilter(double dt);
+
     protected:
         IMU()
         {
             setUpPackedData();
         }
-        // Hardware data
-        Vector<3> measuredAcc = Vector<3>(0, 0, 0);
-        Vector<3> measuredMag = Vector<3>(0, 0, 0);
-        Vector<3> measuredGyro = Vector<3>(0, 0, 0);
 
-        // IMU data
+        Vector<3> accelerationVec = Vector<3>(0, 0, 0); // Body frame acceleration in m/s/s
+        Vector<3> orientationEuler = Vector<3>(0, 0, 0);
+        Quaternion orientation = Quaternion(1, 0, 0, 0); // This is the mapping from the body to interial frame as a quaternion and can be used as such: r_I = q * r_B * q^-1
+        Vector<3> angularVelocity = Vector<3>(0, 0, 0); // Rad/s
+        Vector<3> magField = Vector<3>(0, 0, 0); // Body frame mag field in uT
         Vector<3> initialMagField = Vector<3>(0, 0, 0);
-        Vector<3> initialAcc = Vector<3>(0, 0, 0);
-        Vector<3> GyroOffset = Vector<3>(0, 0, 0);
-
-
-        // IMU data (calculated)
-        Vector<3> accelerationGlobal = Vector<3>(0, 0, 0);
-        Vector<3> accelerationLocal = Vector<3>(0, 0, 0);
-        Quaternion orientationGlobal = Quaternion(1, 0, 0, 0);
-        Quaternion orientationLocal = Quaternion(1, 0, 0, 0);
+        double accel_best_filtering_at_static = 0.9; // [0, 1] Higher this number, the more you trust the accelerameter
+        double mag_best_filtering_at_static = 0.9; // [0, 1] Higher this number, the more you trust the magnatometer
     };
-  
 }
 #endif

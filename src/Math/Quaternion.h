@@ -149,6 +149,7 @@ public:
   // similarly for result.z().
   //
   Vector<3> toEuler() const {
+    // TODO what Euler is this? See comment above, I think it is 1-2-3
     Vector<3> ret;
     double sqw = _w * _w;
     double sqx = _x * _x;
@@ -209,6 +210,32 @@ public:
 
   Quaternion scale(double scalar) const {
     return Quaternion(_w * scalar, _x * scalar, _y * scalar, _z * scalar);
+  }
+
+  Quaternion interpolation(Quaternion q, double alpha, double epsilon = .9)
+  {
+    // Source: https://ahrs.readthedocs.io/en/latest/filters/aqua.html#ahrs.filters.aqua.slerp_I
+    // Takes the current quaternion and an input quaternion (q) and performs either a 
+    // Linear intERPolation (LERP) or Spherical Linear intERPolation (SLERP) based on a threshold value.
+    // Inputs
+    // q: Input quaternion to interpolate the current quaterion with. Generally this is the identity quaternion [1 0 0 0] (w first)
+    // alpha: Gain [0 1]. Decides how close the output should be to the input quaternion. A lower alpha means closer to q.
+    // epsilon: Cutoff. Generally .9. Lower than the threshold, use SLERP. Higher use LERP.
+
+    Quaternion p = Quaternion{_w, _x, _y, _z}; // current quaternion
+    Quaternion r; // result
+
+    if(p.w() > epsilon)
+    {
+      // LERP
+      r = q*(1-alpha) + p*alpha;
+      r.normalize();
+      return r;
+    }
+
+    double omega = acos(p.w());
+    r = q*((sin((1-alpha)*omega))/(sin(omega))) + p*(sin(alpha*omega)/sin(omega));
+    return r;
   }
 
 private:
