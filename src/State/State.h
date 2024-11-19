@@ -1,6 +1,7 @@
 #ifndef STATE_H
 #define STATE_H
 
+
 #include "../Filters/Filter.h"
 
 // Include all the sensor classes
@@ -15,7 +16,7 @@
 
 namespace mmfs
 {
-    class State : public DataReporter
+    class State
     {
     public:
         // make numSensors the number of sensors you expect to have. This is used to determine how many sensors to expect in the sensorOrder array.
@@ -25,7 +26,7 @@ namespace mmfs
         // SensorType sensorOrder[numSensors] = {BAROMETER_, GPS_, IMU_, BAROMETER_}; It doesn't what order they're in, as long as they're in the array.
         // useKalmanFilter: whether or not to use the Kalman Filter. If false, the state will use the raw sensor data.
         // stateRecordsOwnData: whether or not the state should call recordFlightData() itself. If false, other funcitons must call recordFlightData() to record the state's data.
-        State(Sensor **sensors, int numSensors, Filter *filter);
+        State(Sensor **sensors, int numSensors, Filter *filter, bool stateRecordsOwnData = true);
         virtual ~State();
 
         // to be called after all applicable sensors have been added.
@@ -39,6 +40,10 @@ namespace mmfs
         // sensor functions
         virtual Sensor *getSensor(SensorType type, int sensorNum = 1) const; // get a sensor of a certain type. 1 indexed. i.e. getSensor(GPS, 1) gets the first GPS sensor.
 
+        virtual char *getDataString() const;
+        virtual char *getCsvHeader() const;
+        virtual char *getStateString(); // This contains only the portions that define what the state thinks the rocket looks like, not full sensor data.
+
         // State Getters
         virtual Vector<3> getPosition() const { return position; }
         virtual Vector<3> getVelocity() const { return velocity; }
@@ -46,22 +51,12 @@ namespace mmfs
         virtual Quaternion getOrientation() const { return orientation; }
         virtual Vector<2> getCoordinates() const { return coordinates; } // lat long in decimal degrees
         virtual double getHeading() const { return heading; }
-        virtual int getNumMaxSensors() const { return maxNumSensors; }
-        virtual Sensor **getSensors() const { return sensors; }
-        bool sensorOK(const Sensor *sensor) const;
 
         // State Setters
         virtual void setUseFilter(bool useFilter) { this->useFilter = useFilter; }
-
-        // DataReporter functions
-        virtual const char *getName() const override { return "State"; }
-        virtual const PackedType *getPackedOrder() const override;
-        virtual const int getNumPackedDataPoints() const override;
-        virtual const char **getPackedDataLabels() const override;
+        virtual void setRecordOwnFlightData(bool recordOwnFlightData) { this->recordOwnFlightData = recordOwnFlightData; }
 
     protected:
-        virtual void packData() override;
-
         double currentTime; // in s since uC turned on
         int lastTime;
 
@@ -69,9 +64,21 @@ namespace mmfs
         Sensor **sensors;
         int numSensors; // how many sensors are actually enabled
 
+        char *csvHeader;
+        char *dataString;
+        char *stateString;
+
+        virtual void setCsvHeader();
+        virtual void setDataString();
+
         virtual void updateSensors();
 
+        // internal state variables
+        bool recordOwnFlightData; // used to determine if the state should record its own data or leave it to other functions
+
         // Helper functions
+        void setCsvString(char *str, const char *start, int startSize, bool header);
+        bool sensorOK(const Sensor *sensor) const;
 
         // State variables
         Vector<3> position;     // in m from start position
@@ -79,7 +86,7 @@ namespace mmfs
         Vector<3> acceleration; // in m/s^2
         Quaternion orientation; // in quaternion
         Vector<2> coordinates;  // in lat, lon
-        double heading;         // in degrees
+        double heading;              // in degrees
 
         // These two only exist because of bugs in the KF. They will be removed when the KF is fixed.
         double baroVelocity;    // in m/s
@@ -88,8 +95,18 @@ namespace mmfs
         // Kalman Filter settings
         bool useFilter = true;
         Filter *filter;
-
-        bool initialized = false;
     };
 }
-#endif // STATE_H
+#endif
+
+/*
+    To add sensors: Include a local variable for the sensor in the state class and edit the applySensorType() function to point the local variable to the correct index in the sensors[] array.
+    Then, edit what the state class does with the sensor data in the updateState() function.
+    Finally, make sure too update the NUM_MAX_SENSORS, SENSOR_ORDER, and SENSOR_NAMES arrays to reflect the new sensor.
+
+    It's that easy!
+    Don't forget to call addSensor() with your new sensor.
+
+    Use sensorOK() to check if a sensor is enabled before using it.
+
+*/

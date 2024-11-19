@@ -4,21 +4,24 @@
 namespace mmfs
 {
 
-    State::State(Sensor **sensors, int numSensors, Filter *filter)
+    State::State(Sensor **sensors, int numSensors, Filter *filter, bool stateRecordsOwnData)
     {
         baroOldAltitude = 0;
         baroVelocity = 0;
-        lastTime = 0;
-        currentTime = 0;
+
+        stateString = nullptr;
+        dataString = nullptr;
+        csvHeader = nullptr;
         this->maxNumSensors = numSensors;
         this->sensors = sensors;
+        recordOwnFlightData = stateRecordsOwnData;
         this->filter = filter;
-        useFilter = filter != nullptr;
-        setUpPackedData();
     }
 
     State::~State()
     {
+        delete[] csvHeader;
+        delete[] stateString;
         delete filter;
     }
 
@@ -56,13 +59,8 @@ namespace mmfs
             filter->initialize();
         }
         numSensors = good;
+        setCsvHeader();
 
-        // Set up the packed data array's size
-        int size = sizeof(float) * 10; // 10 for the state data
-        for (int i = 0; i < numSensors; i++)
-            size += sensors[i]->getPackedDataSize();
-
-        initialized = true;
         return good == tryNumSensors;
     }
 
@@ -73,6 +71,17 @@ namespace mmfs
             if (sensorOK(sensors[i]))
             { // not nullptr and initialized
                 sensors[i]->update();
+                // Wire.beginTransmission(0x42); // random address for testing the i2c bus
+                // byte b = Wire.endTransmission();
+                // if (b != 0x00)
+                // {
+                //     Wire.end();
+                //     Wire.begin();
+                //     logger.recordLogData(ERROR_, "I2C Error");
+                //     sensors[i]->update();
+                //     delay(10);
+                //     sensors[i]->update();
+                // }
             }
         }
     }
@@ -113,14 +122,14 @@ namespace mmfs
             stateVars[4] = velocity.y();
             stateVars[5] = velocity.z();
 
-            filter->iterate(currentTime - lastTime, stateVars, measurements, inputs);
+            double *predictions = filter->iterate(currentTime - lastTime, stateVars, measurements, inputs);
             // pos x, y, z, vel x, y, z
-            position.x() = stateVars[0];
-            position.y() = stateVars[1];
-            position.z() = stateVars[2];
-            velocity.x() = stateVars[3];
-            velocity.y() = stateVars[4];
-            velocity.z() = stateVars[5];
+            position.x() = predictions[0];
+            position.y() = predictions[1];
+            position.z() = predictions[2];
+            velocity.x() = predictions[3];
+            velocity.y() = predictions[4];
+            velocity.z() = predictions[5];
 
             if (sensorOK(baro))
             {
@@ -128,7 +137,7 @@ namespace mmfs
                 baroOldAltitude = baro->getAGLAltM();
             }
 
-            delete[] stateVars;
+            delete[] predictions;
         }
         else
         {
@@ -138,7 +147,6 @@ namespace mmfs
             }
             if (sensorOK(baro))
             {
-                position.z() = baro->getAGLAltM();
                 baroVelocity = velocity.z() = (baro->getAGLAltM() - baroOldAltitude) / (currentTime - lastTime);
                 baroOldAltitude = position.z() = baro->getAGLAltM();
             }
@@ -160,8 +168,54 @@ namespace mmfs
 
         orientation = sensorOK(imu) ? imu->getOrientation() : Quaternion(1, 0, 0, 0);
 
-        packData();
+        setDataString();
+        if (recordOwnFlightData)
+            logger.recordFlightData(dataString);
     }
+
+    void State::setCsvHeader()
+    {
+        char csvHeaderStart[] = "Time,Stage,PX,PY,PZ,VX,VY,VZ,AX,AY,AZ,";
+        setCsvString(csvHeader, csvHeaderStart, sizeof(csvHeaderStart), true);
+    }
+
+    void State::setDataString()
+    {
+        // Assuming 12 char/float (2 dec precision, leaving min value of -9,999,999.99), 10 char/int, 30 char/string
+        // float * 9, int * 0, string * 0, 11 commas and a null terminator
+        // 108 + 12 = 120
+        const int dataStartSize = MAX_DIGITS_FLOAT * 9 + 12;
+        char csvDataStart[dataStartSize];
+        snprintf(
+            csvDataStart, dataStartSize,
+            "%.3f,%.2f,%.2f,%.2f,%.2f,%.2f,%.2f,%.2f,%.2f,%.2f,", // trailing comma very important
+            currentTime,
+            position.x(), position.y(), position.z(),
+            velocity.x(), velocity.y(), velocity.z(),
+            acceleration.x(), acceleration.y(), acceleration.z());
+        setCsvString(dataString, csvDataStart, dataStartSize, false);
+    }
+
+    char *State::getStateString()
+    {
+        delete[] stateString;
+        stateString = new char[500]; // way oversized for right now.
+        GPS *gps = reinterpret_cast<GPS *>(getSensor(GPS_));
+        snprintf(stateString, 500, "%.3f|%.2f,%.2f,%.2f|%.2f,%.2f,%.2f|%.7f,%.7f,%.2f|%.2f,%.2f,%.2f,%.2f|%.2f",
+                 currentTime,
+                 acceleration.x(), acceleration.y(), acceleration.z(),
+                 velocity.x(), velocity.y(), velocity.z(),
+                 position.x(), position.y(), position.z(),
+                 orientation.x(), orientation.y(), orientation.z(), orientation.w(),
+                 sensorOK(gps) ? gps->getHeading() : 0);
+        return stateString;
+    }
+
+    char *State::getDataString() const { return dataString; }
+
+    char *State::getCsvHeader() const { return csvHeader; }
+
+#pragma region Getters and Setters for Sensors
 
     Sensor *State::getSensor(SensorType type, int sensorNum) const
     {
@@ -171,7 +225,45 @@ namespace mmfs
         return nullptr;
     }
 
+#pragma endregion
+
 #pragma region Helper Functions
+
+    void State::setCsvString(char *dest, const char *start, int startSize, bool header)
+    {
+        int numCategories = numSensors + 1;
+        const char **str = new const char *[numCategories];
+        str[0] = start;
+        int cursor = 1;
+        delete[] dest;
+        //---Determine required size for string
+        int size = startSize + 1; // includes '\0' at end of string for the end of dataString to use
+        for (int i = 0; i < maxNumSensors; i++)
+        {
+            if (sensorOK(sensors[i]))
+            {
+                str[cursor] = header ? sensors[i]->getCsvHeader() : sensors[i]->getDataString();
+                size += strlen(str[cursor++]);
+            }
+        }
+        dest = new char[size];
+        if (header)
+            csvHeader = dest;
+        else
+            dataString = dest;
+        //---Fill data String
+        int j = 0;
+        for (int i = 0; i < numCategories; i++)
+        {
+            for (int k = 0; str[i][k] != '\0'; j++, k++)
+            { // append all the data strings onto the main string
+
+                dest[j] = str[i][k];
+            }
+        }
+        delete[] str;
+        dest[j - 1] = '\0'; // all strings have ',' at end so this gets rid of that by terminating it a character early.
+    }
 
     bool State::sensorOK(const Sensor *sensor) const
     {
@@ -179,68 +271,5 @@ namespace mmfs
             return true;
         return false;
     }
+}
 #pragma endregion
-
-#pragma region DataReporter Functions
-
-    const int State::getNumPackedDataPoints() const { return 10; }
-
-    const PackedType *State::getPackedOrder() const
-    {
-        static const PackedType order[10] = {
-            FLOAT, FLOAT, FLOAT, FLOAT, FLOAT, FLOAT, FLOAT, FLOAT, FLOAT, FLOAT};
-        return order;
-    }
-
-    const char **State::getPackedDataLabels() const
-    {
-        static const char *labels[] = {
-            "Time (s)",
-            "PX (m)",
-            "PY (m)",
-            "PZ (m)",
-            "VX (m/s)",
-            "VY (m/s)",
-            "VZ (m/s)",
-            "AX (m/s/s)",
-            "AY (m/s/s)",
-            "AZ (m/s/s)"};
-        return labels;
-    }
-
-    void State::packData()
-    {
-        float t = currentTime;
-        float px = position.x();
-        float py = position.y();
-        float pz = position.z();
-        float vx = velocity.x();
-        float vy = velocity.y();
-        float vz = velocity.z();
-        float ax = acceleration.x();
-        float ay = acceleration.y();
-        float az = acceleration.z();
-
-        int cursor = 0;
-        memcpy(packedData + cursor, &t, sizeof(float));
-        cursor += sizeof(float);
-        memcpy(packedData + cursor, &px, sizeof(float));
-        cursor += sizeof(float);
-        memcpy(packedData + cursor, &py, sizeof(float));
-        cursor += sizeof(float);
-        memcpy(packedData + cursor, &pz, sizeof(float));
-        cursor += sizeof(float);
-        memcpy(packedData + cursor, &vx, sizeof(float));
-        cursor += sizeof(float);
-        memcpy(packedData + cursor, &vy, sizeof(float));
-        cursor += sizeof(float);
-        memcpy(packedData + cursor, &vz, sizeof(float));
-        cursor += sizeof(float);
-        memcpy(packedData + cursor, &ax, sizeof(float));
-        cursor += sizeof(float);
-        memcpy(packedData + cursor, &ay, sizeof(float));
-        cursor += sizeof(float);
-        memcpy(packedData + cursor, &az, sizeof(float));
-        cursor += sizeof(float);
-    }
-} // namespace mmfs

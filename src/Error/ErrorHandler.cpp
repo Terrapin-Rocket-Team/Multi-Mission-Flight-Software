@@ -13,7 +13,6 @@ Error::Error(ErrorType type, const char *message, int errorLocation)
 
 Error::~Error()
 { // Don't delete message if it's a string literal
-
 }
 
 const char *Error::getTypeString() const

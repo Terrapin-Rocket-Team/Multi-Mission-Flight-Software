@@ -27,14 +27,10 @@ void digitalWrite(int pin, int value);
 
 class SerialClass {
     public:
-        void write(const char *data, int i);
+        void write(const char *data);
         void print(const char *data);
         void println(const char *data);
         void begin(int baud = 9600);
-        void clearBuffer();
-
-    char fakeBuffer[1000];
-    int cursor = 0;
 };
 
 extern SerialClass Serial;

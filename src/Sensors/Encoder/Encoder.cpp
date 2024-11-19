@@ -3,24 +3,26 @@
 namespace mmfs
 {
 
-#pragma region Encoder Specific Functions
-
-    Encoder::~Encoder() {}
-
-    Encoder::Encoder()
+    const char *Encoder::getCsvHeader() const
     {
-        setUpPackedData();
-        // Additional constructor logic
+        return "E-Rel Steps";
     }
 
-#pragma endregion // Encoder Specific Functions
+    const char *Encoder::getDataString() const
+    {
+        sprintf(data, "%d,", currentRelativeSteps);
+        return data;
+    }
 
-#pragma region Sensor Virtual Function Implementations
+    const char *Encoder::getStaticDataString() const
+    {
+        sprintf(staticData, "Initial Steps: %d\n", initialSteps);
+        return staticData;
+    }
 
     void Encoder::update()
     {
         read();
-        packData();
     }
 
     bool Encoder::begin(bool useBiasCorrection)
@@ -28,40 +30,4 @@ namespace mmfs
         biasCorrectionMode = useBiasCorrection;
         return init();
     }
-
-#pragma region Data Reporting
-
-    const char *Encoder::getTypeString() const { return "Encoder"; }
-
-    const SensorType Encoder::getType() const { return ENCODER_; }
-
-    const int Encoder::getNumPackedDataPoints() const { return 1; }
-
-    const PackedType *Encoder::getPackedOrder() const
-    {
-        static const PackedType order[] = {INT};
-        return order;
-    }
-
-    const char **Encoder::getPackedDataLabels() const
-    {
-        static const char *labels[] = {"Rel Steps"};
-        return labels;
-    }
-
-    void Encoder::packData()
-    {
-        int offset = 0;
-        memcpy(packedData + offset, &currentRelativeSteps, sizeof(int));
-    }
-
-    // const char *Encoder::getStaticDataString() const
-    // {
-    //     sprintf(staticData, "Initial Steps: %d\n", initialSteps);
-    //     return staticData;
-    // }
-
-#pragma endregion // Data Reporting
-
-#pragma endregion // Sensor Virtual Function Implementations
 }

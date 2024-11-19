@@ -8,22 +8,23 @@ namespace mmfs
     class LightSensor : public Sensor
     {
     public:
-        virtual ~LightSensor();
+        virtual ~LightSensor() {}
+        virtual const char *getCsvHeader() const override;
+        virtual const char *getDataString() const override;
+        virtual const char *getStaticDataString() const override;
         virtual const double getLux() const;
-        virtual const SensorType getType() const override;
-        virtual const char *getTypeString() const override;
+        virtual SensorType getType() const override { return LIGHT_SENSOR_; }
+        virtual const char *getTypeString() const override { return "Light Sensor"; }
         virtual void update() override;
-        virtual bool begin(bool useBiasCorrection = true) override;
-
-        virtual const int getNumPackedDataPoints() const override;
-        virtual const PackedType *getPackedOrder() const override;
-        virtual void packData() override;
 
     protected:
-        LightSensor();
+        LightSensor()
+        {
+            staticData = new char[25 + MAX_DIGITS_FLOAT * 1]; // 25 chars for the string, 12 chars for the float
+            data = new char[MAX_DIGITS_FLOAT * 1 + 1];        // 12 chars for the 1 float, 1 for the comma
+        }; // Protected constructor to prevent instantiation
         double lux;
         double initialLux;
     };
 }
-
-#endif // LIGHT_SENSOR_H
+#endif

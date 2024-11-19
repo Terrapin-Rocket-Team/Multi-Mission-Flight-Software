@@ -10,7 +10,7 @@ def get_version():
 
 # Call the Python script to get the version flag
 version = get_version()
-print(f"[MMFS CPP DEFINE] APP_VERSION: {version}")
+print(f"Version: {version}")
 
 # Append the version flag, making sure the version is passed as a string literal to C++
 env.Append(CPPDEFINES=[f'APP_VERSION=\\"{version}\\"'])
