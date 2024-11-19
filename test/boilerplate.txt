@@ -36,7 +36,7 @@ void tearDown(void)
 // void test_function_name() {
 //     TEST_ASSERT_EQUAL(expected, actual);
 //     TEST_ASSERT_EQUAL_FLOAT(expected, actual);
-}
+// }
 
 // ---
 
