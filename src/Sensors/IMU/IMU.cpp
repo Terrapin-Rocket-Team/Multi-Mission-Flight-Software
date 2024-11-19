@@ -3,17 +3,6 @@
 
 namespace mmfs
 {
-    void IMU::update()
-    {
-        read();
-    }
-
-    bool IMU::begin(bool useBiasCorrection)
-    {
-        biasCorrectionMode = useBiasCorrection;
-        return init();
-    }
-
     Quaternion IMU::getOrientation()
     {
         return orientation;

@@ -121,9 +121,9 @@ void test_imu_read() {
         mockIMU.read();
 
   	    for(int j = 0; j < 3; j++) {
-  	        TEST_ASSERT_EQUAL_FLOAT(9.0f+i+j, mockIMU.getAccReading()[j]);
-  	        TEST_ASSERT_EQUAL_FLOAT(12.0f+i+j, mockIMU.getGyroReading()[j]);
-  	        TEST_ASSERT_EQUAL_FLOAT(15.0f+i+j, mockIMU.getMagnetometerReading()[j]);
+  	        TEST_ASSERT_EQUAL_FLOAT(9.0f+i+j, mockIMU.getAcceleration()[j]);
+  	        TEST_ASSERT_EQUAL_FLOAT(12.0f+i+j, mockIMU.getAngularVelocity()[j]);
+  	        TEST_ASSERT_EQUAL_FLOAT(15.0f+i+j, mockIMU.getMagField()[j]);
   	    }
     }
 
