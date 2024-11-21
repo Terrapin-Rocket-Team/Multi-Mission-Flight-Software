@@ -1,15 +1,15 @@
-#ifndef ENCODER_H
-#define ENCODER_H
+#ifndef ENCODER_MMFS_H
+#define ENCODER_MMFS_H
 
 #include "../Sensor.h"
 #include "../../Constants.h"
 
 namespace mmfs
 {
-    class Encoder : Sensor
+    class Encoder_MMFS : Sensor
     {
     public:
-        virtual ~Encoder();
+        virtual ~Encoder_MMFS();
         virtual const char *getTypeString() const override;
         virtual const SensorType getType() const override;
         virtual void update() override;
@@ -20,9 +20,9 @@ namespace mmfs
         virtual void packData();
 
     protected:
-        Encoder();
+        Encoder_MMFS();
         int currentRelativeSteps;
         int initialSteps;
     };
 }
-#endif // ENCODER_H
+#endif // ENCODER_MMFS_H
