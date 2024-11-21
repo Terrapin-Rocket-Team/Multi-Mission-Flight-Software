@@ -6,7 +6,7 @@
 
 namespace mmfs
 {
-    class Encoder_MMFS : Sensor
+    class Encoder_MMFS : public Sensor
     {
     public:
         virtual ~Encoder_MMFS();
