@@ -13,7 +13,7 @@ namespace mmfs
         // Additional constructor logic
     }
 
-    double Encoder_MMFS::getSteps() const { return currentRelativeSteps; }
+    int Encoder_MMFS::getSteps() const { return currentRelativeSteps; }
 
 #pragma endregion // Encoder Specific Functions
 
