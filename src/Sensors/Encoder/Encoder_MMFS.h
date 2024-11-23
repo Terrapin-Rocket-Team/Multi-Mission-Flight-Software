@@ -10,6 +10,7 @@ namespace mmfs
     {
     public:
         virtual ~Encoder_MMFS();
+        virtual double getSteps() const;
         virtual const char *getTypeString() const override;
         virtual const SensorType getType() const override;
         virtual void update() override;

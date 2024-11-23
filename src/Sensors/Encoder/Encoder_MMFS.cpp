@@ -13,6 +13,8 @@ namespace mmfs
         // Additional constructor logic
     }
 
+    double Encoder_MMFS::getSteps() const { return currentRelativeSteps; }
+
 #pragma endregion // Encoder Specific Functions
 
 #pragma region Sensor Virtual Function Implementations
