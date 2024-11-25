@@ -1,29 +1,31 @@
-#include "Encoder.h"
+#include "Encoder_MMFS.h"
 
 namespace mmfs
 {
 
 #pragma region Encoder Specific Functions
 
-    Encoder::~Encoder() {}
+    Encoder_MMFS::~Encoder_MMFS() {}
 
-    Encoder::Encoder()
+    Encoder_MMFS::Encoder_MMFS()
     {
         setUpPackedData();
         // Additional constructor logic
     }
 
+    int Encoder_MMFS::getSteps() const { return currentRelativeSteps; }
+
 #pragma endregion // Encoder Specific Functions
 
 #pragma region Sensor Virtual Function Implementations
 
-    void Encoder::update()
+    void Encoder_MMFS::update()
     {
         read();
         packData();
     }
 
-    bool Encoder::begin(bool useBiasCorrection)
+    bool Encoder_MMFS::begin(bool useBiasCorrection)
     {
         biasCorrectionMode = useBiasCorrection;
         return init();
@@ -31,31 +33,31 @@ namespace mmfs
 
 #pragma region Data Reporting
 
-    const char *Encoder::getTypeString() const { return "Encoder"; }
+    const char *Encoder_MMFS::getTypeString() const { return "Encoder"; }
 
-    const SensorType Encoder::getType() const { return ENCODER_; }
+    const SensorType Encoder_MMFS::getType() const { return ENCODER_; }
 
-    const int Encoder::getNumPackedDataPoints() const { return 1; }
+    const int Encoder_MMFS::getNumPackedDataPoints() const { return 1; }
 
-    const PackedType *Encoder::getPackedOrder() const
+    const PackedType *Encoder_MMFS::getPackedOrder() const
     {
         static const PackedType order[] = {INT};
         return order;
     }
 
-    const char **Encoder::getPackedDataLabels() const
+    const char **Encoder_MMFS::getPackedDataLabels() const
     {
         static const char *labels[] = {"Rel Steps"};
         return labels;
     }
 
-    void Encoder::packData()
+    void Encoder_MMFS::packData()
     {
         int offset = 0;
         memcpy(packedData + offset, &currentRelativeSteps, sizeof(int));
     }
 
-    // const char *Encoder::getStaticDataString() const
+    // const char *Encoder_MMFS::getStaticDataString() const
     // {
     //     sprintf(staticData, "Initial Steps: %d\n", initialSteps);
     //     return staticData;
