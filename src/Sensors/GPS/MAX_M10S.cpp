@@ -4,9 +4,18 @@
 namespace mmfs
 {
 
-    MAX_M10S::MAX_M10S(const char *name) : m10s()
+    MAX_M10S::MAX_M10S(const char *name, uint8_t address, TwoWire *wire) : m10s()
     {
         setName(name);
+        this->wire = wire;
+        this->address = address;
+    }
+
+    MAX_M10S::MAX_M10S(uint8_t address, TwoWire *wire) : m10s()
+    {
+        setName("MAX-M10S");
+        this->wire = wire;
+        this->address = address;
     }
 
     bool MAX_M10S::init()
