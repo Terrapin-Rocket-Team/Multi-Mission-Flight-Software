@@ -1,3 +1,5 @@
+#ifndef DPS310_H
+#define DPS310_H
 #include <Adafruit_DPS310.h>
 
 #include <Sensors/Baro/Barometer.h>
@@ -16,3 +18,5 @@ namespace mmfs
         Adafruit_DPS310 dps;
     };
 }; // namespace mmfs
+
+#endif // DPS310_H
