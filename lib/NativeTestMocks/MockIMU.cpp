@@ -70,9 +70,9 @@ void MockIMU::read() {
         return;
     }
     for(int i = 0; i < 3; i++) {
-        accelerationVec[i] = launchData[accIndices[i]];
-        angularVelocity[i] = launchData[gyroIndices[i]];
-        magField[i] = launchData[magIndices[i]];
+        measuredAcc[i] = launchData[accIndices[i]];
+        measuredGyro[i] = launchData[gyroIndices[i]];
+        measuredMag[i] = launchData[magIndices[i]];
     }
 }
 

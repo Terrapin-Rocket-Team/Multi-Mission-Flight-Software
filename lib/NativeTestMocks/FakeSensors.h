@@ -84,16 +84,16 @@ public:
     }
     void set(Vector<3> acc, Vector<3> gyro, Vector<3> mag)
     {
-        accelerationVec = acc;
-        angularVelocity = gyro;
-        magField = mag;
+        measuredAcc = acc;
+        measuredGyro = gyro;
+        measuredMag = mag;
     }
 
     bool init() override
     {
-        accelerationVec = Vector<3>{0,0,0};
-        angularVelocity = Vector<3>{0,0,0};
-        magField = Vector<3>{0,0,0};
+        measuredAcc = Vector<3>{0,0,0};
+        measuredGyro = Vector<3>{0,0,0};
+        measuredMag = Vector<3>{0,0,0};
         orientation = Quaternion{1,0,0,0};
         return initialized;
     }
