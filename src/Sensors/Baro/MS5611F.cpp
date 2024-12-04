@@ -15,7 +15,7 @@ namespace mmfs
             printf("Failed to initialize MS5611 sensor\n");
             return initialized = false;
         }
-        ms.setOversampling(OSR_HIGH);
+        ms.setOversampling(OSR_ULTRA_HIGH);
 
         return initialized = true;
     }
