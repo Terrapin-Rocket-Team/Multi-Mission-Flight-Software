@@ -59,11 +59,11 @@ namespace mmfs
             setUpPackedData();
         }
 
-        Vector<3> accelerationVec = Vector<3>(0, 0, 0); // Body frame acceleration in m/s/s
+        Vector<3> measuredAcc = Vector<3>(0, 0, 0); // Body frame acceleration in m/s/s
         Vector<3> orientationEuler = Vector<3>(0, 0, 0);
         Quaternion orientation = Quaternion(1, 0, 0, 0); // This is the mapping from the body to interial frame as a quaternion and can be used as such: r_I = q * r_B * q^-1
-        Vector<3> angularVelocity = Vector<3>(0, 0, 0); // Rad/s
-        Vector<3> magField = Vector<3>(0, 0, 0); // Body frame mag field in uT
+        Vector<3> measuredGyro = Vector<3>(0, 0, 0); // Rad/s
+        Vector<3> measuredMag = Vector<3>(0, 0, 0); // Body frame mag field in uT
         Vector<3> initialMagField = Vector<3>(0, 0, 0);
         double accel_best_filtering_at_static = 0.9; // [0, 1] Higher this number, the more you trust the accelerameter
         double mag_best_filtering_at_static = 0.9; // [0, 1] Higher this number, the more you trust the magnatometer

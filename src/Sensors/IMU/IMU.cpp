@@ -10,22 +10,22 @@ namespace mmfs
 
     Vector<3> IMU::getAngularVelocity()
     {
-        return angularVelocity;
+        return measuredGyro;
     }
 
     Vector<3> IMU::getMagField()
     {
-        return magField;
+        return measuredMag;
     }
 
     Vector<3> IMU::getAcceleration()
     {
-        return accelerationVec;
+        return measuredAcc;
     }
 
     Vector<3> IMU::getAccelerationGlobal()
     {
-        Quaternion accelInterial = orientation * Quaternion(0, accelerationVec) * orientation.conjugate();
+        Quaternion accelInterial = orientation * Quaternion(0, measuredAcc) * orientation.conjugate();
         return Vector<3>(accelInterial.x(), accelInterial.y(), accelInterial.z());
     }
     
@@ -43,9 +43,9 @@ namespace mmfs
 
     void IMU::packData()
     {
-        float accX = float(accelerationVec.x());
-        float accY = float(accelerationVec.y());
-        float accZ = float(accelerationVec.z());
+        float accX = float(measuredAcc.x());
+        float accY = float(measuredAcc.y());
+        float accZ = float(measuredAcc.z());
         float quatX = float(orientation.x());
         float quatY = float(orientation.y());
         float quatZ = float(orientation.z());
@@ -72,7 +72,7 @@ namespace mmfs
         // Find initial absolute orientation which is just q = q_acc * q_mag
 
         // Get Accelerometer Orientation
-        Quaternion a_b = Quaternion{0, accelerationVec};
+        Quaternion a_b = Quaternion{0, measuredAcc};
         if (!(a_b.magnitude() > 0))
         {
             errorHandler.addError(GENERIC_ERROR, "Acceleration magnitude 0 while running quaternionBasedComplimentaryFilterSetup(). Need to record acceleration vector on setup before running this function.");
@@ -91,7 +91,7 @@ namespace mmfs
         }
 
         // Get Magnetometer Orientation
-        Quaternion m_b = Quaternion{0, magField};
+        Quaternion m_b = Quaternion{0, measuredMag};
         if (!(m_b.magnitude() > 0))
         {
             errorHandler.addError(GENERIC_ERROR, "Magnetic magnitude 0 while running quaternionBasedComplimentaryFilterSetup(). Need to record magnetometer vector on setup before running this function.");
@@ -119,12 +119,12 @@ namespace mmfs
     void IMU::quaternionBasedComplimentaryFilter(double dt)
     {
         // See the Readme for details.
-        // As a programmer this function takes in dt, angularVelocity, accelerationVec, magField,
+        // As a programmer this function takes in dt, measuredGyro, measuredAcc, measuredMag,
         // and current orientation and propgated the orientation to the next time step.
 
         //----------------- GYRO ORIENTATION --------------//
         // 1. Determine rate of change of quaternion
-        Quaternion w_b = Quaternion{0, angularVelocity};
+        Quaternion w_b = Quaternion{0, measuredGyro};
         Quaternion q_w_BI = orientation.conjugate(); // Map from Inertia to body r_B = q_w_BI * r_I * q_w_BI^-1
         Quaternion q_w_BI_dot = w_b * q_w_BI * -.5;
 
@@ -135,7 +135,7 @@ namespace mmfs
 
         //----------------- ACCEL ORIENTATION --------------//
         // 3. Find the predicted gravity vector in the inertial frame
-        Quaternion a_b = Quaternion{0, accelerationVec};
+        Quaternion a_b = Quaternion{0, measuredAcc};
         if (!(a_b.magnitude() > 0))
         {
             // Accel has no roll or pitch contribution to be made
@@ -167,7 +167,7 @@ namespace mmfs
         //----------------- MAG ORIENTATION --------------//
 
         // 7. Get magnetic field vector in interial frame
-        Quaternion m_B = Quaternion{0, magField};
+        Quaternion m_B = Quaternion{0, measuredMag};
         if (!(m_B.magnitude() > 0))
         {
             // Mag Field has no yaw contribution to be made
@@ -207,7 +207,7 @@ namespace mmfs
         // t_1: threshold 1 - Below, gravitation accel dominates
         // t_2: threshold 2 - Below, gain factor decreases linearly as non grav accel increase
         double g = 9.81; // m/s^2
-        double error = abs(accelerationVec.magnitude() - g) / g;
+        double error = abs(measuredAcc.magnitude() - g) / g;
 
         double f = 0;
         if (error < t_1)
