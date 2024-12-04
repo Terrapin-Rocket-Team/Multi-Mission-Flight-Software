@@ -24,14 +24,14 @@ namespace mmfs
         // myGNSS.enableDebugging(); // Uncomment this line to enable helpful debug messages on Serial
 
         int count = 0;
-        while (m10s.begin() == false && count < 3) // Connect to the u-blox module using Wire port
+        while (m10s.begin(*wire, address) == false && count < 3) // Connect to the u-blox module using Wire port
         {
             // Serial.println(F("u-blox GNSS not detected at default I2C address. Retrying..."));
             // TODO: RECORD FAILURE IN RECORDDATA?
             delay(250);
             count++;
         }
-        if (!m10s.begin())
+        if (!m10s.begin(*wire, address))
             return initialized = false;
 
         m10s.setI2COutput(COM_TYPE_UBX);            // Set the I2C port to output UBX only (turn off NMEA noise)
