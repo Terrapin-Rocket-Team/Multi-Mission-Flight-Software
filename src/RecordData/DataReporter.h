@@ -70,25 +70,25 @@ namespace mmfs
             switch (type)
             {
             case BOOL:
-                return sizeof(bool);
+                return sizeof(float);
             case BYTE:
-                return sizeof(uint8_t);
+                return sizeof(float);
             case SHORT:
-                return sizeof(int16_t);
+                return sizeof(float);
             case INT:
-                return sizeof(int32_t);
+                return sizeof(float);
             case LONG:
-                return sizeof(int64_t);
+                return sizeof(float);
             case FLOAT:
                 return sizeof(float);
             case DOUBLE:
                 return sizeof(double);
             case STRING_10:
-                return 10;
+                return 12;
             case STRING_20:
                 return 20;
             case STRING_50:
-                return 50;
+                return 52;
             default:
                 return 0;
             }
