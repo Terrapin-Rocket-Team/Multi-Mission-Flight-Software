@@ -273,7 +273,7 @@ void Logger::dumpData()
 void Logger::writeCsvHeader()
 {
     char header[2000]; // 500 is arbitrary, but should be enough for basically any header
-    DataFormatter::getCSVHeader(header, 500, state);
+    DataFormatter::getCSVHeader(header, sizeof(header), state);
     flightDataFile = sd.open(flightDataFileName, FILE_WRITE);
     flightDataFile.println(header);
     flightDataFile.close();
