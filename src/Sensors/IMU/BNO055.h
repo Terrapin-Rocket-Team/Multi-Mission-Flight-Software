@@ -10,6 +10,7 @@ namespace mmfs
     {
     private:
         Adafruit_BNO055 bno;
+        uint8_t address;
 
         // Helper function to convert Adafruit's imu::Vector to mmfs::Vector
         template <uint8_t N>
@@ -34,7 +35,9 @@ namespace mmfs
 
     public:
         // BNO Returns ACC in m/s^2, orientation in quaternion, orientation in euler angles, and magnetometer in uT (microteslas)
-        BNO055(const char *name = "BNO055");
+        BNO055(const char *name = "BNO055", uint8_t address = BNO055_ADDRESS_A, TwoWire *theWire = &Wire);
+        virtual ~BNO055(){};
+        BNO055(uint8_t address, TwoWire *theWire = &Wire);
         virtual void calibrateBno();
         virtual bool init() override;
         virtual void read() override;
