@@ -41,6 +41,12 @@ namespace mmfs
         return order;
     }
 
+    const char **LightSensor::getPackedDataLabels() const
+    {
+        static const char *labels[] = {"Lux (Lux)"};
+        return labels;
+    }
+
     void LightSensor::packData()
     {
         float l = float(lux);
