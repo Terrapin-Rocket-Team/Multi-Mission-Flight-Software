@@ -119,7 +119,7 @@ namespace mmfs
     void IMU::quaternionBasedComplimentaryFilter(double dt)
     {
         // See the Readme for details.
-        // As a programmer this function takes in dt, measuredGyro, measuredAcc, measuredMag,
+        // As a programmer this function takes in dt (seconds), measuredGyro, measuredAcc, measuredMag,
         // and current orientation and propgated the orientation to the next time step.
 
         //----------------- GYRO ORIENTATION --------------//
@@ -165,7 +165,8 @@ namespace mmfs
         //-------------------------------------------------//
 
         //----------------- MAG ORIENTATION --------------//
-
+        orientation = q_wa_BI.conjugate(); // TODO come back to at some poin
+        return;
         // 7. Get magnetic field vector in interial frame
         Quaternion m_B = Quaternion{0, measuredMag};
         if (!(m_B.magnitude() > 0))
