@@ -54,6 +54,10 @@ void BMI088andLIS3MDL::packData()
     float magX = float(measuredMag.x());
     float magY = float(measuredMag.y());
     float magZ = float(measuredMag.z());
+    float oriX = float(orientation.x());
+    float oriY = float(orientation.y());
+    float oriZ = float(orientation.z());
+    float oriW = float(orientation.w());
 
     int offset = 0;
     memcpy(packedData + offset, &accX, sizeof(float));
@@ -73,5 +77,13 @@ void BMI088andLIS3MDL::packData()
     memcpy(packedData + offset, &magY, sizeof(float));
     offset += sizeof(float);
     memcpy(packedData + offset, &magZ, sizeof(float));
+    offset += sizeof(float);
+    memcpy(packedData + offset, &oriX, sizeof(float));
+    offset += sizeof(float);
+    memcpy(packedData + offset, &oriY, sizeof(float));
+    offset += sizeof(float);
+    memcpy(packedData + offset, &oriZ, sizeof(float));
+    offset += sizeof(float);
+    memcpy(packedData + offset, &oriW, sizeof(float));
     
 }

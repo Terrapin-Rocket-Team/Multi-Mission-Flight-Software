@@ -22,11 +22,11 @@ namespace mmfs
         bool init() override;
         void read() override;
         void packData() override;
-        const int getNumPackedDataPoints() const override { return 9; }
+        const int getNumPackedDataPoints() const override { return 13; }
         const mmfs::PackedType *getPackedOrder() const override
         {
             using namespace mmfs;
-            static const PackedType order[] = {FLOAT, FLOAT, FLOAT, FLOAT, FLOAT, FLOAT, FLOAT, FLOAT, FLOAT};
+            static const PackedType order[] = {FLOAT, FLOAT, FLOAT, FLOAT, FLOAT, FLOAT, FLOAT, FLOAT, FLOAT, FLOAT, FLOAT, FLOAT, FLOAT};
             return order;
         }
         const char **getPackedDataLabels() const override
@@ -40,7 +40,11 @@ namespace mmfs
                 "GyroZ",
                 "MagX",
                 "MagY",
-                "MagZ"};
+                "MagZ",
+                "OriX",
+                "OriY",
+                "OriZ",
+                "OriW"};
             return labels;
         }
 
