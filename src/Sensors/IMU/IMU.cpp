@@ -41,31 +41,50 @@ namespace mmfs
         return init();
     }
 
-    void IMU::packData()
-    {
-        float accX = float(measuredAcc.x());
-        float accY = float(measuredAcc.y());
-        float accZ = float(measuredAcc.z());
-        float quatX = float(orientation.x());
-        float quatY = float(orientation.y());
-        float quatZ = float(orientation.z());
-        float quatW = float(orientation.w());
+void IMU::packData()
+{
+    float accX = float(measuredAcc.x());
+    float accY = float(measuredAcc.y());
+    float accZ = float(measuredAcc.z());
+    float gyroX = float(measuredGyro.x());
+    float gyroY = float(measuredGyro.y());
+    float gyroZ = float(measuredGyro.z());
+    float magX = float(measuredMag.x());
+    float magY = float(measuredMag.y());
+    float magZ = float(measuredMag.z());
+    float oriX = float(orientation.x());
+    float oriY = float(orientation.y());
+    float oriZ = float(orientation.z());
+    float oriW = float(orientation.w());
 
-        int offset = 0;
-        memcpy(packedData + offset, &accX, sizeof(float));
-        offset += sizeof(float);
-        memcpy(packedData + offset, &accY, sizeof(float));
-        offset += sizeof(float);
-        memcpy(packedData + offset, &accZ, sizeof(float));
-        offset += sizeof(float);
-        memcpy(packedData + offset, &quatX, sizeof(float));
-        offset += sizeof(float);
-        memcpy(packedData + offset, &quatY, sizeof(float));
-        offset += sizeof(float);
-        memcpy(packedData + offset, &quatZ, sizeof(float));
-        offset += sizeof(float);
-        memcpy(packedData + offset, &quatW, sizeof(float));
-    }
+    int offset = 0;
+    memcpy(packedData + offset, &accX, sizeof(float));
+    offset += sizeof(float);
+    memcpy(packedData + offset, &accY, sizeof(float));
+    offset += sizeof(float);
+    memcpy(packedData + offset, &accZ, sizeof(float));
+    offset += sizeof(float);
+    memcpy(packedData + offset, &gyroX, sizeof(float));
+    offset += sizeof(float);
+    memcpy(packedData + offset, &gyroY, sizeof(float));
+    offset += sizeof(float);
+    memcpy(packedData + offset, &gyroZ, sizeof(float));
+    offset += sizeof(float);
+    memcpy(packedData + offset, &magX, sizeof(float));
+    offset += sizeof(float);
+    memcpy(packedData + offset, &magY, sizeof(float));
+    offset += sizeof(float);
+    memcpy(packedData + offset, &magZ, sizeof(float));
+    offset += sizeof(float);
+    memcpy(packedData + offset, &oriX, sizeof(float));
+    offset += sizeof(float);
+    memcpy(packedData + offset, &oriY, sizeof(float));
+    offset += sizeof(float);
+    memcpy(packedData + offset, &oriZ, sizeof(float));
+    offset += sizeof(float);
+    memcpy(packedData + offset, &oriW, sizeof(float));
+    
+}
 
     void IMU::quaternionBasedComplimentaryFilterSetup()
     {
