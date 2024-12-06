@@ -21,33 +21,7 @@ namespace mmfs
         }
         bool init() override;
         void read() override;
-        void packData() override;
-        const int getNumPackedDataPoints() const override { return 13; }
-        const mmfs::PackedType *getPackedOrder() const override
-        {
-            using namespace mmfs;
-            static const PackedType order[] = {FLOAT, FLOAT, FLOAT, FLOAT, FLOAT, FLOAT, FLOAT, FLOAT, FLOAT, FLOAT, FLOAT, FLOAT, FLOAT};
-            return order;
-        }
-        const char **getPackedDataLabels() const override
-        {
-            static const char *labels[] = {
-                "AccX",
-                "AccY",
-                "AccZ",
-                "GyroX",
-                "GyroY",
-                "GyroZ",
-                "MagX",
-                "MagY",
-                "MagZ",
-                "OriX",
-                "OriY",
-                "OriZ",
-                "OriW"};
-            return labels;
-        }
-
+        
     protected:
         Bmi088Accel accel;
         Bmi088Gyro gyro;
