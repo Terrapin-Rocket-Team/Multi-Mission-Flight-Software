@@ -23,6 +23,9 @@ bool BMI088andLIS3MDL::init()
     }
 
     initialized = (accelStatus > 0 && gyroStatus > 0);
+    quaternionBasedComplimentaryFilterSetup();
+    setAccelBestFilteringAtStatic(.5);
+    setMagBestFilteringAtStatic(.5);
     return initialized;
 }
 
@@ -35,6 +38,9 @@ void BMI088andLIS3MDL::read()
     measuredMag = mmfs::Vector<3>(mag.m.x, mag.m.y, mag.m.z);
     measuredAcc = mmfs::Vector<3>(accel.getAccelX_mss(), accel.getAccelY_mss(), accel.getAccelZ_mss());
     measuredGyro = mmfs::Vector<3>(gyro.getGyroX_rads(), gyro.getGyroY_rads(), gyro.getGyroZ_rads());
+    
+    quaternionBasedComplimentaryFilter(UPDATE_INTERVAL / 1000.0);
+
 }
 
 void BMI088andLIS3MDL::packData()
