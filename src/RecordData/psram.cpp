@@ -178,9 +178,9 @@ int PSRAM::readFile(PSRAMFile &file, char *data, int size)
 
     for (; i < size && !(file.clusterCursor == file.eofCluster && file.cursor >= file.endOfFile); i++)
     {
-        data[i] = *((char *)(start + i % PSRAM_CLUSTER_SIZE));
+        data[i] = *((char *)(start + (i % PSRAM_CLUSTER_SIZE)));
         file.cursor++;
-        if ((start + i + 1) % PSRAM_CLUSTER_SIZE == 0)
+        if ((file.cursor) % PSRAM_CLUSTER_SIZE == 0)
         {
             if (nextCluster == 0xFF)
                 break; // No more clusters for this file
