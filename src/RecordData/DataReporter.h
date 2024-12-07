@@ -52,6 +52,7 @@ namespace mmfs
 
         virtual void setUpPackedData()
         {
+            delete[] packedData;
             int size = 0;
             for (int i = 0; i < getNumPackedDataPoints(); i++)
                 size += PackedTypeToSize(getPackedOrder()[i]);

@@ -14,7 +14,6 @@ namespace mmfs
         this->sensors = sensors;
         this->filter = filter;
         useFilter = filter != nullptr;
-        setUpPackedData();
     }
 
     State::~State()
@@ -26,6 +25,7 @@ namespace mmfs
 
     bool State::init(bool useBiasCorrection)
     {
+        setUpPackedData();
         char *logData = new char[100];
         int good = 0, tryNumSensors = 0;
         for (int i = 0; i < maxNumSensors; i++)
