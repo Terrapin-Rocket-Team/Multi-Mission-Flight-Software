@@ -182,9 +182,10 @@ int PSRAM::readFile(PSRAMFile &file, char *data, int size)
             if (nextCluster == 0xFF)
                 break; // No more clusters for this file
             start = PSRAM_STARTING_ADDRESS + nextCluster * PSRAM_CLUSTER_SIZE;
-            nextCluster = clusterMap[nextCluster] >> 16;
             file.clusterCursor = nextCluster;
             file.cursor = nextCluster * PSRAM_CLUSTER_SIZE;
+            nextCluster = clusterMap[nextCluster] >> 16;
+
         }
     }
     return i;
