@@ -259,6 +259,7 @@ void Logger::dumpData()
     else // unpack the data
     {
         int len = DataFormatter::getPackedLen(state);
+        printf("len: %d\n", len);
         char packed[len];
         char unpacked[500];
         while (ramFlightDataFile->read(packed, len) > 0)
