@@ -4,7 +4,7 @@
 
 #ifndef MOCKBAROMETER_H
 #define MOCKBAROMETER_H
-#include <LaunchDataReader.h>
+#include "LaunchDataReader.h"
 #include "../../src/Sensors/Baro/Barometer.h"
 
 class MockBarometer : public mmfs::Barometer {
