@@ -96,6 +96,10 @@ namespace mmfs
                 printf("Ground Altitude: %.2f m\n", groundAltitude);
                 altitudeASL = groundAltitude;
             }
+            for(int i = 0; i < 3; i++){
+                read();
+                delay(50);
+            }
             return true;
         }
         return false;
