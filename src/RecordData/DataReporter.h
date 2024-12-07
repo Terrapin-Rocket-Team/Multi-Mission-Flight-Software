@@ -78,7 +78,7 @@ namespace mmfs
             case INT:
                 return sizeof(float);
             case LONG:
-                return sizeof(float);
+                return sizeof(long int);
             case FLOAT:
                 return sizeof(float);
             case DOUBLE:

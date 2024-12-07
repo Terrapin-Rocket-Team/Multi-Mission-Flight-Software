@@ -101,16 +101,16 @@ uintptr_t DataFormatter::toCSVSection(char *dest, int &destLen, void *data, int 
             printedSize = snprintf(dest + strSize, destLen, "%.7f,", *(double *)dataPtr);
             break;
         case BYTE:
-            printedSize = snprintf(dest + strSize, destLen, "%hhd,", *(uint8_t *)dataPtr);
+            printedSize = snprintf(dest + strSize, destLen, "%hhd,", *(int *)dataPtr);
             break;
         case SHORT:
-            printedSize = snprintf(dest + strSize, destLen, "%hd,", *(int16_t *)dataPtr);
+            printedSize = snprintf(dest + strSize, destLen, "%hd,", *(int *)dataPtr);
             break;
         case INT:
-            printedSize = snprintf(dest + strSize, destLen, "%d,", *(int32_t *)dataPtr);
+            printedSize = snprintf(dest + strSize, destLen, "%d,", *(int *)dataPtr);
             break;
         case LONG:
-            printedSize = snprintf(dest + strSize, destLen, "%ld,", *(int64_t *)dataPtr);
+            printedSize = snprintf(dest + strSize, destLen, "%ld,", *(long int *)dataPtr);
             break;
         case STRING_10:
         case STRING_20:
