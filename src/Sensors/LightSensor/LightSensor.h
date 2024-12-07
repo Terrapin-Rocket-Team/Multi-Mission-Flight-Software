@@ -10,13 +10,17 @@ namespace mmfs
     public:
         virtual ~LightSensor();
         virtual const double getLux() const;
+
+        // Sensor virtual functions
         virtual const SensorType getType() const override;
         virtual const char *getTypeString() const override;
         virtual void update() override;
         virtual bool begin(bool useBiasCorrection = true) override;
 
+        // Data reporting
         virtual const int getNumPackedDataPoints() const override;
         virtual const PackedType *getPackedOrder() const override;
+        virtual const char **getPackedDataLabels() const override;
         virtual void packData() override;
 
     protected:
