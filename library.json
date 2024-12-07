@@ -64,10 +64,6 @@
             "owner": "adafruit"
         },
         {
-            "name": "RadioHead",
-            "version": "https://github.com/Awbmilne/Patched-RadioHead.git"
-        },
-        {
             "name": "Bolder Flight Systems BMI088",
             "version": "^1.0.1",
             "owner": "bolderflight"
