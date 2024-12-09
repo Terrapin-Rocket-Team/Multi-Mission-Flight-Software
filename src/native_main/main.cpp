@@ -34,16 +34,12 @@ int main()
         &imu
     };
 
-
-
     mmfs::AvionicsState avState = mmfs::AvionicsState(sensors, 3, nullptr, true);
-
-
     avState.init();
 
-    for(int i = 0; i < 3; i++) {
+    while(baro.isInitialized() && gps.isInitialized() && imu.isInitialized()) {
         avState.updateState();
-        std::cout << "coords: " << avState.getAcceleration().x()  << std::endl;
+        std::cout << "bPres: " << baro.getPressure() << " px: " << avState.getPosition().x() << " py: " << avState.getPosition().y()  << " pz: " << avState.getPosition().z() << std::endl;
     }
 
     return 0;
