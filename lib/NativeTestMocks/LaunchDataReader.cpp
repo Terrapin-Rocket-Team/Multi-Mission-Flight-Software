@@ -47,6 +47,7 @@ bool LaunchDataReader::readLine(float *data) {
 
     std::string line;
     std::getline(fileStream, line);
+    if(line.empty()) return false;
     if(line[line.size()-1] != ',') line+=",";
 
     std::istringstream lineStream = std::istringstream(line);
