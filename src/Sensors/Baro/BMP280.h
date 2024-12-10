@@ -10,9 +10,12 @@ namespace mmfs
     {
     private:
         Adafruit_BMP280 bmp;
+        uint8_t addr;
 
     public:
-        BMP280(const char *name = "BMP280");
+        BMP280(const char *name = "BMP280", uint8_t addr = BMP280_ADDRESS, TwoWire *wire = &Wire);
+        virtual ~BMP280() {}
+        BMP280(uint8_t addr = BMP280_ADDRESS, TwoWire *wire = &Wire);
         virtual bool init() override;
         virtual void read() override;
     };

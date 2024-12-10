@@ -3,14 +3,21 @@
 namespace mmfs
 {
 
-    BMP280::BMP280(const char *name) : bmp()
+    BMP280::BMP280(const char *name, uint8_t addr, TwoWire *wire) : bmp(wire)
     {
         setName(name);
+        this->addr = addr;
+    }
+
+    BMP280::BMP280(uint8_t addr, TwoWire *wire) : bmp(wire), addr(addr)
+    {
+        setName("BMP280");
+        this->addr = addr;
     }
 
     bool BMP280::init()
     {
-        if (!bmp.begin())
+        if (!bmp.begin(addr))
         { // hardware I2C mode, can pass in address & alt Wire
             // Serial.println("Could not find a valid BMP390 sensor, check wiring!");
             return initialized = false;

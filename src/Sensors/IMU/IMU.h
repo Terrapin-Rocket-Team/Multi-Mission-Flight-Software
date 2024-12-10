@@ -29,25 +29,33 @@ namespace mmfs
         virtual void update() override;
         virtual bool begin(bool useBiasCorrection = true) override;
 
-        virtual const int getNumPackedDataPoints() const override { return 7; }
-        virtual const PackedType *getPackedOrder() const override
+        const int getNumPackedDataPoints() const override { return 13; }
+        const mmfs::PackedType *getPackedOrder() const override
         {
-            static const PackedType order[] = {FLOAT, FLOAT, FLOAT, FLOAT, FLOAT, FLOAT, FLOAT};
+            using namespace mmfs;
+            static const PackedType order[] = {FLOAT, FLOAT, FLOAT, FLOAT, FLOAT, FLOAT, FLOAT, FLOAT, FLOAT, FLOAT, FLOAT, FLOAT, FLOAT};
             return order;
         }
-        virtual const char **getPackedDataLabels() const override
+        const char **getPackedDataLabels() const override
         {
             static const char *labels[] = {
                 "AccX",
                 "AccY",
                 "AccZ",
-                "QuatX",
-                "QuatY",
-                "QuatZ",
-                "QuatW"};
+                "GyroX",
+                "GyroY",
+                "GyroZ",
+                "MagX",
+                "MagY",
+                "MagZ",
+                "OriX",
+                "OriY",
+                "OriZ",
+                "OriW"};
             return labels;
         }
-        virtual void packData();
+
+        virtual void packData() override;
 
         double adaptiveAccelGain(double alphaBar, double t_1 = .1, double t_2 = .2);
         virtual void quaternionBasedComplimentaryFilterSetup();

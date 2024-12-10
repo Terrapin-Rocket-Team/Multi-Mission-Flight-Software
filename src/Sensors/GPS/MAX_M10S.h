@@ -13,9 +13,13 @@ namespace mmfs
     {
     private:
         SFE_UBLOX_GNSS m10s;
+        TwoWire *wire;
+        uint8_t address;
 
     public:
-        MAX_M10S(const char *name = "MAX-M10S");
+        MAX_M10S(const char *name = "MAX-M10S", uint8_t address = 0x42, TwoWire *wire = &Wire); // 0x42 is the default address
+        virtual ~MAX_M10S() {}
+        MAX_M10S(uint8_t address, TwoWire *wire = &Wire);
         bool init() override;
         void read() override;
     };

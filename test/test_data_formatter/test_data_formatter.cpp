@@ -38,7 +38,7 @@ void test_getPackedLen()
             sizeof(float) * 4 +
             sizeof(double) * 2 +
             sizeof(float) * 4 +
-            sizeof(uint8_t) * 1,
+            sizeof(float) * 1,
         mmfs::DataFormatter::getPackedLen(&state));
 }
 
@@ -47,7 +47,7 @@ void test_packUnpackData()
     gps.set(0, 0, 0);
     baro.set(1001.28948, 25); // HPA for 100 ft ASL
     state.updateState(1);
-    uint8_t dest[500];
+    uint8_t dest[2000];
     uint8_t *destPtr = dest;
     destPtr = mmfs::DataFormatter::packData(destPtr, &state);
 
@@ -62,8 +62,8 @@ void test_packUnpackData()
     TEST_ASSERT_EQUAL_INT(expectedSize, destPtr - dest);
 
     // now unpack
-    char dest2[500];
-    mmfs::DataFormatter::toCSVRow(dest2, 500, &state, dest);
+    char dest2[2000];
+    mmfs::DataFormatter::toCSVRow(dest2, 2000, &state, dest);
     TEST_ASSERT_EQUAL_STRING(
         "1.000,0.000,0.000,0.000,0.000,0.000,0.000,0.000,0.000,0.000," // state
         "1001.289,25.000,100.000,0.000,"                               // baro
@@ -76,7 +76,7 @@ void test_packData2()
     gps.set(0, 0, 0);
     baro.set(1001.28948, 25); // HPA for 100 ft ASL
     state.updateState(2);
-    uint8_t dest[500];
+    uint8_t dest[2000];
     uint8_t *destPtr = dest;
     destPtr = mmfs::DataFormatter::packData(destPtr, &state);
     int packedDataSize = destPtr - dest;
@@ -86,8 +86,8 @@ void test_packData2()
     destPtr = mmfs::DataFormatter::packData(destPtr, &state);
 
     // now unpack
-    char dest2[500];
-    mmfs::DataFormatter::toCSVRow(dest2, 500, &state, dest);
+    char dest2[2000];
+    mmfs::DataFormatter::toCSVRow(dest2, 2000, &state, dest);
     TEST_ASSERT_EQUAL_STRING(
         "2.000,0.000,0.000,0.000,0.000,0.000,0.000,0.000,0.000,0.000," // state
         "1001.289,25.000,100.000,0.000,"                               // baro
@@ -95,7 +95,7 @@ void test_packData2()
         dest2);
 
     char *newPos = (char *)dest + packedDataSize;
-    mmfs::DataFormatter::toCSVRow(dest2, 500, &state, newPos);
+    mmfs::DataFormatter::toCSVRow(dest2, 2000, &state, newPos);
     TEST_ASSERT_EQUAL_STRING(
         "3.000,0.000,0.000,40925.168,0.000,0.000,40925.168,0.000,0.000,0.000,"
         "0.000,0.000,44307.691,40925.168,"
@@ -105,14 +105,14 @@ void test_packData2()
 
 void test_setCSVHeader()
 {
-    char dest[500];
+    char dest[2000];
     for (int i = 0; i < 500; i++)
         dest[i] = 0;
-    mmfs::DataFormatter::getCSVHeader(dest, 500, &state);
+    mmfs::DataFormatter::getCSVHeader(dest, 2000, &state);
     TEST_ASSERT_EQUAL_STRING(
-        "Time (s),PX (m),PY (m),PZ (m),VX (m/s),VY (m/s),VZ (m/s),AX (m/s/s),AY (m/s/s),AZ (m/s/s),"
-        "Pres (hPa),Temp (C),Alt ASL (ft),Alt AGL (ft),"
-        "Lat,Lon,Alt (m),Disp X (m),Disp Y (m),Disp Z (m),Fix Quality",
+        "State - Time (s),State - PX (m),State - PY (m),State - PZ (m),State - VX (m/s),State - VY (m/s),State - VZ (m/s),State - AX (m/s/s),State - AY (m/s/s),State - AZ (m/s/s),"
+        "FakeBarometer - Pres (hPa),FakeBarometer - Temp (C),FakeBarometer - Alt ASL (ft),FakeBarometer - Alt AGL (ft),"
+        "FakeGPS - Lat,FakeGPS - Lon,FakeGPS - Alt (m),FakeGPS - Disp X (m),FakeGPS - Disp Y (m),FakeGPS - Disp Z (m),FakeGPS - Fix Quality",
         dest);
 }
 
@@ -123,6 +123,8 @@ int main(int argc, char **argv)
 {
     UNITY_BEGIN();
 
+    state.init(true);
+    gps.setHasFirstFix(true);
     // Add your tests here
     // RUN_TEST(test_function_name); // no parentheses after function name
     RUN_TEST(test_getPackedLen);

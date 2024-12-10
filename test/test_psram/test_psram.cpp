@@ -143,10 +143,17 @@ void test_PSRAM_readFile()
     }
     data[281] = '\0';
     char readData[282];
-    file->read(readData, 282);
+    int i = file->read(readData, 282);
     readData[file->getSize()] = '\0';
 
+
     TEST_ASSERT_EQUAL_STRING(data, readData);
+    TEST_ASSERT_EQUAL(281, i);
+
+    i = file->read(readData, 282);
+
+    TEST_ASSERT_EQUAL(0, i);
+
 }
 
 void test_PSRAM_read_file2()

@@ -259,6 +259,7 @@ void Logger::dumpData()
     else // unpack the data
     {
         int len = DataFormatter::getPackedLen(state);
+        printf("len: %d\n", len);
         char packed[len];
         char unpacked[500];
         while (ramFlightDataFile->read(packed, len) > 0)
@@ -272,8 +273,8 @@ void Logger::dumpData()
 
 void Logger::writeCsvHeader()
 {
-    char header[500]; // 500 is arbitrary, but should be enough for basically any header
-    DataFormatter::getCSVHeader(header, 500, state);
+    char header[2000]; // 500 is arbitrary, but should be enough for basically any header
+    DataFormatter::getCSVHeader(header, sizeof(header), state);
     flightDataFile = sd.open(flightDataFileName, FILE_WRITE);
     flightDataFile.println(header);
     flightDataFile.close();

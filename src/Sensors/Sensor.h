@@ -18,7 +18,8 @@ namespace mmfs
         LIGHT_SENSOR_,
         RADIO_,
         RTC_,
-        ENCODER_
+        ENCODER_,
+        OTHER_
     };
 
     class Sensor : public DataReporter

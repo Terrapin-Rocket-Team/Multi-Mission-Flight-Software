@@ -173,18 +173,19 @@ int PSRAM::readFile(PSRAMFile &file, char *data, int size)
     uintptr_t start = PSRAM_STARTING_ADDRESS + file.cursor;
     uint8_t nextCluster = clusterMap[file.clusterCursor] >> 16;
     int i = 0;
+
     for (; i < size && !(file.clusterCursor == file.eofCluster && file.cursor >= file.endOfFile); i++)
     {
-        data[i] = *((char *)(start + i % PSRAM_CLUSTER_SIZE));
+        data[i] = *((char *)(start + (i % PSRAM_CLUSTER_SIZE)));
         file.cursor++;
-        if ((i + 1) % PSRAM_CLUSTER_SIZE == 0)
+        if ((file.cursor) % PSRAM_CLUSTER_SIZE == 0)
         {
             if (nextCluster == 0xFF)
                 break; // No more clusters for this file
             start = PSRAM_STARTING_ADDRESS + nextCluster * PSRAM_CLUSTER_SIZE;
-            nextCluster = clusterMap[nextCluster] >> 16;
             file.clusterCursor = nextCluster;
             file.cursor = nextCluster * PSRAM_CLUSTER_SIZE;
+            nextCluster = clusterMap[nextCluster] >> 16;
         }
     }
     return i;
