@@ -43,8 +43,8 @@ void DataFormatter::getCSVHeader(char *dest, int destLen, State *state)
     const char **labels = state->getPackedDataLabels();
     for (int i = 0; i < state->getNumPackedDataPoints() && destLen > 0; i++)
     {
-        int len = strlen(labels[i]) + 1;
-        snprintf(dest + offset, destLen, "%s,", labels[i]);
+        int len = strlen(state->getName()) + 3 + strlen(labels[i]) + 1; // "State - [header],"
+        snprintf(dest + offset, destLen, "%s - %s,", state->getName(), labels[i]);
         offset += len;
         destLen -= len;
     }
@@ -58,7 +58,7 @@ void DataFormatter::getCSVHeader(char *dest, int destLen, State *state)
         for (int j = 0; j < state->getSensors()[i]->getNumPackedDataPoints() && destLen > 0; j++)
         {
 
-            int len = snprintf(dest + offset, destLen, "%s,", labels[j]);
+            int len = snprintf(dest + offset, destLen, "%s - %s,", state->getSensors()[i]->getName(), labels[j]);
             offset += len;
             destLen -= len;
         }
@@ -101,16 +101,16 @@ uintptr_t DataFormatter::toCSVSection(char *dest, int &destLen, void *data, int 
             printedSize = snprintf(dest + strSize, destLen, "%.7f,", *(double *)dataPtr);
             break;
         case BYTE:
-            printedSize = snprintf(dest + strSize, destLen, "%hhd,", *(uint8_t *)dataPtr);
+            printedSize = snprintf(dest + strSize, destLen, "%hhd,", *(int *)dataPtr);
             break;
         case SHORT:
-            printedSize = snprintf(dest + strSize, destLen, "%hd,", *(int16_t *)dataPtr);
+            printedSize = snprintf(dest + strSize, destLen, "%hd,", *(int *)dataPtr);
             break;
         case INT:
-            printedSize = snprintf(dest + strSize, destLen, "%d,", *(int32_t *)dataPtr);
+            printedSize = snprintf(dest + strSize, destLen, "%d,", *(int *)dataPtr);
             break;
         case LONG:
-            printedSize = snprintf(dest + strSize, destLen, "%ld,", *(int64_t *)dataPtr);
+            printedSize = snprintf(dest + strSize, destLen, "%ld,", *(long int *)dataPtr);
             break;
         case STRING_10:
         case STRING_20:

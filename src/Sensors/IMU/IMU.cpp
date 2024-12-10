@@ -41,31 +41,50 @@ namespace mmfs
         return init();
     }
 
-    void IMU::packData()
-    {
-        float accX = float(measuredAcc.x());
-        float accY = float(measuredAcc.y());
-        float accZ = float(measuredAcc.z());
-        float quatX = float(orientation.x());
-        float quatY = float(orientation.y());
-        float quatZ = float(orientation.z());
-        float quatW = float(orientation.w());
+void IMU::packData()
+{
+    float accX = float(measuredAcc.x());
+    float accY = float(measuredAcc.y());
+    float accZ = float(measuredAcc.z());
+    float gyroX = float(measuredGyro.x());
+    float gyroY = float(measuredGyro.y());
+    float gyroZ = float(measuredGyro.z());
+    float magX = float(measuredMag.x());
+    float magY = float(measuredMag.y());
+    float magZ = float(measuredMag.z());
+    float oriX = float(orientation.x());
+    float oriY = float(orientation.y());
+    float oriZ = float(orientation.z());
+    float oriW = float(orientation.w());
 
-        int offset = 0;
-        memcpy(packedData + offset, &accX, sizeof(float));
-        offset += sizeof(float);
-        memcpy(packedData + offset, &accY, sizeof(float));
-        offset += sizeof(float);
-        memcpy(packedData + offset, &accZ, sizeof(float));
-        offset += sizeof(float);
-        memcpy(packedData + offset, &quatX, sizeof(float));
-        offset += sizeof(float);
-        memcpy(packedData + offset, &quatY, sizeof(float));
-        offset += sizeof(float);
-        memcpy(packedData + offset, &quatZ, sizeof(float));
-        offset += sizeof(float);
-        memcpy(packedData + offset, &quatW, sizeof(float));
-    }
+    int offset = 0;
+    memcpy(packedData + offset, &accX, sizeof(float));
+    offset += sizeof(float);
+    memcpy(packedData + offset, &accY, sizeof(float));
+    offset += sizeof(float);
+    memcpy(packedData + offset, &accZ, sizeof(float));
+    offset += sizeof(float);
+    memcpy(packedData + offset, &gyroX, sizeof(float));
+    offset += sizeof(float);
+    memcpy(packedData + offset, &gyroY, sizeof(float));
+    offset += sizeof(float);
+    memcpy(packedData + offset, &gyroZ, sizeof(float));
+    offset += sizeof(float);
+    memcpy(packedData + offset, &magX, sizeof(float));
+    offset += sizeof(float);
+    memcpy(packedData + offset, &magY, sizeof(float));
+    offset += sizeof(float);
+    memcpy(packedData + offset, &magZ, sizeof(float));
+    offset += sizeof(float);
+    memcpy(packedData + offset, &oriX, sizeof(float));
+    offset += sizeof(float);
+    memcpy(packedData + offset, &oriY, sizeof(float));
+    offset += sizeof(float);
+    memcpy(packedData + offset, &oriZ, sizeof(float));
+    offset += sizeof(float);
+    memcpy(packedData + offset, &oriW, sizeof(float));
+    
+}
 
     void IMU::quaternionBasedComplimentaryFilterSetup()
     {
@@ -119,7 +138,7 @@ namespace mmfs
     void IMU::quaternionBasedComplimentaryFilter(double dt)
     {
         // See the Readme for details.
-        // As a programmer this function takes in dt, measuredGyro, measuredAcc, measuredMag,
+        // As a programmer this function takes in dt (seconds), measuredGyro, measuredAcc, measuredMag,
         // and current orientation and propgated the orientation to the next time step.
 
         //----------------- GYRO ORIENTATION --------------//
@@ -165,7 +184,8 @@ namespace mmfs
         //-------------------------------------------------//
 
         //----------------- MAG ORIENTATION --------------//
-
+        orientation = q_wa_BI.conjugate(); // TODO come back to at some poin
+        return;
         // 7. Get magnetic field vector in interial frame
         Quaternion m_B = Quaternion{0, measuredMag};
         if (!(m_B.magnitude() > 0))

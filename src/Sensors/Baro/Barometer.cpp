@@ -74,8 +74,15 @@ namespace mmfs
             if (!biasCorrectionMode)
             {
                 double startPressure = 0;
+                for (int i = 0; i < 25; i++)
+                {
+                    read();
+#ifndef PIO_UNIT_TESTING // Don't delay in unit tests
+                    delay(25);
+#endif
+                }
 
-                for (int i = 0; i < 100; i++)
+                for (int i = 0; i < 75; i++)
                 {
                     read();
                     startPressure += pressure;
@@ -83,11 +90,15 @@ namespace mmfs
                     delay(25);
 #endif
                 }
-                groundPressure = (startPressure / 100.0); // hPa
+                groundPressure = (startPressure / 75.0); // hPa
                 groundAltitude = calcAltitude(groundPressure);
                 printf("Ground Pressure: %.2f hPa\n", groundPressure);
                 printf("Ground Altitude: %.2f m\n", groundAltitude);
                 altitudeASL = groundAltitude;
+            }
+            for(int i = 0; i < 3; i++){
+                read();
+                delay(50);
             }
             return true;
         }
