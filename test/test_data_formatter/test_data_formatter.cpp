@@ -38,7 +38,8 @@ void test_getPackedLen()
             sizeof(float) * 4 +
             sizeof(double) * 2 +
             sizeof(float) * 4 +
-            sizeof(float) * 1,
+            sizeof(float) * 1 +
+            DataReporter::PackedTypeToSize(STRING_10),
         mmfs::DataFormatter::getPackedLen(&state));
 }
 
@@ -67,7 +68,7 @@ void test_packUnpackData()
     TEST_ASSERT_EQUAL_STRING(
         "1.000,0.000,0.000,0.000,0.000,0.000,0.000,0.000,0.000,0.000," // state
         "1001.289,25.000,100.000,0.000,"                               // baro
-        "0.0000000,0.0000000,0.000,0.000,0.000,0.000,0",                       // gps
+        "0.0000000,0.0000000,0.000,0.000,0.000,0.000,0,00:00:00",                       // gps
         dest2);
 }
 
@@ -91,7 +92,7 @@ void test_packData2()
     TEST_ASSERT_EQUAL_STRING(
         "2.000,0.000,0.000,0.000,0.000,0.000,0.000,0.000,0.000,0.000," // state
         "1001.289,25.000,100.000,0.000,"                               // baro
-        "0.0000000,0.0000000,0.000,0.000,0.000,0.000,0",                       // gps
+        "0.0000000,0.0000000,0.000,0.000,0.000,0.000,0,00:00:00",                       // gps
         dest2);
 
     char *newPos = (char *)dest + packedDataSize;
@@ -99,7 +100,7 @@ void test_packData2()
     TEST_ASSERT_EQUAL_STRING(
         "3.000,0.000,0.000,40925.168,0.000,0.000,40925.168,0.000,0.000,0.000,"
         "0.000,0.000,44307.691,40925.168,"
-        "180.0000000,180.0000000,1000.000,0.000,0.000,666.667,0",
+        "180.0000000,180.0000000,1000.000,0.000,0.000,666.667,0,00:00:00",
         dest2);
 }
 
@@ -112,7 +113,7 @@ void test_setCSVHeader()
     TEST_ASSERT_EQUAL_STRING(
         "State - Time (s),State - PX (m),State - PY (m),State - PZ (m),State - VX (m/s),State - VY (m/s),State - VZ (m/s),State - AX (m/s/s),State - AY (m/s/s),State - AZ (m/s/s),"
         "FakeBarometer - Pres (hPa),FakeBarometer - Temp (C),FakeBarometer - Alt ASL (ft),FakeBarometer - Alt AGL (ft),"
-        "FakeGPS - Lat,FakeGPS - Lon,FakeGPS - Alt (m),FakeGPS - Disp X (m),FakeGPS - Disp Y (m),FakeGPS - Disp Z (m),FakeGPS - Fix Quality",
+        "FakeGPS - Lat,FakeGPS - Lon,FakeGPS - Alt (m),FakeGPS - Disp X (m),FakeGPS - Disp Y (m),FakeGPS - Disp Z (m),FakeGPS - Fix Quality,FakeGPS - Time of Day",
         dest);
 }
 

@@ -55,5 +55,10 @@ namespace mmfs
         position.z() = m10s.getAltitude() / 1000.0;
         heading = m10s.getHeading();
         fixQual = m10s.getSIV();
+        hr = m10s.getHour();
+        min = m10s.getMinute();
+        sec = m10s.getSecond();
+        day = m10s.getDay();
+        month = m10s.getMonth();
     }
 }

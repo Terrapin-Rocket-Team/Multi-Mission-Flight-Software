@@ -27,6 +27,7 @@ const int UPDATE_INTERVAL = 1000.0 / UPDATE_RATE;
 
 void setup()
 {
+    Wire.begin();
     //If you need to change these values, do that here (in setup, before anything else)
     //SENSOR_BIAS_CORRECTION_DATA_LENGTH = 2;
     //SENSOR_BIAS_CORRECTION_DATA_IGNORE = 1;
