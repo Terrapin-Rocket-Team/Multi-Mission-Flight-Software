@@ -11,8 +11,8 @@ BlinkBuzz bb(allowedPins, 2, true);
 
 
 MAX_M10S gps;
-BNO055 imu055;
-BMP390 baro;
+BMI088andLIS3MDL imu055;
+DPS310 baro;
 Sensor *sensors[3] = {&gps, &imu055, &baro};
 AvionicsKF kfilter;
 Logger logger;
@@ -23,10 +23,11 @@ ErrorHandler errorHandler;
 const int UPDATE_RATE = 10;
 const int UPDATE_INTERVAL = 1000.0 / UPDATE_RATE;
 
- int timeOfLastUpdate = 0;
+int timeOfLastUpdate = 0;
 
 void setup()
 {
+    Wire.begin();
     //If you need to change these values, do that here (in setup, before anything else)
     //SENSOR_BIAS_CORRECTION_DATA_LENGTH = 2;
     //SENSOR_BIAS_CORRECTION_DATA_IGNORE = 1;
@@ -44,10 +45,11 @@ void setup()
     else
         bb.onoff(BUZZER_PIN, 1000, 1);
     
-    if(!avionicsState.init())
+    if(!avionicsState.init(true))
         bb.onoff(BUZZER_PIN, 200, 3);
     else
         bb.onoff(BUZZER_PIN, 1000, 1);
+    logger.writeCsvHeader();
 }
 
 void loop()
@@ -63,4 +65,5 @@ void loop()
 
     
     avionicsState.updateState();
+    logger.recordFlightData();
 }

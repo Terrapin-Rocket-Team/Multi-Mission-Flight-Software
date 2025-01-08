@@ -13,7 +13,8 @@ Logger::Logger(uint16_t bufferTime, int bufferInterval)
     this->packData = bufferTime > 0;
     this->bufferTime = bufferTime;
     this->bufferInterval = bufferInterval;
-    this->groundMode = bufferInterval > 0 ? ALTERNATE_ : bufferInterval == 0 ? SD_ : PSRAM_;
+    this->groundMode = bufferInterval > 0 ? ALTERNATE_ : bufferInterval == 0 ? SD_
+                                                                             : PSRAM_;
     numBufferLines = bufferTime * UPDATE_RATE;
 }
 
@@ -111,7 +112,10 @@ void Logger::recordFlightData()
                 ramBufferFile->write(dest, len);
                 delete[] dest;
                 if (++bufferIterations % numBufferLines == 0)
+                {
                     ramBufferFile->restart();
+                    hasFilledBuffer = true;
+                }
 
                 if (groundMode == ALTERNATE_ && bufferIterations % (bufferInterval * UPDATE_RATE) == 0)
                 // TODO: This prints the most recent data. We really want it to print the oldest data in the buffer
@@ -234,13 +238,23 @@ void Logger::dumpData()
             int len = DataFormatter::getPackedLen(state);
             char packed[len];
             char unpacked[500];
-            for (int i = 0; i < numBufferLines; i++)
+            if (hasFilledBuffer) // if the buffer has been filled, then the buffer is circular and we need to read it in chunks
+                for (int i = 0; i < numBufferLines; i++)
+                {
+                    ramBufferFile->read(packed, len);
+                    DataFormatter::toCSVRow(unpacked, 500, state, packed);
+                    flightDataFile.println(unpacked);
+                    if (++bufferIterations % numBufferLines == 0)
+                        ramBufferFile->restart();
+                }
+            else // if the buffer hasn't been filled, then we can just read it all at once
             {
-                ramBufferFile->read(packed, len);
-                DataFormatter::toCSVRow(unpacked, 500, state, packed);
-                flightDataFile.println(unpacked);
-                if (++bufferIterations % numBufferLines == 0)
-                    ramBufferFile->restart();
+                ramBufferFile->restart();
+                while (ramBufferFile->read(packed, len) > 0)
+                {
+                    DataFormatter::toCSVRow(unpacked, 500, state, packed);
+                    flightDataFile.println(unpacked);
+                }
             }
         }
     }
@@ -259,7 +273,6 @@ void Logger::dumpData()
     else // unpack the data
     {
         int len = DataFormatter::getPackedLen(state);
-        printf("len: %d\n", len);
         char packed[len];
         char unpacked[500];
         while (ramFlightDataFile->read(packed, len) > 0)
