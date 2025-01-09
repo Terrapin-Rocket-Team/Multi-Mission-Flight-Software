@@ -13,9 +13,6 @@ bool BMI088andLIS3MDL::init()
     int accelStatus = accel.begin();
     int gyroStatus = gyro.begin();
 
-    printf("acc: %d", accelStatus);
-    printf("gyro: %d", gyroStatus);
-
     int magStatus = mag.init();
     if (magStatus != 0)
     {

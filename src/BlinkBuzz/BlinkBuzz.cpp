@@ -79,7 +79,7 @@ bool BlinkBuzz::isUsingAsync()
 
 bool BlinkBuzz::isAllowed(int pin)
 {
-    if (pin > 0)
+    if (pin >= 0)
         for (int i = 0; i < numPins; i++)
             if (allowedPins[i] == pin)
                 return true;

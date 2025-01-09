@@ -121,6 +121,7 @@ namespace mmfs
         bool sdReady = false;               // Whether the SD card has been initialized
         bool psramReady = false;            // Whether the PSRAM has been initialized
         bool ready = false;                 // Whether the logger is ready
+        bool hasFilledBuffer = false;       // Whether the ram buffer has been filled yet
 
         //
 
