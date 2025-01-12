@@ -5,17 +5,15 @@
 #include <MockBarometer.h>
 #include <MockIMU.h>
 #include <State/State.h>
-
-#include "AvionicsKF.h"
-
 #include "AvionicsState.h"
+#include "AvionicsKF.h"
 
 int main()
 {
     const std::string dataPath = "./test_data/185_FlightData.csv";
 
     std::string accColNames[3] {
-        "I-AX (m/s/s)", "I-AY (m/s/s)", "I-AZ (m/s/s)"
+        "AX", "AY", "AZ"
     };
     std::string gyroColNames[3] {
         "I-ULRX", "I-ULRY", "I-ULRZ"
@@ -34,19 +32,16 @@ int main()
         &imu
     };
 
-    mmfs::AvionicsState avState = mmfs::AvionicsState(sensors, 3, nullptr, true);
+    mmfs::AvionicsKF kf = mmfs::AvionicsKF();
+    mmfs::AvionicsState avState = mmfs::AvionicsState(sensors, 3, &kf, true);
     avState.init();
 
     while(baro.isInitialized() && gps.isInitialized() && imu.isInitialized()) {
         avState.updateState();
-        std::cout << "bPres: " << baro.getPressure() << " px: " << avState.getPosition().x() << " py: " << avState.getPosition().y()  << " pz: " << avState.getPosition().z() << std::endl;
+        std::cout << "accZ: " << avState.getAcceleration().z() << " (m/s/s)\t|" << "vz: " << avState.getVelocity().z() << " (m/s)\t|" << " pz: " << avState.getPosition().z() << std::endl;
     }
 
     return 0;
 }
-
-// This file exists to allow native to build without being in unit test mode.
-// I wanted a way to click the build button and just know if would work without having to go thru the whole testing thing.
-// also clicking the build button saves the files
 
 #endif
