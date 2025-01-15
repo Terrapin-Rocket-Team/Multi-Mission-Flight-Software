@@ -6,10 +6,10 @@ namespace mmfs
 #pragma region Barometer Specific Functions
     Barometer::Barometer()
     {
-        addColumn(FLOAT, &pressure, "Pressure (hPa)");
-        addColumn(FLOAT, &temp, "Temperature (C)");
-        addColumn(FLOAT, &altitudeASL, "Altitude ASL (m)");
-        addColumn(FLOAT, &altitudeAGL, "Altitude AGL (m)");
+        addColumn(DOUBLE, &pressure, "Pressure (hPa)");
+        addColumn(DOUBLE, &temp, "Temperature (C)");
+        addColumn(DOUBLE, &altitudeASL, "Altitude ASL (m)");
+        addColumn(DOUBLE, &altitudeAGL, "Altitude AGL (m)");
     }
 
     Barometer::~Barometer() {}
@@ -63,7 +63,6 @@ namespace mmfs
         }
 
         altitudeAGL = altitudeASL - groundAltitude;
-        packData();
     }
 
     bool Barometer::begin(bool useBiasCorrection)

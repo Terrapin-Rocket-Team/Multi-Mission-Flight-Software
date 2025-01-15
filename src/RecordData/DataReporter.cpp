@@ -42,6 +42,8 @@ namespace mmfs
 
     uint8_t *DataReporter::getPackedData()
     {
+        if (packedData == nullptr)
+            initializeDataReporting();
         return packedData;
     }
 
@@ -62,6 +64,7 @@ namespace mmfs
 
     void DataReporter::packData()
     {
+
         if (packedData == nullptr)
             initializeDataReporting();
 
@@ -74,11 +77,20 @@ namespace mmfs
             case INT:
                 ((int *)packedData)[idx] = *((int *)current->data);
                 break;
+            case BYTE:
+                ((uint8_t *)packedData)[idx] = *((uint8_t *)current->data);
+                break;
+            case SHORT:
+                ((uint16_t *)packedData)[idx] = *((uint16_t *)current->data);
+                break;
             case FLOAT:
                 ((float *)packedData)[idx] = *((float *)current->data);
                 break;
             case DOUBLE:
-                ((double *)packedData)[idx] = *((double *)current->data);
+                ((float *)packedData)[idx] = (float) (*((double *)current->data)); // convert double data into float
+                break;
+            case DOUBLE_HP:
+                ((uint8_t *)packedData)[idx] = *((uint8_t *)current->data);
                 break;
             case STRING:
                 snprintf((char *)&packedData[idx], current->size, "%s", (char *)current->data);
@@ -101,6 +113,7 @@ namespace mmfs
     {
         delete[] packedData;
         packedData = new uint8_t[packedDataSize];
+        printf("test");
     }
 
     uint8_t DataReporter::findSizeOfType(PackedType t, void *str)
@@ -108,18 +121,21 @@ namespace mmfs
         switch (t)
         {
         case INT:
+        case BYTE:
+        case SHORT:
         case BOOL:
             return sizeof(int);
         case FLOAT:
-            return sizeof(float);
         case DOUBLE:
+            return sizeof(float);
+        case DOUBLE_HP:
             return sizeof(double);
         case LONG:
             return sizeof(long);
         case STRING:
         {
             int size = (strlen((char *)str) + 1);
-            size += size % 4; // Make sure the size is a multiple of 4 for alignment
+            size += 4 - (size % 4); // Make sure the size is a multiple of 4 for alignment
             return size;
         }
         default:

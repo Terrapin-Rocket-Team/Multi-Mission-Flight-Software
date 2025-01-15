@@ -12,8 +12,11 @@ namespace mmfs
     enum PackedType
     {
         INT,
+        BYTE,
+        SHORT,
         FLOAT,
-        DOUBLE,
+        DOUBLE, // Compressed to a FLOAT
+        DOUBLE_HP, // Remains a double after compression
         STRING,
         BOOL,
         LONG,

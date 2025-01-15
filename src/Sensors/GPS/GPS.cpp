@@ -13,10 +13,10 @@ namespace mmfs
         strcpy(tod, "00:00:00");
         addColumn(DOUBLE, &position.x(), "Lat");
         addColumn(DOUBLE, &position.y(), "Lon");
-        addColumn(FLOAT, &position.z(), "Alt (m)");
-        addColumn(FLOAT, &displacement.x(), "Disp X (m)");
-        addColumn(FLOAT, &displacement.y(), "Disp Y (m)");
-        addColumn(FLOAT, &displacement.z(), "Disp Z (m)");
+        addColumn(DOUBLE, &position.z(), "Alt (m)");
+        addColumn(DOUBLE, &displacement.x(), "Disp X (m)");
+        addColumn(DOUBLE, &displacement.y(), "Disp Y (m)");
+        addColumn(DOUBLE, &displacement.z(), "Disp Z (m)");
         addColumn(INT, &fixQual, "Fix Quality");
         addColumn(STRING, tod, "Time of Day");
     }
@@ -178,7 +178,6 @@ namespace mmfs
             sec = sec % 60;                                    // just in case
             snprintf(tod, 12, "%02d:%02d:%02d", hr, min, sec); // size is really 9 but 12 ignores warnings about truncation. IRL it will never truncate
         }
-        packData();
     }
 
     bool GPS::begin(bool useBiasCorrection)

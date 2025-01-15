@@ -6,7 +6,7 @@ namespace mmfs
 
     LightSensor::LightSensor() : lux(0), initialLux(0)
     {
-        addColumn(FLOAT, &lux, "Lux (Lux)");
+        addColumn(DOUBLE, &lux, "Lux (Lux)");
     }
 
     LightSensor::~LightSensor() {}

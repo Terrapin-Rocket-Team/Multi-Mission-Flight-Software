@@ -10,6 +10,7 @@ static const char *logTypeStrings[] = {"LOG", "ERROR", "WARNING", "INFO"};
 // Constructor for Logger class
 Logger::Logger()
 {
+    psram = new PSRAM;
     Serial.begin(115200);
     if (sd.begin(SD_CONFIG) || sd.restart())
     {
@@ -58,7 +59,6 @@ Logger::Logger()
     snprintf(data, 100, "This flight is running MMFS v%s", APP_VERSION);
     recordLogData(INFO_, data);
 #endif
-    ready = true;
 }
 
 // Destructor for Logger class
@@ -99,7 +99,7 @@ bool Logger::init(DataReporter **dataReporters, int numReporters, uint16_t buffe
                                                                              : PSRAM_;
     numBufferLines = bufferTime * UPDATE_RATE;
 
-    return sdReady;
+    return ready = sdReady;
 }
 
 // Records flight data to the SD card or PSRAM
@@ -141,9 +141,6 @@ void Logger::recordFlightData()
                 }
 
                 if (groundMode == ALTERNATE_ && bufferIterations % (bufferInterval * UPDATE_RATE) == 0)
-                // TODO: This prints the most recent data. We really want it to print the oldest data in the buffer
-                // because when the buffer is dumped, it will start at the oldest data. This will result in one of the lines
-                // being out of time order. This is a minor issue, but it would be nice to fix it.
                 {
                     char dest[500];
                     DataFormatter::toCSVRow(dest, 500, dataReporters, numReporters);

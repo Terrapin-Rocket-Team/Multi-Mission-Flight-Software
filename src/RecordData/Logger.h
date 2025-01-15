@@ -109,6 +109,7 @@ namespace mmfs
         FsFile logFile;
         FsFile flightDataFile;
         FsFile preFlightFile;
+        PSRAM *psram;
 
         //
 

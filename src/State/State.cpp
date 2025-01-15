@@ -15,16 +15,16 @@ namespace mmfs
         this->filter = filter;
         useFilter = filter != nullptr;
 
-        addColumn(FLOAT, &currentTime, "Time (s)");
-        addColumn(FLOAT, &position.x(), "PX (m)");
-        addColumn(FLOAT, &position.y(), "PY (m)");
-        addColumn(FLOAT, &position.z(), "PZ (m)");
-        addColumn(FLOAT, &velocity.x(), "VX (m/s)");
-        addColumn(FLOAT, &velocity.y(), "VY (m/s)");
-        addColumn(FLOAT, &velocity.z(), "VZ (m/s)");
-        addColumn(FLOAT, &acceleration.x(), "AX (m/s/s)");
-        addColumn(FLOAT, &acceleration.y(), "AY (m/s/s)");
-        addColumn(FLOAT, &acceleration.z(), "AZ (m/s/s)");
+        addColumn(DOUBLE, &currentTime, "Time (s)");
+        addColumn(DOUBLE, &position.x(), "PX (m)");
+        addColumn(DOUBLE, &position.y(), "PY (m)");
+        addColumn(DOUBLE, &position.z(), "PZ (m)");
+        addColumn(DOUBLE, &velocity.x(), "VX (m/s)");
+        addColumn(DOUBLE, &velocity.y(), "VY (m/s)");
+        addColumn(DOUBLE, &velocity.z(), "VZ (m/s)");
+        addColumn(DOUBLE, &acceleration.x(), "AX (m/s/s)");
+        addColumn(DOUBLE, &acceleration.y(), "AY (m/s/s)");
+        addColumn(DOUBLE, &acceleration.z(), "AZ (m/s/s)");
     }
 
     State::~State()
@@ -169,8 +169,6 @@ namespace mmfs
         }
 
         orientation = sensorOK(imu) ? imu->getOrientation() : Quaternion(1, 0, 0, 0);
-
-        packData();
     }
 
     Sensor *State::getSensor(SensorType type, int sensorNum) const

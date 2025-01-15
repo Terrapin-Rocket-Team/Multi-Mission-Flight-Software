@@ -114,7 +114,7 @@ PSRAMFile *PSRAM::open(const char *name, uint8_t mode, bool create)
         }
         else if (create && getNextFreeCluster(0) != (uint8_t)-1) // Create a new file if it doesn't exist
         {
-            PSRAMFile *file = new PSRAMFile(name);
+            PSRAMFile *file = new PSRAMFile(name, this);
             file->id = i;
             file->startCluster = getNextFreeCluster(0);
             file->eofCluster = file->startCluster;

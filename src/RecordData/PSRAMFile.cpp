@@ -4,9 +4,10 @@
 
 using namespace mmfs;
 
-PSRAMFile::PSRAMFile(const char *name)
+PSRAMFile::PSRAMFile(const char *name, PSRAM *psram)
 {
     setName(name);
+    this->psram = psram;
 }
 
 PSRAMFile::~PSRAMFile()

@@ -6,19 +6,19 @@ namespace mmfs
 
     IMU::IMU()
     {
-        addColumn(FLOAT, &measuredAcc.x(), "AccX (m/s^2)");
-        addColumn(FLOAT, &measuredAcc.y(), "AccY (m/s^2)");
-        addColumn(FLOAT, &measuredAcc.z(), "AccZ (m/s^2)");
-        addColumn(FLOAT, &measuredGyro.x(), "GyroX (rad/s)");
-        addColumn(FLOAT, &measuredGyro.y(), "GyroY (rad/s)");
-        addColumn(FLOAT, &measuredGyro.z(), "GyroZ (rad/s)");
-        addColumn(FLOAT, &measuredMag.x(), "MagX (uT)");
-        addColumn(FLOAT, &measuredMag.y(), "MagY (uT)");
-        addColumn(FLOAT, &measuredMag.z(), "MagZ (uT)");
-        addColumn(FLOAT, &orientation.x(), "OriX");
-        addColumn(FLOAT, &orientation.y(), "OriY");
-        addColumn(FLOAT, &orientation.z(), "OriZ");
-        addColumn(FLOAT, &orientation.w(), "OriW");
+        addColumn(DOUBLE, &measuredAcc.x(), "AccX (m/s^2)");
+        addColumn(DOUBLE, &measuredAcc.y(), "AccY (m/s^2)");
+        addColumn(DOUBLE, &measuredAcc.z(), "AccZ (m/s^2)");
+        addColumn(DOUBLE, &measuredGyro.x(), "GyroX (rad/s)");
+        addColumn(DOUBLE, &measuredGyro.y(), "GyroY (rad/s)");
+        addColumn(DOUBLE, &measuredGyro.z(), "GyroZ (rad/s)");
+        addColumn(DOUBLE, &measuredMag.x(), "MagX (uT)");
+        addColumn(DOUBLE, &measuredMag.y(), "MagY (uT)");
+        addColumn(DOUBLE, &measuredMag.z(), "MagZ (uT)");
+        addColumn(DOUBLE, &orientation.x(), "OriX");
+        addColumn(DOUBLE, &orientation.y(), "OriY");
+        addColumn(DOUBLE, &orientation.z(), "OriZ");
+        addColumn(DOUBLE, &orientation.w(), "OriW");
     }
     Quaternion IMU::getOrientation()
     {
@@ -49,7 +49,6 @@ namespace mmfs
     void IMU::update()
     {
         read();
-        packData();
     }
 
     bool IMU::begin(bool useBiasCorrection)

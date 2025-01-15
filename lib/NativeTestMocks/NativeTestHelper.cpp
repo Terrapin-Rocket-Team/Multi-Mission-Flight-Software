@@ -9,7 +9,6 @@ const int LED_PIN = 13;
 int allowed_pins[] = {BUZZER_PIN, LED_PIN};
 BlinkBuzz bb(allowed_pins, 2, true);
 mmfs::Logger logger;
-mmfs::PSRAM *psram = new mmfs::PSRAM();
 mmfs::ErrorHandler errorHandler;
 
 const int UPDATE_RATE = 10;

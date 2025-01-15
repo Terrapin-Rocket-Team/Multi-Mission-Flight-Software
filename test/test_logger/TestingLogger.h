@@ -19,6 +19,8 @@ class TestingLogger : public Logger
         PSRAMFile *getRamLogFile() { return ramLogFile; }
         PSRAMFile *getRamFlightDataFile() { return ramFlightDataFile; }
         PSRAMFile *getRamBufferFile() { return ramBufferFile; }
+
+        PSRAM *psram;
 };
 
 #endif // TESTING_LOGGER_H

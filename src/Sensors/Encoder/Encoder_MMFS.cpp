@@ -22,7 +22,6 @@ namespace mmfs
     void Encoder_MMFS::update()
     {
         read();
-        packData();
     }
 
     bool Encoder_MMFS::begin(bool useBiasCorrection)
