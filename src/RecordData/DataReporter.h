@@ -54,8 +54,8 @@ namespace mmfs
         virtual void initializeDataReporting();
 
         uint8_t *packedData = nullptr; // Packed data for RecordData
-        int packedDataSize = 0;        // Size of packedData
-        uint8_t fieldCount = 0;        // Number of fields in packedData
+        int packedDataSize = 0;        // Size of packedData in bytes
+        uint8_t numColumns = 0;        // Number of fields in packedData
 
         PackedInfo *first = nullptr, *last = nullptr;
 
@@ -65,7 +65,7 @@ namespace mmfs
         template <typename T>
         void addColumn(PackedType t, T *variable, const char *label);
 
-        void removeColumn(const char *label);
+        // void removeColumn(const char *label);
 
     private:
         char *name = nullptr; // Name of the object

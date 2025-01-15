@@ -6,10 +6,10 @@ namespace mmfs
 #pragma region Barometer Specific Functions
     Barometer::Barometer()
     {
-        addColumn(DOUBLE, &pressure, "Pressure (hPa)");
-        addColumn(DOUBLE, &temp, "Temperature (C)");
-        addColumn(DOUBLE, &altitudeASL, "Altitude ASL (m)");
-        addColumn(DOUBLE, &altitudeAGL, "Altitude AGL (m)");
+        addColumn(DOUBLE, &pressure, "Pres (hPa)");
+        addColumn(DOUBLE, &temp, "Temp (C)");
+        addColumn(DOUBLE, &altitudeASL, "Alt ASL (m)");
+        addColumn(DOUBLE, &altitudeAGL, "Alt AGL (m)");
     }
 
     Barometer::~Barometer() {}

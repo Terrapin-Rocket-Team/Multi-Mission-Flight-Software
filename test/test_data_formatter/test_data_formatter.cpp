@@ -117,7 +117,7 @@ void test_setCSVHeader()
     mmfs::DataFormatter::getCSVHeader(dest, 2000, dr, 3);
     TEST_ASSERT_EQUAL_STRING(
         "State - Time (s),State - PX (m),State - PY (m),State - PZ (m),State - VX (m/s),State - VY (m/s),State - VZ (m/s),State - AX (m/s/s),State - AY (m/s/s),State - AZ (m/s/s),"
-        "FakeBarometer - Pres (hPa),FakeBarometer - Temp (C),FakeBarometer - Alt ASL (ft),FakeBarometer - Alt AGL (ft),"
+        "FakeBarometer - Pres (hPa),FakeBarometer - Temp (C),FakeBarometer - Alt ASL (m),FakeBarometer - Alt AGL (m),"
         "FakeGPS - Lat,FakeGPS - Lon,FakeGPS - Alt (m),FakeGPS - Disp X (m),FakeGPS - Disp Y (m),FakeGPS - Disp Z (m),FakeGPS - Fix Quality,FakeGPS - Time of Day",
         dest);
 }

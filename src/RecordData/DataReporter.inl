@@ -22,7 +22,7 @@ namespace mmfs
             first = packedInfo;
             last = packedInfo;
         }
-        else if (place == -1 || place >= fieldCount)
+        else if (place == -1 || place >= numColumns)
         { // Append
             last->next = packedInfo;
             last = packedInfo;
@@ -46,7 +46,8 @@ namespace mmfs
                 last = packedInfo;
             }
         }
-        fieldCount++;
+        numColumns++;
+        initializeDataReporting();
     }
 
     template <typename T>

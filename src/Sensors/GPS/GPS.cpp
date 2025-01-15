@@ -11,8 +11,8 @@ namespace mmfs
         min = 0;
         sec = 0;
         strcpy(tod, "00:00:00");
-        addColumn(DOUBLE, &position.x(), "Lat");
-        addColumn(DOUBLE, &position.y(), "Lon");
+        addColumn(DOUBLE_HP, &position.x(), "Lat");
+        addColumn(DOUBLE_HP, &position.y(), "Lon");
         addColumn(DOUBLE, &position.z(), "Alt (m)");
         addColumn(DOUBLE, &displacement.x(), "Disp X (m)");
         addColumn(DOUBLE, &displacement.y(), "Disp Y (m)");

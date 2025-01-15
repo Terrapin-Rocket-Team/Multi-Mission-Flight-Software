@@ -111,10 +111,6 @@ void Logger::recordFlightData()
     }
     sdReady = true;
 
-    for (int i = 0; i < numReporters; i++)
-    {
-        dataReporters[i]->packData();
-    }
     if (mode == GROUND) // If rocket not in flight
     {
         if (groundMode == SD_) // If we are writing to SD card

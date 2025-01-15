@@ -49,18 +49,18 @@ void DataFormatter::toCSVRow(char *dest, int destLen, DataReporter **drs, int nu
 {
     int dataOffset = 0;
 
-    uintptr_t cursor = 0;
+    char * cursor = dest;
     for (int i = 0; i < numDrs; i++)
     {
         if (data == nullptr)
             dataOffset = 0;
         drs[i]->packData();
-        cursor = toCSVSection((char *)cursor, destLen, data == nullptr ? drs[i]->getPackedData() : (void *)data, dataOffset, drs[i]);
+        cursor = toCSVSection(cursor, destLen, data == nullptr ? drs[i]->getPackedData() : (void *)data, dataOffset, drs[i]);
     }
-    ((char *)cursor)[-1] = '\0';
+    cursor[-1] = '\0';
 }
 
-uintptr_t DataFormatter::toCSVSection(char *dest, int &destLen, void *data, int &dataOffset, DataReporter *obj)
+char *DataFormatter::toCSVSection(char *dest, int &destLen, void *data, int &dataOffset, DataReporter *obj)
 {
     int strSize = 0;
     auto curDataPt = obj->getPackedInfo();
@@ -98,5 +98,5 @@ uintptr_t DataFormatter::toCSVSection(char *dest, int &destLen, void *data, int 
         strSize += printedSize;
         curDataPt = curDataPt->next;
     }
-    return (uintptr_t)dest + strSize;
+    return dest + strSize;
 }

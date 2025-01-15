@@ -22,7 +22,7 @@ namespace mmfs
         static int getPackedLen(DataReporter **drs, int numDrs);
 
     private:
-        static uintptr_t toCSVSection(char *dest, int &destLen, void *data, int &dataOffset, DataReporter *d);
+        static char *toCSVSection(char *dest, int &destLen, void *data, int &dataOffset, DataReporter *d);
     };
 }
 

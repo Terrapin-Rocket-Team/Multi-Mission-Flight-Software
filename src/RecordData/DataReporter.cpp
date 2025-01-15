@@ -5,13 +5,13 @@ namespace mmfs
 
     int DataReporter::numReporters = 0;
 
-    DataReporter::DataReporter(const char *name) : packedData(nullptr), packedDataSize(0)
+    DataReporter::DataReporter(const char *name)
     {
         numReporters++;
         if (name == nullptr)
         {
             this->name = new char[13];
-            snprintf(this->name, 13, "Reporter%d", numReporters);
+            snprintf(this->name, 13, "Reporter #%d", numReporters);
         }
         else
         {
@@ -42,8 +42,6 @@ namespace mmfs
 
     uint8_t *DataReporter::getPackedData()
     {
-        if (packedData == nullptr)
-            initializeDataReporting();
         return packedData;
     }
 
@@ -54,7 +52,7 @@ namespace mmfs
 
     int DataReporter::getNumColumns()
     {
-        return fieldCount;
+        return numColumns;
     }
 
     PackedInfo *DataReporter::getPackedInfo()
@@ -65,9 +63,6 @@ namespace mmfs
     void DataReporter::packData()
     {
 
-        if (packedData == nullptr)
-            initializeDataReporting();
-
         auto current = first;
         int idx = 0;
         while (current != nullptr)
@@ -75,31 +70,31 @@ namespace mmfs
             switch (current->type)
             {
             case INT:
-                ((int *)packedData)[idx] = *((int *)current->data);
+                *(int *)(&packedData[idx]) = *((int *)current->data);
                 break;
             case BYTE:
-                ((uint8_t *)packedData)[idx] = *((uint8_t *)current->data);
+                *(uint8_t *)(&packedData[idx]) = *((uint8_t *)current->data);
                 break;
             case SHORT:
-                ((uint16_t *)packedData)[idx] = *((uint16_t *)current->data);
+                *(uint16_t *)(&packedData[idx]) = *((uint16_t *)current->data);
                 break;
             case FLOAT:
-                ((float *)packedData)[idx] = *((float *)current->data);
+                *(float *)(&packedData[idx]) = (float)(*((double *)current->data)); // convert double data into float
                 break;
             case DOUBLE:
-                ((float *)packedData)[idx] = (float) (*((double *)current->data)); // convert double data into float
+                *(float *)(&packedData[idx]) = (float)(*((double *)current->data)); // convert double data into float
                 break;
             case DOUBLE_HP:
-                ((uint8_t *)packedData)[idx] = *((uint8_t *)current->data);
+                *(double *)(&packedData[idx]) = *((double *)current->data);
                 break;
             case STRING:
                 snprintf((char *)&packedData[idx], current->size, "%s", (char *)current->data);
                 break;
             case BOOL:
-                ((bool *)packedData)[idx] = *((bool *)current->data);
+                *(bool *)(&packedData[idx]) = *((bool *)current->data);
                 break;
             case LONG:
-                ((long *)packedData)[idx] = *((long *)current->data);
+                *(long *)(&packedData[idx]) = *((long *)current->data);
                 break;
             default:
                 break;

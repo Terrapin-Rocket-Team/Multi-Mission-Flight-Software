@@ -21,7 +21,7 @@ FakeGPS gps;
 FakeBarometer baro;
 Sensor *sensors[2] = {&gps, &baro};
 State state(sensors, 2, nullptr);
-DataReporter *arr[] = {&state, &baro, &gps};
+DataReporter *arr[] = {&state, &gps, &baro};
 TestingLogger *testLogger;
 
     // ---
@@ -63,7 +63,7 @@ void test_SdFs_mock()
 
 void test_testLogger_init()
 {
-    testLogger->init(arr, sizeof(arr), 1, 1);
+    testLogger->init(arr, 3, 1, 1);
     TEST_ASSERT_TRUE(testLogger->isPsramReady());
     TEST_ASSERT_TRUE(testLogger->isSdCardReady());
     TEST_ASSERT_TRUE(testLogger->isReady());
