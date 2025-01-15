@@ -15,6 +15,7 @@ FakeBarometer baro;
 FakeGPS gps;
 Sensor *sensors[] = {&baro, &gps};
 mmfs::State state(sensors, 2, nullptr);
+DataReporter *dr[] = {&state, &baro, &gps};
 // ---
 
 // These two functions are called before and after each test function, and are required in unity, even if empty.
@@ -39,8 +40,8 @@ void test_getPackedLen()
             sizeof(double) * 2 +
             sizeof(float) * 4 +
             sizeof(float) * 1 +
-            DataReporter::PackedTypeToSize(STRING_10),
-        mmfs::DataFormatter::getPackedLen(&state));
+            12,
+        mmfs::DataFormatter::getPackedLen(dr, 3));
 }
 
 void test_packUnpackData()
@@ -50,25 +51,29 @@ void test_packUnpackData()
     state.updateState(1);
     uint8_t dest[2000];
     uint8_t *destPtr = dest;
-    destPtr = mmfs::DataFormatter::packData(destPtr, &state);
+    destPtr = mmfs::DataFormatter::packData(destPtr, dr, 3);
 
     int expectedSize = 0;
-    for (int i = 0; i < state.getNumPackedDataPoints(); i++)
-        expectedSize += state.PackedTypeToSize(state.getPackedOrder()[i]);
 
-    for (int i = 0; i < 2; i++)
-        for (int j = 0; j < state.getSensors()[i]->getNumPackedDataPoints(); j++)
-            expectedSize += state.PackedTypeToSize(state.getSensors()[i]->getPackedOrder()[j]);
+    for (int i = 0; i < 3; i++)
+    {
+        auto t = dr[i]->getPackedInfo();
+        for (int j = 0; j < dr[i]->getNumColumns(); j++)
+        {
+            expectedSize += t->size;
+            t = t->next;
+        }
+    }
 
     TEST_ASSERT_EQUAL_INT(expectedSize, destPtr - dest);
 
     // now unpack
     char dest2[2000];
-    mmfs::DataFormatter::toCSVRow(dest2, 2000, &state, dest);
+    mmfs::DataFormatter::toCSVRow(dest2, 2000, dr, 3, dest);
     TEST_ASSERT_EQUAL_STRING(
         "1.000,0.000,0.000,0.000,0.000,0.000,0.000,0.000,0.000,0.000," // state
         "1001.289,25.000,100.000,0.000,"                               // baro
-        "0.0000000,0.0000000,0.000,0.000,0.000,0.000,0,00:00:00",                       // gps
+        "0.0000000,0.0000000,0.000,0.000,0.000,0.000,0,00:00:00",      // gps
         dest2);
 }
 
@@ -79,24 +84,24 @@ void test_packData2()
     state.updateState(2);
     uint8_t dest[2000];
     uint8_t *destPtr = dest;
-    destPtr = mmfs::DataFormatter::packData(destPtr, &state);
+    destPtr = mmfs::DataFormatter::packData(destPtr, dr, 3);
     int packedDataSize = destPtr - dest;
     baro.set(0, 0);
     gps.set(180, 180, 1000);
     state.updateState(3);
-    destPtr = mmfs::DataFormatter::packData(destPtr, &state);
+    destPtr = mmfs::DataFormatter::packData(destPtr, dr, 3);
 
     // now unpack
     char dest2[2000];
-    mmfs::DataFormatter::toCSVRow(dest2, 2000, &state, dest);
+    mmfs::DataFormatter::toCSVRow(dest2, 2000, dr, 3, dest);
     TEST_ASSERT_EQUAL_STRING(
         "2.000,0.000,0.000,0.000,0.000,0.000,0.000,0.000,0.000,0.000," // state
         "1001.289,25.000,100.000,0.000,"                               // baro
-        "0.0000000,0.0000000,0.000,0.000,0.000,0.000,0,00:00:00",                       // gps
+        "0.0000000,0.0000000,0.000,0.000,0.000,0.000,0,00:00:00",      // gps
         dest2);
 
     char *newPos = (char *)dest + packedDataSize;
-    mmfs::DataFormatter::toCSVRow(dest2, 2000, &state, newPos);
+    mmfs::DataFormatter::toCSVRow(dest2, 2000, dr, 3, newPos);
     TEST_ASSERT_EQUAL_STRING(
         "3.000,0.000,0.000,40925.168,0.000,0.000,40925.168,0.000,0.000,0.000,"
         "0.000,0.000,44307.691,40925.168,"
@@ -109,10 +114,10 @@ void test_setCSVHeader()
     char dest[2000];
     for (int i = 0; i < 500; i++)
         dest[i] = 0;
-    mmfs::DataFormatter::getCSVHeader(dest, 2000, &state);
+    mmfs::DataFormatter::getCSVHeader(dest, 2000, dr, 3);
     TEST_ASSERT_EQUAL_STRING(
         "State - Time (s),State - PX (m),State - PY (m),State - PZ (m),State - VX (m/s),State - VY (m/s),State - VZ (m/s),State - AX (m/s/s),State - AY (m/s/s),State - AZ (m/s/s),"
-        "FakeBarometer - Pres (hPa),FakeBarometer - Temp (C),FakeBarometer - Alt ASL (ft),FakeBarometer - Alt AGL (ft),"
+        "FakeBarometer - Pres (hPa),FakeBarometer - Temp (C),FakeBarometer - Alt ASL (m),FakeBarometer - Alt AGL (m),"
         "FakeGPS - Lat,FakeGPS - Lon,FakeGPS - Alt (m),FakeGPS - Disp X (m),FakeGPS - Disp Y (m),FakeGPS - Disp Z (m),FakeGPS - Fix Quality,FakeGPS - Time of Day",
         dest);
 }

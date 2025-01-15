@@ -14,6 +14,17 @@ namespace mmfs
         this->sensors = sensors;
         this->filter = filter;
         useFilter = filter != nullptr;
+
+        addColumn(DOUBLE, &currentTime, "Time (s)");
+        addColumn(DOUBLE, &position.x(), "PX (m)");
+        addColumn(DOUBLE, &position.y(), "PY (m)");
+        addColumn(DOUBLE, &position.z(), "PZ (m)");
+        addColumn(DOUBLE, &velocity.x(), "VX (m/s)");
+        addColumn(DOUBLE, &velocity.y(), "VY (m/s)");
+        addColumn(DOUBLE, &velocity.z(), "VZ (m/s)");
+        addColumn(DOUBLE, &acceleration.x(), "AX (m/s/s)");
+        addColumn(DOUBLE, &acceleration.y(), "AY (m/s/s)");
+        addColumn(DOUBLE, &acceleration.z(), "AZ (m/s/s)");
     }
 
     State::~State()
@@ -25,7 +36,6 @@ namespace mmfs
 
     bool State::init(bool useBiasCorrection)
     {
-        setUpPackedData();
         char *logData = new char[100];
         int good = 0, tryNumSensors = 0;
         for (int i = 0; i < maxNumSensors; i++)
@@ -37,18 +47,18 @@ namespace mmfs
                 {
                     good++;
                     snprintf(logData, 100, "%s [%s] initialized.", sensors[i]->getTypeString(), sensors[i]->getName());
-                    logger.recordLogData(INFO_, logData);
+                    getLogger().recordLogData(INFO_, logData);
                 }
                 else
                 {
                     snprintf(logData, 100, "%s [%s] failed to initialize.", sensors[i]->getTypeString(), sensors[i]->getName());
-                    logger.recordLogData(ERROR_, logData);
+                    getLogger().recordLogData(ERROR_, logData);
                 }
             }
             else
             {
                 snprintf(logData, 100, "A sensor in the array was null!");
-                logger.recordLogData(ERROR_, logData);
+                getLogger().recordLogData(ERROR_, logData);
             }
         }
         if (useFilter)
@@ -159,8 +169,6 @@ namespace mmfs
         }
 
         orientation = sensorOK(imu) ? imu->getOrientation() : Quaternion(1, 0, 0, 0);
-
-        packData();
     }
 
     Sensor *State::getSensor(SensorType type, int sensorNum) const
@@ -181,66 +189,4 @@ namespace mmfs
     }
 #pragma endregion
 
-#pragma region DataReporter Functions
-
-    const int State::getNumPackedDataPoints() const { return 10; }
-
-    const PackedType *State::getPackedOrder() const
-    {
-        static const PackedType order[10] = {
-            FLOAT, FLOAT, FLOAT, FLOAT, FLOAT, FLOAT, FLOAT, FLOAT, FLOAT, FLOAT};
-        return order;
-    }
-
-    const char **State::getPackedDataLabels() const
-    {
-        static const char *labels[] = {
-            "Time (s)",
-            "PX (m)",
-            "PY (m)",
-            "PZ (m)",
-            "VX (m/s)",
-            "VY (m/s)",
-            "VZ (m/s)",
-            "AX (m/s/s)",
-            "AY (m/s/s)",
-            "AZ (m/s/s)"};
-        return labels;
-    }
-
-    void State::packData()
-    {
-        float t = currentTime;
-        float px = position.x();
-        float py = position.y();
-        float pz = position.z();
-        float vx = velocity.x();
-        float vy = velocity.y();
-        float vz = velocity.z();
-        float ax = acceleration.x();
-        float ay = acceleration.y();
-        float az = acceleration.z();
-
-        int cursor = 0;
-        memcpy(packedData + cursor, &t, sizeof(float));
-        cursor += sizeof(float);
-        memcpy(packedData + cursor, &px, sizeof(float));
-        cursor += sizeof(float);
-        memcpy(packedData + cursor, &py, sizeof(float));
-        cursor += sizeof(float);
-        memcpy(packedData + cursor, &pz, sizeof(float));
-        cursor += sizeof(float);
-        memcpy(packedData + cursor, &vx, sizeof(float));
-        cursor += sizeof(float);
-        memcpy(packedData + cursor, &vy, sizeof(float));
-        cursor += sizeof(float);
-        memcpy(packedData + cursor, &vz, sizeof(float));
-        cursor += sizeof(float);
-        memcpy(packedData + cursor, &ax, sizeof(float));
-        cursor += sizeof(float);
-        memcpy(packedData + cursor, &ay, sizeof(float));
-        cursor += sizeof(float);
-        memcpy(packedData + cursor, &az, sizeof(float));
-        cursor += sizeof(float);
-    }
 } // namespace mmfs

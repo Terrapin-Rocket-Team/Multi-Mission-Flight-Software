@@ -15,6 +15,7 @@ using namespace mmfs;
 
 char *fakepsram = nullptr;
 
+PSRAM *psram;
 // ---
 
 // These two functions are called before and after each test function, and are required in unity, even if empty.
@@ -38,7 +39,7 @@ void tearDown(void)
 
 void test_PSRAMFile_constructor()
 {
-    PSRAMFile file("testfile");
+    PSRAMFile file("testfile", psram);
     TEST_ASSERT_EQUAL_STRING("testfile", file.getName());
     TEST_ASSERT_EQUAL(0, file.getSize());
 }
@@ -328,7 +329,6 @@ void test_seek_write()
 }
 
 // ---
-
 // This is the main function that runs all the tests. It should be the last thing in the file.
 int main(int argc, char **argv)
 {
@@ -339,7 +339,6 @@ int main(int argc, char **argv)
     PSRAM_STARTING_ADDRESS = (uintptr_t)fakepsram;
     PSRAM_CLUSTER_SIZE = 256; // in bytes
 
-    delete psram;
     psram = new PSRAM();
 
     // Add your tests here

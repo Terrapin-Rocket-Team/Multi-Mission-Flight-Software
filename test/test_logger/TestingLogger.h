@@ -8,7 +8,7 @@ using namespace mmfs;
 class TestingLogger : public Logger
 {
     public:
-        TestingLogger(uint16_t bufferTime = 30, int bufferInterval = 30, bool packData = true, GroundMode mode = ALTERNATE_) : Logger(bufferTime, bufferInterval) {};
+        TestingLogger() {};
         virtual ~TestingLogger() {};
 
         SdFs &getSdFs() { return sd; }
@@ -19,6 +19,8 @@ class TestingLogger : public Logger
         PSRAMFile *getRamLogFile() { return ramLogFile; }
         PSRAMFile *getRamFlightDataFile() { return ramFlightDataFile; }
         PSRAMFile *getRamBufferFile() { return ramBufferFile; }
+
+        PSRAM *psram;
 };
 
 #endif // TESTING_LOGGER_H

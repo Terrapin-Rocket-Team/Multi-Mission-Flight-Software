@@ -29,43 +29,12 @@ namespace mmfs
         virtual void update() override;
         virtual bool begin(bool useBiasCorrection = true) override;
 
-        const int getNumPackedDataPoints() const override { return 13; }
-        const mmfs::PackedType *getPackedOrder() const override
-        {
-            using namespace mmfs;
-            static const PackedType order[] = {FLOAT, FLOAT, FLOAT, FLOAT, FLOAT, FLOAT, FLOAT, FLOAT, FLOAT, FLOAT, FLOAT, FLOAT, FLOAT};
-            return order;
-        }
-        const char **getPackedDataLabels() const override
-        {
-            static const char *labels[] = {
-                "AccX",
-                "AccY",
-                "AccZ",
-                "GyroX",
-                "GyroY",
-                "GyroZ",
-                "MagX",
-                "MagY",
-                "MagZ",
-                "OriX",
-                "OriY",
-                "OriZ",
-                "OriW"};
-            return labels;
-        }
-
-        virtual void packData() override;
-
         double adaptiveAccelGain(double alphaBar, double t_1 = .1, double t_2 = .2);
         virtual void quaternionBasedComplimentaryFilterSetup();
         virtual void quaternionBasedComplimentaryFilter(double dt);
 
     protected:
-        IMU()
-        {
-            setUpPackedData();
-        }
+        IMU();
 
         Vector<3> measuredAcc = Vector<3>(0, 0, 0); // Body frame acceleration in m/s/s
         Vector<3> orientationEuler = Vector<3>(0, 0, 0);

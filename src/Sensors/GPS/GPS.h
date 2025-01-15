@@ -24,10 +24,6 @@ namespace mmfs
         virtual const char *getTypeString() const override;
         virtual const SensorType getType() const override;
 
-        virtual const int getNumPackedDataPoints() const override;
-        virtual const PackedType *getPackedOrder() const override;
-        virtual const char **getPackedDataLabels() const override;
-        virtual void packData() override;
         virtual const char *getTimeOfDay() const;
 
     protected:
