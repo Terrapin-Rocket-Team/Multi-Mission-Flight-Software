@@ -11,13 +11,14 @@ class TestingLogger : public Logger
         TestingLogger(uint16_t bufferTime = 30, int bufferInterval = 30, bool packData = true, GroundMode mode = ALTERNATE_) : Logger(bufferTime, bufferInterval) {};
         virtual ~TestingLogger() {};
 
-        SdFs &getSdFs() { return sd; };
-        FsFile &getLogFile() { return logFile; };
-        FsFile &getFlightDataFile() { return flightDataFile; };
+        SdFs &getSdFs() { return sd; }
+        FsFile &getLogFile() { return logFile; }
+        FsFile &getFlightDataFile() { return flightDataFile; }
+        FsFile &getPreFlightFile() { return preFlightFile;}
 
-        PSRAMFile *getRamLogFile() { return ramLogFile; };
-        PSRAMFile *getRamFlightDataFile() { return ramFlightDataFile; };
-        PSRAMFile *getRamBufferFile() { return ramBufferFile; };
+        PSRAMFile *getRamLogFile() { return ramLogFile; }
+        PSRAMFile *getRamFlightDataFile() { return ramFlightDataFile; }
+        PSRAMFile *getRamBufferFile() { return ramBufferFile; }
 };
 
 #endif // TESTING_LOGGER_H

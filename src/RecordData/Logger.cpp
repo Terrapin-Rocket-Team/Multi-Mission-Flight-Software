@@ -21,6 +21,9 @@ Logger::Logger(uint16_t bufferTime, int bufferInterval)
 // Destructor for Logger class
 Logger::~Logger()
 {
+    delete[] flightDataFileName;
+    delete[] preFlightFileName;
+    delete[] logFileName;
 }
 
 // Returns whether the PSRAM is ready
@@ -48,6 +51,8 @@ bool Logger::init(State *state)
     if (sd.begin(SD_CONFIG) || sd.restart())
     {
         sdReady = true;
+
+        // find a unique file name
         char fileName[MAX_FILE_NAME_SIZE];
         int fileNo = 0;
         bool exists = true;
@@ -56,16 +61,27 @@ bool Logger::init(State *state)
             snprintf(fileName, MAX_FILE_NAME_SIZE, "%d_%s", ++fileNo, "FlightData.csv");
             exists = sd.exists(fileName);
         }
+
+        // create files
+
+        int len = 26; // max file name length
         flightDataFile = sd.open(fileName, FILE_WRITE);
-        flightDataFileName = new char[strlen(fileName) + 1];
-        snprintf(flightDataFileName, strlen(fileName) + 1, "%s", fileName);
+        flightDataFileName = new char[len];
+        snprintf(flightDataFileName,len, "%s", fileName);
         flightDataFile.close();
 
         snprintf(fileName, MAX_FILE_NAME_SIZE, "%d_%s", fileNo, "Log.txt");
         logFile = sd.open(fileName, FILE_WRITE);
-        logFileName = new char[strlen(fileName) + 1];
-        snprintf(logFileName, strlen(fileName) + 1, "%s", fileName);
+        logFileName = new char[len];
+        snprintf(logFileName, len, "%s", fileName);
         logFile.close();
+
+        snprintf(fileName, MAX_FILE_NAME_SIZE, "%d_%s", fileNo, "PreFlightData.csv");
+        preFlightFile = sd.open(fileName, FILE_WRITE);
+        preFlightFileName = new char[len];
+        snprintf(preFlightFileName, len, "%s", fileName);
+        preFlightFile.close();
+
     }
     if (psram->init())
     {
@@ -88,17 +104,18 @@ bool Logger::init(State *state)
 // Records flight data to the SD card or PSRAM
 void Logger::recordFlightData()
 {
-    if (!sdReady) // If SD card not available, nothing to do.
+    if (!sdReady && !sd.restart()) // If SD card not available, nothing to do.
     {
         return;
     }
+    sdReady = true;
     if (mode == GROUND) // If rocket not in flight
     {
         if (groundMode == SD_) // If we are writing to SD card
         {
             char dest[500];
             DataFormatter::toCSVRow(dest, 500, state);
-            flightDataFile = sd.open(flightDataFileName, FILE_WRITE);
+            flightDataFile = sd.open(preFlightFileName, FILE_WRITE);
             flightDataFile.println(dest);
             flightDataFile.close();
         }
@@ -124,7 +141,7 @@ void Logger::recordFlightData()
                 {
                     char dest[500];
                     DataFormatter::toCSVRow(dest, 500, state);
-                    flightDataFile = sd.open(flightDataFileName, FILE_WRITE);
+                    flightDataFile = sd.open(preFlightFileName, FILE_WRITE);
                     flightDataFile.println(dest);
                     flightDataFile.close();
                 }
@@ -286,7 +303,7 @@ void Logger::dumpData()
 
 void Logger::writeCsvHeader()
 {
-    char header[2000]; // 500 is arbitrary, but should be enough for basically any header
+    char header[2000]; // 2000 is arbitrary, but should be enough for basically any header
     DataFormatter::getCSVHeader(header, sizeof(header), state);
     flightDataFile = sd.open(flightDataFileName, FILE_WRITE);
     flightDataFile.println(header);
