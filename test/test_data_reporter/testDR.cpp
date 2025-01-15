@@ -15,6 +15,8 @@ namespace mmfs
             addColumn(INT, &var1, "int");
             addColumn(DOUBLE, &var2, "DtoF");
             addColumn(DOUBLE_HP, &var2, "Double");
+            removeColumn("DtoF");
+            insertColumn(1, DOUBLE, &var2, "DtoF2");
         }
     };
 }

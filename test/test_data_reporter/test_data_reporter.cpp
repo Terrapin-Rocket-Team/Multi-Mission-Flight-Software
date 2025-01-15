@@ -39,6 +39,9 @@ void test_constructor(){
     TEST_ASSERT_EQUAL_INT(obj.getPackedDataSize(), sizeof(int) + sizeof(float) + sizeof(double));
     TEST_ASSERT_EQUAL_INT(obj.getNumColumns(), 3);
     TEST_ASSERT_NOT_NULL(obj.getPackedInfo());
+    TEST_ASSERT_EQUAL_STRING(obj.getPackedInfo()->label, "int");
+    TEST_ASSERT_EQUAL_STRING(obj.getPackedInfo()->next->label, "DtoF2");
+    TEST_ASSERT_EQUAL_STRING(obj.getPackedInfo()->next->next->label, "Double");
 }
 
 void test_pack(){

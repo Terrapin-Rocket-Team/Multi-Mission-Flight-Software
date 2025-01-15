@@ -65,7 +65,7 @@ namespace mmfs
         template <typename T>
         void addColumn(PackedType t, T *variable, const char *label);
 
-        // void removeColumn(const char *label);
+        void removeColumn(const char *label);
 
     private:
         char *name = nullptr; // Name of the object

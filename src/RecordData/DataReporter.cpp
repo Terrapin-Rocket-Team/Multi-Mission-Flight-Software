@@ -139,4 +139,40 @@ namespace mmfs
         }
     }
 
+    void DataReporter::removeColumn(const char *label)
+    {
+        if (getLogger().isReady())
+            getLogger().recordLogData(ERROR_, "Logger already initalized. Cannot remove any columns.");
+        if (first == nullptr)
+            return;
+        if (strcmp(first->label, label) == 0)
+        {
+            auto toDel = first;
+            first = first->next;
+            if (first == nullptr)
+                last = nullptr;
+            packedDataSize -= toDel->size;
+            delete toDel;
+            numColumns--;
+            return;
+        }
+
+        auto t = first;
+        while (t->next != nullptr)
+        {
+            if (strcmp(t->next->label, label) == 0)
+            {
+                auto toDel = t->next;
+                t->next = t->next->next;
+                if (t->next == nullptr)
+                    last = t;
+                packedDataSize -= toDel->size;
+                delete toDel;
+                numColumns--;
+                return;
+            }
+            t = t->next;
+        }
+    }
+
 } // namespace mmfs
