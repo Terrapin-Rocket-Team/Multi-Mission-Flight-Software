@@ -54,12 +54,8 @@ namespace mmfs
 
         // DataReporter functions
         virtual const char *getName() const override { return "State"; }
-        virtual const PackedType *getPackedOrder() const override;
-        virtual const int getNumPackedDataPoints() const override;
-        virtual const char **getPackedDataLabels() const override;
 
     protected:
-        virtual void packData() override;
 
         double currentTime; // in s since uC turned on
         int lastTime;

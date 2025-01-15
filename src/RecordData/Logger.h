@@ -49,6 +49,7 @@ const uint8_t SD_CS_PIN = SDCARD_SS_PIN;
 namespace mmfs
 {
     class State; // Forward declaration
+    class DataReporter; // Forward declaration
 
     enum LogType
     {
@@ -82,13 +83,13 @@ namespace mmfs
     {
 
     public:
-        Logger(uint16_t bufferTime = 30, int bufferInterval = 30); // store 30 seconds, print to SD every 30 seconds
+        Logger(); // store 30 seconds, print to SD every 30 seconds
         virtual ~Logger();
 
-        virtual bool init(State *state);
+        virtual bool init(DataReporter **dataReporters, int numReporters, uint16_t bufferTime = 30, int bufferInterval = 30);
 
         virtual bool isPsramReady() const;
-        virtual bool isSdCardReady() const;
+        virtual bool isSdCardReady();
         virtual bool isReady() const;
 
         void recordFlightData(); // records  flight data
@@ -112,7 +113,8 @@ namespace mmfs
         //
 
         Mode mode = GROUND;
-        State *state = nullptr;
+        DataReporter **dataReporters = nullptr;
+        int numReporters = 0;
         GroundMode groundMode = ALTERNATE_;
         bool packData = true;
         uint16_t bufferTime;
@@ -134,8 +136,8 @@ namespace mmfs
         int numBufferLines = 0;
         int bufferIterations = 0;
     };
-} // namespace mmfs
 
-extern mmfs::Logger logger;
+    Logger &getLogger();
+} // namespace mmfs
 
 #endif // LOGGER_H

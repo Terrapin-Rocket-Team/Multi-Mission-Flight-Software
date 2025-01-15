@@ -4,7 +4,13 @@ namespace mmfs
 {
 
 #pragma region Barometer Specific Functions
-    Barometer::Barometer() { setUpPackedData(); }
+    Barometer::Barometer()
+    {
+        addColumn(FLOAT, &pressure, "Pressure (hPa)");
+        addColumn(FLOAT, &temp, "Temperature (C)");
+        addColumn(FLOAT, &altitudeASL, "Altitude ASL (m)");
+        addColumn(FLOAT, &altitudeAGL, "Altitude AGL (m)");
+    }
 
     Barometer::~Barometer() {}
 
@@ -96,42 +102,14 @@ namespace mmfs
                 printf("Ground Altitude: %.2f m\n", groundAltitude);
                 altitudeASL = groundAltitude;
             }
-            for(int i = 0; i < 3; i++){
+            for (int i = 0; i < 3; i++)
+            {
                 read();
                 delay(50);
             }
             return true;
         }
         return false;
-    }
-
-#pragma region Data Reporting
-
-    const int Barometer::getNumPackedDataPoints() const { return 4; }
-
-    const PackedType *Barometer::getPackedOrder() const
-    {
-        static const PackedType order[] = {FLOAT, FLOAT, FLOAT, FLOAT};
-        return order;
-    }
-
-    const char **Barometer::getPackedDataLabels() const
-    {
-        static const char *labels[] = {"Pres (hPa)", "Temp (C)", "Alt ASL (ft)", "Alt AGL (ft)"};
-        return labels;
-    }
-
-    void Barometer::packData()
-    {
-        int flt = sizeof(float);
-        float p = float(pressure);
-        float t = float(temp);
-        float a = float(altitudeASL);
-        float g = float(altitudeAGL);
-        memcpy(packedData, &p, flt);
-        memcpy(packedData + flt, &t, flt);
-        memcpy(packedData + 2 * flt, &a, flt);
-        memcpy(packedData + 3 * flt, &g, flt);
     }
 
     // const char *Barometer::getStaticDataString() const

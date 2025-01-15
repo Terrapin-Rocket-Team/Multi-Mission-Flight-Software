@@ -8,46 +8,9 @@ using namespace mmfs;
 static const char *logTypeStrings[] = {"LOG", "ERROR", "WARNING", "INFO"};
 
 // Constructor for Logger class
-Logger::Logger(uint16_t bufferTime, int bufferInterval)
+Logger::Logger()
 {
-    this->packData = bufferTime > 0;
-    this->bufferTime = bufferTime;
-    this->bufferInterval = bufferInterval;
-    this->groundMode = bufferInterval > 0 ? ALTERNATE_ : bufferInterval == 0 ? SD_
-                                                                             : PSRAM_;
-    numBufferLines = bufferTime * UPDATE_RATE;
-}
-
-// Destructor for Logger class
-Logger::~Logger()
-{
-    delete[] flightDataFileName;
-    delete[] preFlightFileName;
-    delete[] logFileName;
-}
-
-// Returns whether the PSRAM is ready
-bool Logger::isPsramReady() const
-{
-    return psramReady;
-}
-
-// Returns whether the SD card is ready
-bool Logger::isSdCardReady() const
-{
-    return sdReady;
-}
-
-// Returns whether the logger is ready
-bool Logger::isReady() const
-{
-    return ready;
-}
-
-// Initializes the logger, returning whether SD card is ready
-bool Logger::init(State *state)
-{
-
+    Serial.begin(115200);
     if (sd.begin(SD_CONFIG) || sd.restart())
     {
         sdReady = true;
@@ -67,7 +30,7 @@ bool Logger::init(State *state)
         int len = 26; // max file name length
         flightDataFile = sd.open(fileName, FILE_WRITE);
         flightDataFileName = new char[len];
-        snprintf(flightDataFileName,len, "%s", fileName);
+        snprintf(flightDataFileName, len, "%s", fileName);
         flightDataFile.close();
 
         snprintf(fileName, MAX_FILE_NAME_SIZE, "%d_%s", fileNo, "Log.txt");
@@ -81,7 +44,6 @@ bool Logger::init(State *state)
         preFlightFileName = new char[len];
         snprintf(preFlightFileName, len, "%s", fileName);
         preFlightFile.close();
-
     }
     if (psram->init())
     {
@@ -91,13 +53,52 @@ bool Logger::init(State *state)
         if (ramLogFile && ramFlightDataFile && ramBufferFile)
             psramReady = true;
     }
-    this->state = state;
 #ifndef PIO_UNIT_TESTING // This is a workaround because testing this logger is hard when it's writing its own variable data to the log file
     char data[100];
     snprintf(data, 100, "This flight is running MMFS v%s", APP_VERSION);
     recordLogData(INFO_, data);
 #endif
     ready = true;
+}
+
+// Destructor for Logger class
+Logger::~Logger()
+{
+    delete[] flightDataFileName;
+    delete[] preFlightFileName;
+    delete[] logFileName;
+}
+
+// Returns whether the PSRAM is ready
+bool Logger::isPsramReady() const
+{
+    return psramReady;
+}
+
+// Returns whether the SD card is ready
+bool Logger::isSdCardReady()
+{
+    return sdReady || sd.restart();
+}
+
+// Returns whether the logger is ready
+bool Logger::isReady() const
+{
+    return ready;
+}
+
+// Initializes the logger, returning whether SD card is ready
+bool Logger::init(DataReporter **dataReporters, int numReporters, uint16_t bufferTime, int bufferInterval)
+{
+    this->dataReporters = dataReporters;
+    this->numReporters = numReporters;
+    this->packData = bufferTime > 0;
+    this->bufferTime = bufferTime;
+    this->bufferInterval = bufferInterval;
+    this->groundMode = bufferInterval > 0 ? ALTERNATE_ : bufferInterval == 0 ? SD_
+                                                                             : PSRAM_;
+    numBufferLines = bufferTime * UPDATE_RATE;
+
     return sdReady;
 }
 
@@ -109,12 +110,17 @@ void Logger::recordFlightData()
         return;
     }
     sdReady = true;
+
+    for (int i = 0; i < numReporters; i++)
+    {
+        dataReporters[i]->packData();
+    }
     if (mode == GROUND) // If rocket not in flight
     {
         if (groundMode == SD_) // If we are writing to SD card
         {
             char dest[500];
-            DataFormatter::toCSVRow(dest, 500, state);
+            DataFormatter::toCSVRow(dest, 500, dataReporters, numReporters);
             flightDataFile = sd.open(preFlightFileName, FILE_WRITE);
             flightDataFile.println(dest);
             flightDataFile.close();
@@ -123,9 +129,9 @@ void Logger::recordFlightData()
         {
             if (packData) // can't circular buffer dynamic strings, only fixed length packed data. TODO?
             {
-                int len = DataFormatter::getPackedLen(state);
+                int len = DataFormatter::getPackedLen(dataReporters, numReporters);
                 uint8_t *dest = new uint8_t[len];
-                DataFormatter::packData(dest, state);
+                DataFormatter::packData(dest, dataReporters, numReporters);
                 ramBufferFile->write(dest, len);
                 delete[] dest;
                 if (++bufferIterations % numBufferLines == 0)
@@ -140,7 +146,7 @@ void Logger::recordFlightData()
                 // being out of time order. This is a minor issue, but it would be nice to fix it.
                 {
                     char dest[500];
-                    DataFormatter::toCSVRow(dest, 500, state);
+                    DataFormatter::toCSVRow(dest, 500, dataReporters, numReporters);
                     flightDataFile = sd.open(preFlightFileName, FILE_WRITE);
                     flightDataFile.println(dest);
                     flightDataFile.close();
@@ -155,14 +161,14 @@ void Logger::recordFlightData()
             if (!packData) // if not packing data, just write the string to the file
             {
                 char dest[500];
-                DataFormatter::toCSVRow(dest, 500, state);
+                DataFormatter::toCSVRow(dest, 500, dataReporters, numReporters);
                 ramFlightDataFile->println(dest);
             }
             else
             {
-                int len = DataFormatter::getPackedLen(state);
+                int len = DataFormatter::getPackedLen(dataReporters, numReporters);
                 uint8_t *dest = new uint8_t[len];
-                DataFormatter::packData(dest, state);
+                DataFormatter::packData(dest, dataReporters, numReporters);
                 ramFlightDataFile->write(dest, len);
                 delete[] dest;
             }
@@ -170,7 +176,7 @@ void Logger::recordFlightData()
         else // If the PSRAM isn't working, write to the SD card
         {
             char dest[500];
-            DataFormatter::toCSVRow(dest, 500, state);
+            DataFormatter::toCSVRow(dest, 500, dataReporters, numReporters);
             flightDataFile = sd.open(flightDataFileName, FILE_WRITE);
             flightDataFile.println(dest);
             flightDataFile.close();
@@ -252,14 +258,14 @@ void Logger::dumpData()
     {
         if (groundMode != SD_) // if set to sd or not packing data, there is no buffer here.
         {
-            int len = DataFormatter::getPackedLen(state);
+            int len = DataFormatter::getPackedLen(dataReporters, numReporters);
             char packed[len];
             char unpacked[500];
             if (hasFilledBuffer) // if the buffer has been filled, then the buffer is circular and we need to read it in chunks
                 for (int i = 0; i < numBufferLines; i++)
                 {
                     ramBufferFile->read(packed, len);
-                    DataFormatter::toCSVRow(unpacked, 500, state, packed);
+                    DataFormatter::toCSVRow(unpacked, 500, dataReporters, numReporters, packed);
                     flightDataFile.println(unpacked);
                     if (++bufferIterations % numBufferLines == 0)
                         ramBufferFile->restart();
@@ -269,7 +275,7 @@ void Logger::dumpData()
                 ramBufferFile->restart();
                 while (ramBufferFile->read(packed, len) > 0)
                 {
-                    DataFormatter::toCSVRow(unpacked, 500, state, packed);
+                    DataFormatter::toCSVRow(unpacked, 500, dataReporters, numReporters, packed);
                     flightDataFile.println(unpacked);
                 }
             }
@@ -289,12 +295,12 @@ void Logger::dumpData()
     }
     else // unpack the data
     {
-        int len = DataFormatter::getPackedLen(state);
+        int len = DataFormatter::getPackedLen(dataReporters, numReporters);
         char packed[len];
         char unpacked[500];
         while (ramFlightDataFile->read(packed, len) > 0)
         {
-            DataFormatter::toCSVRow(unpacked, 500, state, packed);
+            DataFormatter::toCSVRow(unpacked, 500, dataReporters, numReporters, packed);
             flightDataFile.println(unpacked);
         }
     }
@@ -304,8 +310,14 @@ void Logger::dumpData()
 void Logger::writeCsvHeader()
 {
     char header[2000]; // 2000 is arbitrary, but should be enough for basically any header
-    DataFormatter::getCSVHeader(header, sizeof(header), state);
+    DataFormatter::getCSVHeader(header, sizeof(header), dataReporters, numReporters);
     flightDataFile = sd.open(flightDataFileName, FILE_WRITE);
     flightDataFile.println(header);
     flightDataFile.close();
+}
+
+Logger &mmfs::getLogger()
+{
+    static Logger logger;
+    return logger;
 }

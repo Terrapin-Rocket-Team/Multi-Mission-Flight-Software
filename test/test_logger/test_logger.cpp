@@ -21,13 +21,13 @@ FakeGPS gps;
 FakeBarometer baro;
 Sensor *sensors[2] = {&gps, &baro};
 State state(sensors, 2, nullptr);
-
+DataReporter *arr[] = {&state, &baro, &gps};
 TestingLogger testLogger;
 
-// ---
+    // ---
 
-// These two functions are called before and after each test function, and are required in unity, even if empty.
-void setUp(void)
+    // These two functions are called before and after each test function, and are required in unity, even if empty.
+    void setUp(void)
 {
     // set stuff up before each test here, if needed
 }
@@ -63,7 +63,7 @@ void test_SdFs_mock()
 
 void test_testLogger_init()
 {
-    testLogger.init(&state);
+    testLogger.init(arr, sizeof(arr), 1, 1);
     TEST_ASSERT_TRUE(testLogger.isPsramReady());
     TEST_ASSERT_TRUE(testLogger.isSdCardReady());
     TEST_ASSERT_TRUE(testLogger.isReady());
@@ -101,7 +101,7 @@ void test_recordFlightData_on_ground()
     TEST_ASSERT_EQUAL(0, *flightFile.size); // no data should be written to the flight data file
     TEST_ASSERT_EQUAL(0, *preFlightFile.size);
     PSRAMFile *ramBufferFile = testLogger.getRamBufferFile();
-    TEST_ASSERT_EQUAL(DataFormatter::getPackedLen(&state), ramBufferFile->getSize());
+    TEST_ASSERT_EQUAL(DataFormatter::getPackedLen(arr, 3), ramBufferFile->getSize());
     for (int i = 1; i < 10; i++) // write once to the SD card
     {
         state.updateState((i + 1) * .1);
@@ -110,8 +110,8 @@ void test_recordFlightData_on_ground()
     TEST_ASSERT_EQUAL(143, *preFlightFile.size);
     TEST_ASSERT_EQUAL(0, *flightFile.size);
     TEST_ASSERT_EQUAL_CHAR_ARRAY("1.000,0.000,0.000,0.000,0.000,0.000,0.000,0.000,0.000,0.000," // state
-                                 "0.0000000,0.0000000,0.000,0.000,0.000,0.000,0,00:00:00," // gps
-                                 "0.000,0.000,44307.691,0.000\n", // baro
+                                 "0.0000000,0.0000000,0.000,0.000,0.000,0.000,0,00:00:00,"      // gps
+                                 "0.000,0.000,44307.691,0.000\n",                               // baro
                                  preFlightFile.arr, 143);
 
     gps.set(180, 180, 1000);
@@ -129,7 +129,7 @@ void test_recordFlightData_on_ground()
         "0.000,0.000,44307.691,0.000\n",
         preFlightFile.arr, 275 + 18);
     TEST_ASSERT_EQUAL(275 + 18, *preFlightFile.size);
-    TEST_ASSERT_EQUAL(DataFormatter::getPackedLen(&state) * 10, ramBufferFile->getSize());
+    TEST_ASSERT_EQUAL(DataFormatter::getPackedLen(arr, 3) * 10, ramBufferFile->getSize());
 }
 
 void test_recordFlightData_in_flight()
@@ -142,7 +142,7 @@ void test_recordFlightData_in_flight()
         testLogger.recordFlightData();
     }
     TEST_ASSERT_EQUAL(275 + 18, *preFlightFile.size); // no new data should be written to the flight data file
-    TEST_ASSERT_EQUAL(DataFormatter::getPackedLen(&state) * 10, testLogger.getRamFlightDataFile()->getSize());
+    TEST_ASSERT_EQUAL(DataFormatter::getPackedLen(arr, 3) * 10, testLogger.getRamFlightDataFile()->getSize());
 }
 
 void test_dumpData()
@@ -189,7 +189,6 @@ int main(int argc, char **argv)
 
     delete psram;
     psram = new PSRAM();
-    testLogger = TestingLogger(1, 1, true, ALTERNATE_); // store 1 second, print to SD every 1 second
 
     // Add your tests here
     // RUN_TEST(test_function_name); // no parentheses after function name

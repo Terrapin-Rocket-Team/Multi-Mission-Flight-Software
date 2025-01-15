@@ -15,7 +15,6 @@ BMI088andLIS3MDL imu055;
 DPS310 baro;
 Sensor *sensors[3] = {&gps, &imu055, &baro};
 AvionicsKF kfilter;
-Logger logger;
 AvionicsState avionicsState(sensors, 3, &kfilter);
 PSRAM *psram;
 ErrorHandler errorHandler;
@@ -32,15 +31,15 @@ void setup()
     //SENSOR_BIAS_CORRECTION_DATA_LENGTH = 2;
     //SENSOR_BIAS_CORRECTION_DATA_IGNORE = 1;
     psram = new PSRAM();
-    logger.init(&avionicsState);
+    getLogger().init({&avionicsState, &baro, &gps, &imu055}, 4);
 
 
-    if (!(logger.isSdCardReady()))
+    if (!(getLogger().isSdCardReady()))
         bb.onoff(BUZZER_PIN, 200, 3);
     else
         bb.onoff(BUZZER_PIN, 1000, 1);
 
-    if (!(logger.isPsramReady()))
+    if (!(getLogger().isPsramReady()))
         bb.onoff(BUZZER_PIN, 200, 3);
     else
         bb.onoff(BUZZER_PIN, 1000, 1);
@@ -49,7 +48,7 @@ void setup()
         bb.onoff(BUZZER_PIN, 200, 3);
     else
         bb.onoff(BUZZER_PIN, 1000, 1);
-    logger.writeCsvHeader();
+    getLogger().writeCsvHeader();
 }
 
 void loop()
@@ -65,5 +64,5 @@ void loop()
 
     
     avionicsState.updateState();
-    logger.recordFlightData();
+    getLogger().recordFlightData();
 }

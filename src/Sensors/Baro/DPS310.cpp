@@ -39,7 +39,7 @@ namespace mmfs
         }
         else
         {
-            logger.recordLogData(ERROR_, "Failed to read data from DPS310 sensor", BOTH);
+            getLogger().recordLogData(ERROR_, "Failed to read data from DPS310 sensor", BOTH);
         }
     }
 } // namespace mmfs
