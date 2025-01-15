@@ -15,7 +15,7 @@
 
 using namespace mmfs;
 char *fakepsram = nullptr;
-FsFile flightFile, logFile;
+FsFile flightFile, logFile, preFlightFile;
 
 FakeGPS gps;
 FakeBarometer baro;
@@ -69,8 +69,10 @@ void test_testLogger_init()
     TEST_ASSERT_TRUE(testLogger.isReady());
     TEST_ASSERT_TRUE(testLogger.getSdFs().exists("1_FlightData.csv"));
     TEST_ASSERT_TRUE(testLogger.getSdFs().exists("1_Log.txt"));
+    TEST_ASSERT_TRUE(testLogger.getSdFs().exists("1_PreFlightData.csv"));
     flightFile = testLogger.getFlightDataFile();
     logFile = testLogger.getLogFile();
+    preFlightFile = testLogger.getPreFlightFile();
 }
 
 void test_recordLogData_on_ground()
@@ -78,6 +80,7 @@ void test_recordLogData_on_ground()
 
     testLogger.recordLogData(.1, INFO_, "This is a test", TO_FILE);
     TEST_ASSERT_EQUAL(0, *flightFile.size);
+    TEST_ASSERT_EQUAL(0, *preFlightFile.size);
     TEST_ASSERT_EQUAL_CHAR_ARRAY("0.100 - [INFO] This is a test\n", logFile.arr, 30);
     testLogger.recordLogData(.2, INFO_, "This is another test");
     TEST_ASSERT_EQUAL_CHAR_ARRAY("0.100 - [INFO] This is a test\n0.200 - [INFO] This is another test\n", logFile.arr, 66);
@@ -96,6 +99,7 @@ void test_recordFlightData_on_ground()
     state.updateState(1);
     testLogger.recordFlightData();
     TEST_ASSERT_EQUAL(0, *flightFile.size); // no data should be written to the flight data file
+    TEST_ASSERT_EQUAL(0, *preFlightFile.size);
     PSRAMFile *ramBufferFile = testLogger.getRamBufferFile();
     TEST_ASSERT_EQUAL(DataFormatter::getPackedLen(&state), ramBufferFile->getSize());
     for (int i = 1; i < 10; i++) // write once to the SD card
@@ -103,11 +107,12 @@ void test_recordFlightData_on_ground()
         state.updateState((i + 1) * .1);
         testLogger.recordFlightData();
     }
-    TEST_ASSERT_EQUAL(143, *flightFile.size);
+    TEST_ASSERT_EQUAL(143, *preFlightFile.size);
+    TEST_ASSERT_EQUAL(0, *flightFile.size);
     TEST_ASSERT_EQUAL_CHAR_ARRAY("1.000,0.000,0.000,0.000,0.000,0.000,0.000,0.000,0.000,0.000," // state
                                  "0.0000000,0.0000000,0.000,0.000,0.000,0.000,0,00:00:00," // gps
                                  "0.000,0.000,44307.691,0.000\n", // baro
-                                 flightFile.arr, 143);
+                                 preFlightFile.arr, 143);
 
     gps.set(180, 180, 1000);
     for (int i = 10; i < 20; i++)
@@ -122,8 +127,8 @@ void test_recordFlightData_on_ground()
         "2.000,0.000,0.000,0.000,0.000,0.000,0.000,0.000,0.000,0.000,"
         "180.0000000,180.0000000,1000.000,0.000,0.000,0.000,0,00:00:00,"
         "0.000,0.000,44307.691,0.000\n",
-        flightFile.arr, 275 + 18);
-    TEST_ASSERT_EQUAL(275 + 18, *flightFile.size);
+        preFlightFile.arr, 275 + 18);
+    TEST_ASSERT_EQUAL(275 + 18, *preFlightFile.size);
     TEST_ASSERT_EQUAL(DataFormatter::getPackedLen(&state) * 10, ramBufferFile->getSize());
 }
 
@@ -136,7 +141,7 @@ void test_recordFlightData_in_flight()
         state.updateState((i + 1) * .1);
         testLogger.recordFlightData();
     }
-    TEST_ASSERT_EQUAL(275 + 18, *flightFile.size); // no new data should be written to the flight data file
+    TEST_ASSERT_EQUAL(275 + 18, *preFlightFile.size); // no new data should be written to the flight data file
     TEST_ASSERT_EQUAL(DataFormatter::getPackedLen(&state) * 10, testLogger.getRamFlightDataFile()->getSize());
 }
 
@@ -146,8 +151,6 @@ void test_dumpData()
     flightFile.arr[*flightFile.size] = '\0';
     printf("%s\n", flightFile.arr);
     TEST_ASSERT_EQUAL_CHAR_ARRAY(
-        "1.000,0.000,0.000,0.000,0.000,0.000,0.000,0.000,0.000,0.000,0.0000000,0.0000000,0.000,0.000,0.000,0.000,0,00:00:00,0.000,0.000,44307.691,0.000\n"
-        "2.000,0.000,0.000,0.000,0.000,0.000,0.000,0.000,0.000,0.000,180.0000000,180.0000000,1000.000,0.000,0.000,0.000,0,00:00:00,0.000,0.000,44307.691,0.000\n"
         "1.100,0.000,0.000,0.000,0.000,0.000,0.000,0.000,0.000,0.000,180.0000000,180.0000000,1000.000,0.000,0.000,0.000,0,00:00:00,0.000,0.000,44307.691,0.000\n"
         "1.200,0.000,0.000,0.000,0.000,0.000,0.000,0.000,0.000,0.000,180.0000000,180.0000000,1000.000,0.000,0.000,0.000,0,00:00:00,0.000,0.000,44307.691,0.000\n"
         "1.300,0.000,0.000,0.000,0.000,0.000,0.000,0.000,0.000,0.000,180.0000000,180.0000000,1000.000,0.000,0.000,0.000,0,00:00:00,0.000,0.000,44307.691,0.000\n"
@@ -168,7 +171,7 @@ void test_dumpData()
         "3.800,0.000,0.000,0.000,0.000,0.000,0.000,0.000,0.000,0.000,180.0000000,180.0000000,1000.000,0.000,0.000,0.000,0,00:00:00,0.000,0.000,44307.691,0.000\n"
         "3.900,0.000,0.000,0.000,0.000,0.000,0.000,0.000,0.000,0.000,180.0000000,180.0000000,1000.000,0.000,0.000,0.000,0,00:00:00,0.000,0.000,44307.691,0.000\n"
         "4.000,0.000,0.000,0.000,0.000,0.000,0.000,0.000,0.000,0.000,180.0000000,180.0000000,1000.000,0.000,0.000,0.000,0,00:00:00,0.000,0.000,44307.691,0.000\n",
-        flightFile.arr, 3095 + 9 * 22);
+        flightFile.arr, 3000);
 }
 
 // ---

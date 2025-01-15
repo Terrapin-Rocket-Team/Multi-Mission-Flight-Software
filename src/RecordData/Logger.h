@@ -107,6 +107,7 @@ namespace mmfs
         SdFs sd;
         FsFile logFile;
         FsFile flightDataFile;
+        FsFile preFlightFile;
 
         //
 
@@ -118,6 +119,7 @@ namespace mmfs
         int bufferInterval = 0;
         char *logFileName = nullptr;        // Name of the log file
         char *flightDataFileName = nullptr; // Name of the flight data file
+        char *preFlightFileName = nullptr;  // Name of the pre-flight file
         bool sdReady = false;               // Whether the SD card has been initialized
         bool psramReady = false;            // Whether the PSRAM has been initialized
         bool ready = false;                 // Whether the logger is ready
