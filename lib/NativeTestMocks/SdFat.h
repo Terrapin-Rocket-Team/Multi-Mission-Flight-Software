@@ -23,42 +23,40 @@
 #define O_EXCL 11
 #define O_SYNC 12
 
+struct FsFileData
+{
+    char *arr;
+    int size;
+    int cursor;
+    char *name;
+};
+
+extern FsFileData *files[10];
 class FsFile
 {
 public:
+    FsFileData *data;
     FsFile()
     {
-        arr = new char[10000]; // arbitrary size
-        size = new int(0);
-        cursor = new int(0);
-        name = nullptr;
+        data = nullptr;
     }
-    FsFile(const char *name)
+    FsFile(FsFileData *data)
     {
-        arr = new char[10000]; // arbitrary size
-        size = new int(0);
-        cursor = new int(0);
-        this->name = new char[strlen(name) + 1];
-        snprintf(this->name, strlen(name) + 1, "%s", name);
+        this->data = data;
     }
 
     FsFile &operator=(const FsFile &from) // does not copy array
     {
         if (this == &from)
             return *this;
-        size = from.size;
-        cursor = from.cursor;
-        name = from.name;
-        arr = from.arr; // This is a memory leak but idc for unit testing
+        data = from.data;
         return *this;
     }
     FsFile(const FsFile &from)
     {
-        size = from.size;
-        cursor = from.cursor;
-        name = from.name;
-        arr = from.arr;
+        data = from.data;
     }
+
     ~FsFile()
     {
     }
@@ -68,11 +66,12 @@ public:
     }
     bool write(const char *data, int i)
     {
-        for (int j = 0; j < i && *size < 10000; j++)
+        FsFileData *d = this->data;
+        for (int j = 0; j < i && d->size < 10000; j++)
         {
-            arr[*cursor] = data[j];
-            if (++(*cursor) > *size)
-                *size = *cursor;
+            d->arr[d->cursor] = data[j];
+            if (++(d->cursor) > d->size)
+                d->size = d->cursor;
         }
         return true;
     }
@@ -101,11 +100,12 @@ public:
     }
     int read(char *dest, int size)
     {
+        FsFileData *d = this->data;
         int i = 0;
-        while(*cursor < *(this->size) && size > 0)
+        while (d->cursor < d->size && size > 0)
         {
-            dest[size] = arr[*cursor];
-            (*cursor)++;
+            dest[size] = d->arr[d->cursor];
+            d->cursor++;
             size--;
             i++;
         }
@@ -123,10 +123,6 @@ public:
     {
         return 0;
     }
-    char *arr;
-    int *size;
-    int *cursor;
-    char *name;
 };
 
 class SdFs
@@ -134,8 +130,7 @@ class SdFs
 public:
     SdFs()
     {
-        files = new FsFile*[10];
-        for(int i = 0; i < 10; i++)
+        for (int i = 0; i < 10; i++)
         {
             files[i] = nullptr;
         }
@@ -150,9 +145,9 @@ public:
     }
     bool exists(const char *fileName)
     {
-        for(int i = 0; i < 10; i++)
+        for (int i = 0; i < 10; i++)
         {
-            if(files[i] != nullptr && strcmp(files[i]->name, fileName) == 0)
+            if (files[i] && files[i]->name && strcmp(files[i]->name, fileName) == 0)
             {
                 return true;
             }
@@ -161,25 +156,45 @@ public:
     }
     FsFile open(const char *fileName, int mode)
     {
-        for(int i = 0; i < 10; i++)
+        FsFile f;
+        for (int i = 0; i < 10; i++)
         {
-            if (files[i] != nullptr && strcmp(files[i]->name, fileName) == 0)
+            if (files[i] && files[i]->name && strcmp(files[i]->name, fileName) == 0)
             {
-                return *files[i];
+                f.data = files[i];
+                return f;
             }
         }
-        FsFile *fs = new FsFile(fileName);
-        for(int i = 0; i < 10; i++)
+        FsFileData *d = new FsFileData();
+        d->arr = new char[10000];
+        d->size = 0;
+        d->cursor = 0;
+        d->name = new char[strlen(fileName) + 1];
+        strcpy(d->name, fileName);
+        for (int i = 0; i < 10; i++)
         {
-            if (files[i] == nullptr || files[i]->name == nullptr)
+            if (files[i] == nullptr)
             {
-                files[i] = fs;
-                return *fs;
+                files[i] = d;
+                break;
             }
         }
-        return nullptr;
+        f.data = d;
+        return f;
     }
-    FsFile **files;
+    ~SdFs()
+    {
+        for (int i = 0; i < 10; i++)
+        {
+            if (files[i])
+            {
+                delete[] files[i]->arr;
+                delete[] files[i]->name;
+                delete files[i];
+            }
+            files[i] = nullptr;
+        }
+    }
 };
 
 #endif

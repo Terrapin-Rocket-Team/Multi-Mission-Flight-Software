@@ -95,7 +95,6 @@ namespace mmfs
 
         void recordFlightData(); // records  flight data
 
-
         // recordLogData with format string
         void recordLogData(LogType type, Dest dest, int size, const char *format, ...);
         void recordLogData(double timeStamp, LogType type, Dest dest, int size, const char *format, ...);
@@ -115,6 +114,7 @@ namespace mmfs
         void writeCsvHeader();
 
     protected:
+        void recordLogData(double timeStamp, LogType type, Dest dest, int size, const char *format, va_list args);
         void recordLogData(const char *msg, Dest dest = BOTH, LogType type = CUSTOM_);
         SdFs sd;
         FsFile logFile;
@@ -150,6 +150,9 @@ namespace mmfs
     };
 
     Logger &getLogger();
+    #ifdef PIO_UNIT_TESTING
+    void setLogger(Logger *logger);
+    #endif
 } // namespace mmfs
 
 #endif // LOGGER_H

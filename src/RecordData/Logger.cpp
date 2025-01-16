@@ -6,7 +6,7 @@
 
 using namespace mmfs;
 
-static const char *logTypeStrings[] = {"LOG", "ERROR", "WARNING", "INFO"};
+static const char *logTypeStrings[] = {"LOG", "ERROR", "WARNING", "INFO", "CUSTOM"};
 
 // Constructor for Logger class
 Logger::Logger()
@@ -66,6 +66,10 @@ Logger::~Logger()
     delete[] flightDataFileName;
     delete[] preFlightFileName;
     delete[] logFileName;
+    delete ramLogFile;
+    delete ramFlightDataFile;
+    delete ramBufferFile;
+    delete psram;
 }
 
 // Returns whether the PSRAM is ready
@@ -196,29 +200,42 @@ void Logger::recordLogData(const char *msg, Dest dest, LogType type)
     }
     getEventManager().invoke(LogData{"LOG_DATA"_i, dest, type, msg});
 }
-void Logger::recordLogData(double timeStamp, LogType type, Dest dest, int size, const char *format, ...)
+void Logger::recordLogData(double timeStamp, LogType type, Dest dest, int size, const char *format, va_list args)
 {
     int prefSize = 15 + 7; // 15 for the timestamp and extra chars, 7 for the log type
     char logPrefix[prefSize];
     snprintf(logPrefix, prefSize, "%.3f - [%s] ", timeStamp, logTypeStrings[type]);
 
-    va_list args;
-    va_start(args, format);
-    char *msg = new char[size+1];
-    vsnprintf(msg, size+1, format, args);
-    va_end(args);
+    char *msg = new char[size + 1];
+    vsnprintf(msg, size + 1, format, args);
 
     char *logMsg = new char[prefSize + strlen(msg) + 1];
     snprintf(logMsg, prefSize + strlen(msg) + 1, "%s%s", logPrefix, msg);
     recordLogData(logMsg, dest, type);
+    delete[] msg;
+    delete[] logMsg;
+}
+void Logger::recordLogData(double timeStamp, LogType type, Dest dest, int size, const char *format, ...)
+{
+    va_list args;
+    va_start(args, format);
+    recordLogData(timeStamp, type, dest, size, format, args);
+    va_end(args);
 }
 void Logger::recordLogData(LogType type, Dest dest, int size, const char *format, ...)
 {
+
+    va_list args;
+    va_start(args, format);
     recordLogData(millis(), type, dest, size, format);
+    va_end(args);
 }
 void Logger::recordLogData(LogType type, int size, const char *format, ...)
 {
-    recordLogData(millis(), type, BOTH, size, format);
+    va_list args;
+    va_start(args, format);
+    recordLogData(millis(), type, BOTH, size, format, args);
+    va_end(args);
 }
 void Logger::recordLogData(int size, const char *format, ...)
 {
@@ -228,6 +245,7 @@ void Logger::recordLogData(int size, const char *format, ...)
     vsnprintf(msg, size + 1, format, args);
     va_end(args);
     recordLogData(msg);
+    delete[] msg;
 }
 void Logger::recordLogData(LogType type, Dest dest, const char *msg)
 {
@@ -342,9 +360,19 @@ void Logger::writeCsvHeader()
     flightDataFile.println(header);
     flightDataFile.close();
 }
-
+#ifdef PIO_UNIT_TESTING
+static Logger *testLogger = nullptr;
+void mmfs::setLogger(Logger *logger)
+{
+    testLogger = logger;
+}
+#endif
 Logger &mmfs::getLogger()
 {
+#ifdef PIO_UNIT_TESTING
+    if (testLogger)
+        return *testLogger;
+#endif
     static Logger logger;
     return logger;
 }

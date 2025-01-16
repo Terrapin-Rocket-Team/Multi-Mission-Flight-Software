@@ -15,6 +15,8 @@ PSRAM::PSRAM()
 
 PSRAM::~PSRAM()
 {
+    delete[] clusterMap;
+    delete[] fileMap;
 }
 
 bool PSRAM::init()
