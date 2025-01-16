@@ -78,16 +78,20 @@ void test_testLogger_init()
 void test_recordLogData_on_ground()
 {
 
-    testLogger->recordLogData(.1, INFO_, "This is a test", TO_FILE);
+    testLogger->recordLogData(.1, INFO_, TO_FILE, "This is a test");
     TEST_ASSERT_EQUAL(0, *flightFile.size);
     TEST_ASSERT_EQUAL(0, *preFlightFile.size);
     TEST_ASSERT_EQUAL_CHAR_ARRAY("0.100 - [INFO] This is a test\n", logFile.arr, 30);
     testLogger->recordLogData(.2, INFO_, "This is another test");
     TEST_ASSERT_EQUAL_CHAR_ARRAY("0.100 - [INFO] This is a test\n0.200 - [INFO] This is another test\n", logFile.arr, 66);
     TEST_ASSERT_EQUAL_STRING("0.200 - [INFO] This is another test\n", Serial.fakeBuffer);
-    testLogger->recordLogData(.3, INFO_, "This is a third test", TO_USB);
+    testLogger->recordLogData(.3, INFO_, TO_USB, "This is a third test");
     TEST_ASSERT_EQUAL_CHAR_ARRAY("0.100 - [INFO] This is a test\n0.200 - [INFO] This is another test\n", logFile.arr, 66);
     TEST_ASSERT_EQUAL_STRING("0.200 - [INFO] This is another test\n0.300 - [INFO] This is a third test\n", Serial.fakeBuffer);
+    Serial.clearBuffer();
+    testLogger->recordLogData(.4, WARNING_, TO_USB, 50, "This is a warning! #%d did not %s!", 1, "work");
+    TEST_ASSERT_EQUAL_CHAR_ARRAY("0.100 - [INFO] This is a test\n0.200 - [INFO] This is another test\n", logFile.arr, 66);
+    TEST_ASSERT_EQUAL_STRING("0.400 - [WARNING] This is a warning! #1 did not work!\n", Serial.fakeBuffer);
     Serial.clearBuffer();
 }
 

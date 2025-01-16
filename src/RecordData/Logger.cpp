@@ -176,40 +176,74 @@ void Logger::recordFlightData()
         }
     }
 }
-
-// Records log data with a timestamp and type
-void Logger::recordLogData(LogType type, const char *data, Dest dest)
+void Logger::recordLogData(const char *msg, Dest dest)
 {
-    recordLogData(millis() / 1000.0, type, data, dest);
-}
-
-// Records log data with a specific timestamp, type, and destination
-void Logger::recordLogData(double timeStamp, LogType type, const char *data, Dest dest) // TODO: Allow custom formatting
-{
-    int size = 15 + 7; // 15 for the timestamp and extra chars, 7 for the log type
-    char logPrefix[size];
-    snprintf(logPrefix, size, "%.3f - [%s] ", timeStamp, logTypeStrings[type]);
-
     if (dest == BOTH || dest == TO_USB)
     {
-        Serial.print(logPrefix);
-        Serial.println(data);
+        Serial.println(msg);
     }
     if ((dest == BOTH || dest == TO_FILE) && sdReady)
     {
         if (mode != GROUND && psramReady)
         {
-            ramLogFile->print(logPrefix);
-            ramLogFile->println(data);
+            ramLogFile->println(msg);
         }
         else
         {
             logFile = sd.open(logFileName, FILE_WRITE);
-            logFile.print(logPrefix);
-            logFile.println(data);
+            logFile.println(msg);
             logFile.close();
         }
     }
+}
+void Logger::recordLogData(double timeStamp, LogType type, Dest dest, int size, const char *format, ...)
+{
+    int prefSize = 15 + 7; // 15 for the timestamp and extra chars, 7 for the log type
+    char logPrefix[prefSize];
+    snprintf(logPrefix, prefSize, "%.3f - [%s] ", timeStamp, logTypeStrings[type]);
+
+    va_list args;
+    va_start(args, format);
+    char *msg = new char[size+1];
+    vsnprintf(msg, size+1, format, args);
+    va_end(args);
+
+    char *logMsg = new char[prefSize + strlen(msg) + 1];
+    snprintf(logMsg, prefSize + strlen(msg) + 1, "%s%s", logPrefix, msg);
+    recordLogData(logMsg, dest);
+}
+void Logger::recordLogData(LogType type, Dest dest, int size, const char *format, ...)
+{
+    recordLogData(millis(), type, dest, size, format);
+}
+void Logger::recordLogData(LogType type, int size, const char *format, ...)
+{
+    recordLogData(millis(), type, BOTH, size, format);
+}
+void Logger::recordLogData(int size, const char *format, ...)
+{
+    va_list args;
+    va_start(args, format);
+    char *msg = new char[size + 1];
+    vsnprintf(msg, size + 1, format, args);
+    va_end(args);
+    recordLogData(msg, BOTH);
+}
+void Logger::recordLogData(LogType type, Dest dest, const char *msg)
+{
+    recordLogData(millis(), type, dest, strlen(msg), msg);
+}
+void Logger::recordLogData(double timeStamp, LogType type, Dest dest, const char *msg)
+{
+    recordLogData(timeStamp, type, dest, strlen(msg), msg);
+}
+void Logger::recordLogData(LogType type, const char *msg)
+{
+    recordLogData(millis(), type, BOTH, strlen(msg), msg);
+}
+void Logger::recordLogData(double timeStamp, LogType type, const char *msg)
+{
+    recordLogData(timeStamp, type, BOTH, strlen(msg), msg);
 }
 
 // Sets the recording mode and handles necessary transitions

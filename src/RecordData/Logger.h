@@ -15,7 +15,7 @@
 #include "SdFat.h"
 #include "Arduino.h"
 #include "../Constants.h"
-
+#include <stdarg.h>
 /*
   Change the value of SD_CS_PIN if you are using SPI and
   your hardware does not use the default value, SS.
@@ -48,7 +48,7 @@ const uint8_t SD_CS_PIN = SDCARD_SS_PIN;
 #undef SPI_CLOCK
 namespace mmfs
 {
-    class State; // Forward declaration
+    class State;        // Forward declaration
     class DataReporter; // Forward declaration
 
     enum LogType
@@ -94,9 +94,18 @@ namespace mmfs
 
         void recordFlightData(); // records  flight data
 
-        void recordLogData(LogType type, const char *data, Dest dest = BOTH);
 
-        void recordLogData(double timeStamp, LogType type, const char *data, Dest dest = BOTH);
+        // recordLogData with format string
+        void recordLogData(LogType type, Dest dest, int size, const char *format, ...);
+        void recordLogData(double timeStamp, LogType type, Dest dest, int size, const char *format, ...);
+        void recordLogData(LogType type, int size, const char *format, ...);
+        void recordLogData(int size, const char *format, ...);
+
+        // recordLogData with no format string
+        void recordLogData(LogType type, Dest dest, const char *msg);
+        void recordLogData(double timeStamp, LogType type, Dest dest, const char *msg);
+        void recordLogData(LogType type, const char *msg);
+        void recordLogData(double timeStamp, LogType type, const char *msg);
 
         void setRecordMode(Mode mode);
 
@@ -105,6 +114,7 @@ namespace mmfs
         void writeCsvHeader();
 
     protected:
+        void recordLogData(const char *msg, Dest dest = BOTH);
         SdFs sd;
         FsFile logFile;
         FsFile flightDataFile;
