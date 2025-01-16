@@ -11,10 +11,11 @@
 #include "../Constants.h"
 #include "../Math/Vector.h"
 #include "../Math/Quaternion.h"
+#include "../Events/Event.h"
 
 namespace mmfs
 {
-    class State : public DataReporter
+    class State : public DataReporter, IEventListener
     {
     public:
         // make numSensors the number of sensors you expect to have. This is used to determine how many sensors to expect in the sensorOrder array.
