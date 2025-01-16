@@ -145,7 +145,7 @@ namespace mmfs
         {
             hasFix = true;
             getLogger().recordLogData(INFO_, "GPS acquired fix.");
-            eventManager().invoke("GPS_FIX"_i, &hasFix);
+            getEventManager().invoke(GPSFix {"GPS_FIX"_i, true});
             findTimeZone();
 
             bb.aonoff(BUZZER_PIN, 1000);
@@ -161,7 +161,7 @@ namespace mmfs
             {
                 hasFix = false;
                 getLogger().recordLogData(WARNING_, "GPS lost fix.");
-                eventManager().invoke("GPS_LOST_FIX"_i, &hasFix);
+                getEventManager().invoke(GPSFix {"GPS_FIX"_i, false});
             }
             if (biasCorrectionMode)
             {

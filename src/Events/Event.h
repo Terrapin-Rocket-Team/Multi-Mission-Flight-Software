@@ -13,9 +13,8 @@
 
 namespace mmfs
 {
-    using strToInt = uint32_t;
+    using EventID = uint32_t;
 
-    // 1) Hashing stuff at top is fine
     constexpr uint32_t fnv1a_32(const char *s, size_t count)
     {
         uint32_t hash = 2166136261u;
@@ -26,7 +25,7 @@ namespace mmfs
         }
         return hash;
     }
-    constexpr uint32_t operator"" _i(const char *str, size_t len)
+    constexpr EventID operator"" _i(const char *str, size_t len)
     {
         return fnv1a_32(str, len);
     }
@@ -34,6 +33,17 @@ namespace mmfs
     // Forward-declare EventManager
     class EventManager;
 
+    class Event
+    {
+        friend class EventManager;
+
+    public:
+        Event(EventID id) : ID(id) {}
+        EventID ID;
+
+    private:
+        Event *next = nullptr;
+    };
 
     class IEventListener
     {
@@ -43,7 +53,7 @@ namespace mmfs
         IEventListener();
         virtual ~IEventListener();
 
-        virtual void onEvent(strToInt eventID, const void *data) = 0;
+        virtual void onEvent(const Event *e) = 0;
 
     private:
         IEventListener *next = nullptr;
@@ -54,83 +64,84 @@ namespace mmfs
     public:
         void subscribe(IEventListener *l);
         void unsubscribe(IEventListener *l);
-        void invoke(strToInt eventID, const void *data = nullptr);
+        void invoke(const Event &e);
 
     private:
-        IEventListener *first = nullptr;
-        IEventListener *last = nullptr;
+        IEventListener *firstLis = nullptr, *lastLis = nullptr;
+        Event *firstEvent = nullptr, *lastEvent = nullptr;
     };
 
-    EventManager &eventManager();
+    EventManager &getEventManager();
 
     inline IEventListener::IEventListener()
     {
-        eventManager().subscribe(this);
+        getEventManager().subscribe(this);
     }
     inline IEventListener::~IEventListener()
     {
-        eventManager().unsubscribe(this);
+        getEventManager().unsubscribe(this);
     }
 
     inline void EventManager::subscribe(IEventListener *l)
     {
         if (!l)
             return;
-        if (!first)
+        if (!firstLis)
         {
-            first = last = l;
+            firstLis = lastLis = l;
             return;
         }
-        auto t = first;
+        auto t = firstLis;
         while (t)
         {
             if (t == l)
                 return;
             t = t->next;
         }
-        last->next = l;
-        last = l;
+        lastLis->next = l;
+        lastLis = l;
     }
 
     inline void EventManager::unsubscribe(IEventListener *l)
     {
-        if (!l || !first)
+        if (!l || !firstLis)
             return;
-        if (first == l)
+        if (firstLis == l)
         {
-            first = first->next;
-            if (!first)
-                last = nullptr;
+            firstLis = firstLis->next;
+            if (!firstLis)
+                lastLis = nullptr;
             return;
         }
-        auto t = first;
+        auto t = firstLis;
         while (t->next)
         {
             if (t->next == l)
             {
                 t->next = t->next->next;
                 if (!t->next)
-                    last = t;
+                    lastLis = t;
                 return;
             }
             t = t->next;
         }
     }
 
-    inline void EventManager::invoke(strToInt eventID, const void *data)
+    inline void EventManager::invoke(const Event &e)
     {
-        auto t = first;
+        auto t = firstLis;
         while (t)
         {
-            t->onEvent(eventID, data);
+            t->onEvent(&e);
             t = t->next;
         }
     }
 
-    inline EventManager &eventManager()
+    inline EventManager &getEventManager()
     {
         static EventManager em;
         return em;
     }
 }
+
 #endif

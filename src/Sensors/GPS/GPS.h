@@ -5,7 +5,7 @@
 #include "../../Constants.h"
 #include "../../Math/Vector.h"
 #include "../../RecordData/Logger.h"
-#include "../../Events/Event.h"
+#include "../../Events/DefaultEvents.h"
 
 namespace mmfs
 {

@@ -3,7 +3,7 @@
 
 // include other headers you need to test here
 
-#include "../../src/Events/Event.h"
+#include "../../src/Events/DefaultEvents.h"
 
 // ---
 
@@ -14,18 +14,18 @@ class EventListener : public IEventListener
 {
 public:
     EventListener() {};
-    char *a = nullptr;
+    bool a = false;
     int i = 0;
 
-    void onEvent(strToInt id, const void *data) override
+    void onEvent(const Event *e) override
     {
-        switch (id)
+        switch (e->ID)
         {
         case "Case1"_i:
             i = 5;
             break;
-        case "Case2"_i:
-            a = (char *)data;
+        case "GPS_FIX"_i:
+            a = static_cast<const GPSFix *>(e)->hasFix;
             break;
         default:
             break;
@@ -57,21 +57,20 @@ void tearDown(void)
 
 void testCase1()
 {
-    eventManager().invoke("Case1"_i);
+    getEventManager().invoke(Event{"Case1"_i});
     TEST_ASSERT_EQUAL(5, e1.i);
     TEST_ASSERT_EQUAL(5, e2.i);
-    TEST_ASSERT_NULL(e1.a);
-    TEST_ASSERT_NULL(e2.a);
+    TEST_ASSERT_FALSE(e1.a);
+    TEST_ASSERT_FALSE(e2.a);
 }
 
 void testCase2()
 {
-    const char *data = "Hello";
-    eventManager().invoke("Case2"_i, data);
+    getEventManager().invoke(GPSFix{"GPS_FIX"_i, true});
     TEST_ASSERT_EQUAL(5, e1.i);
     TEST_ASSERT_EQUAL(5, e2.i);
-    TEST_ASSERT_EQUAL_STRING("Hello", e1.a);
-    TEST_ASSERT_EQUAL_STRING("Hello", e2.a);
+    TEST_ASSERT_TRUE(e1.a);
+    TEST_ASSERT_TRUE(e2.a);
 }
 
 // ---

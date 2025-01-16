@@ -2,6 +2,7 @@
 #include "../State/State.h"
 #include "PSRAMFile.h"
 #include "DataFormatter.h"
+#include "../Events/DefaultEvents.h"
 
 using namespace mmfs;
 
@@ -174,7 +175,7 @@ void Logger::recordFlightData()
         }
     }
 }
-void Logger::recordLogData(const char *msg, Dest dest)
+void Logger::recordLogData(const char *msg, Dest dest, LogType type)
 {
     if (dest == BOTH || dest == TO_USB)
     {
@@ -193,6 +194,7 @@ void Logger::recordLogData(const char *msg, Dest dest)
             logFile.close();
         }
     }
+    getEventManager().invoke(LogData{"LOG_DATA"_i, dest, type, msg});
 }
 void Logger::recordLogData(double timeStamp, LogType type, Dest dest, int size, const char *format, ...)
 {
@@ -208,7 +210,7 @@ void Logger::recordLogData(double timeStamp, LogType type, Dest dest, int size, 
 
     char *logMsg = new char[prefSize + strlen(msg) + 1];
     snprintf(logMsg, prefSize + strlen(msg) + 1, "%s%s", logPrefix, msg);
-    recordLogData(logMsg, dest);
+    recordLogData(logMsg, dest, type);
 }
 void Logger::recordLogData(LogType type, Dest dest, int size, const char *format, ...)
 {
@@ -225,7 +227,7 @@ void Logger::recordLogData(int size, const char *format, ...)
     char *msg = new char[size + 1];
     vsnprintf(msg, size + 1, format, args);
     va_end(args);
-    recordLogData(msg, BOTH);
+    recordLogData(msg);
 }
 void Logger::recordLogData(LogType type, Dest dest, const char *msg)
 {

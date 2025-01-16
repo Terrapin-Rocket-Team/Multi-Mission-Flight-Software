@@ -56,7 +56,8 @@ namespace mmfs
         LOG_,
         ERROR_,
         WARNING_,
-        INFO_
+        INFO_,
+        CUSTOM_
     };
 
     enum Dest
@@ -114,7 +115,7 @@ namespace mmfs
         void writeCsvHeader();
 
     protected:
-        void recordLogData(const char *msg, Dest dest = BOTH);
+        void recordLogData(const char *msg, Dest dest = BOTH, LogType type = CUSTOM_);
         SdFs sd;
         FsFile logFile;
         FsFile flightDataFile;
