@@ -14,12 +14,13 @@
 #include "../Constants.h"
 #include "SdFatBoilerplate.h"
 #include <stdarg.h>
-#include "../Events/DefaultEvents.h"
+#include "../Events/Event.h"
 
 namespace mmfs
 {
     class State;        // Forward declaration
     class DataReporter; // Forward declaration
+    class GPS;
 
     enum LogType
     {

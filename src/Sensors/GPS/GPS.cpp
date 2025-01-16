@@ -151,7 +151,7 @@ namespace mmfs
         if (!hasFix && fixQual >= 4)
         {
             hasFix = true;
-            getEventManager().invoke(GPSFix{"GPS_FIX"_i, true});
+            getEventManager().invoke(GPSFix{"GPS_FIX"_i, this, true});
             findTimeZone();
 
             bb.aonoff(BUZZER_PIN, 1000);
@@ -166,7 +166,7 @@ namespace mmfs
             if (fixQual < 4)
             {
                 hasFix = false;
-                getEventManager().invoke(GPSFix{"GPS_FIX"_i, false});
+                getEventManager().invoke(GPSFix{"GPS_FIX"_i, this, false});
             }
             if (biasCorrectionMode)
             {

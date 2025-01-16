@@ -4,6 +4,7 @@
 // include other headers you need to test here
 
 #include "../../src/Events/DefaultEvents.h"
+#include "../../lib/NativeTestMocks/FakeSensors.h"
 
 // ---
 
@@ -66,7 +67,8 @@ void testCase1()
 
 void testCase2()
 {
-    getEventManager().invoke(GPSFix{"GPS_FIX"_i, true});
+    FakeGPS gps;
+    getEventManager().invoke(GPSFix{"GPS_FIX"_i, &gps, true});
     TEST_ASSERT_EQUAL(5, e1.i);
     TEST_ASSERT_EQUAL(5, e2.i);
     TEST_ASSERT_TRUE(e1.a);

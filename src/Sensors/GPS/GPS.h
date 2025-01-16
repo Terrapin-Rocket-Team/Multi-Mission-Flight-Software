@@ -54,9 +54,9 @@ namespace mmfs
 
         char tod[9];
 
-        int8_t hr, min, sec;
-        uint8_t day, month;
-        uint16_t year;
+        int8_t hr = 0, min = 0, sec = 0;
+        uint8_t day = 0, month = 0;
+        uint16_t year = 0;
         int8_t hrOffset = 0;
     };
 }

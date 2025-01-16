@@ -4,13 +4,12 @@
 #include "../RecordData/Logger.h"
 namespace mmfs
 {
-    enum Dest;
     class GPS;
     class GPSFix : public Event
     {
     public:
+        GPSFix(EventID id, GPS *gps, bool hasFix) : Event(id), gps(gps), hasFix(hasFix) {}
         GPS *gps;
-        GPSFix(EventID id, bool hasFix) : Event(id), hasFix(hasFix) {}
         bool hasFix;
     };
     class LogData : public Event

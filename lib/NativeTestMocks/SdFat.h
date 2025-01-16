@@ -23,6 +23,10 @@
 #define O_EXCL 11
 #define O_SYNC 12
 
+#define T_CREATE 1
+#define T_WRITE 2
+#define T_ACCESS 4
+
 struct FsFileData
 {
     char *arr;
@@ -58,6 +62,10 @@ public:
     }
 
     ~FsFile()
+    {
+    }
+
+    void timestamp(int flag, uint16_t year, uint8_t month, uint8_t day, uint8_t hour, uint8_t minute, uint8_t second)
     {
     }
     bool close()

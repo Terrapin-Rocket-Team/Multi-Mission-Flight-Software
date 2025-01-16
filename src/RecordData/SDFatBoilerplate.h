@@ -1,4 +1,5 @@
-
+#ifndef SDFATBP_H
+#define SDFATBP_H
 #define SD_FAT_TYPE 3
 
 #include "SdFat.h"
@@ -34,3 +35,5 @@ const uint8_t SD_CS_PIN = SDCARD_SS_PIN;
 #endif // HAS_SDIO_CLASS
 
 #undef SPI_CLOCK
+
+#endif
