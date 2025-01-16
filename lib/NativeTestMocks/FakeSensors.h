@@ -55,7 +55,7 @@ public:
 
     void setHasFirstFix(bool fix)
     {
-        hasFirstFix = fix;
+        hasFix = fix;
     }
     void setFixQual(int qual)
     {

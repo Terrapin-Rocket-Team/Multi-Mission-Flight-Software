@@ -5,6 +5,7 @@
 #include "../../Constants.h"
 #include "../../Math/Vector.h"
 #include "../../RecordData/Logger.h"
+#include "../../Events/Event.h"
 
 namespace mmfs
 {
@@ -32,7 +33,7 @@ namespace mmfs
         Vector<3> displacement; // displacement from starting location
         Vector<3> origin;       // lat(deg), long(deg), alt(m) of the original location
         int fixQual = 0;            // number of satellite connections
-        bool hasFirstFix;       // whether or not GPS has reached at least 3 satellites since restart
+        bool hasFix;       // whether or not GPS has reached at least 3 satellites since restart
         double heading = 0;
 
         // Distance-related calculations

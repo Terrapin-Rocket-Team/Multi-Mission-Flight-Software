@@ -31,7 +31,7 @@ namespace mmfs
 
     Vector<3> GPS::getOrigin() const { return origin; }
 
-    bool GPS::getHasFirstFix() const { return hasFirstFix; }
+    bool GPS::getHasFirstFix() const { return hasFix; }
 
     int GPS::getFixQual() const { return fixQual; }
 
@@ -143,21 +143,28 @@ namespace mmfs
     {
         read();
 
-        if (!hasFirstFix && fixQual >= 3)
+        if (!hasFix && fixQual >= 4)
         {
+            hasFix = true;
             getLogger().recordLogData(INFO_, "GPS has first fix.");
+            eventManager().invoke("GPS_FIX"_i, &hasFix);
             findTimeZone();
 
             bb.aonoff(BUZZER_PIN, 1000);
-            hasFirstFix = true;
             origin.x() = position.x();
             origin.y() = position.y();
             origin.z() = position.z();
 
             calcInitialValuesForDistance();
         }
-        if (hasFirstFix)
+        if (hasFix)
         {
+            if(fixQual < 4)
+            {
+                hasFix = false;
+                getLogger().recordLogData(INFO_, "GPS lost fix.");
+                eventManager().invoke("GPS_LOST_FIX"_i, &hasFix);
+            }
             if (biasCorrectionMode)
             {
                 originBuffer.push(position);
@@ -188,7 +195,7 @@ namespace mmfs
         origin = Vector<3>(0, 0, 0);
         originBuffer.clear();
         fixQual = 0;
-        hasFirstFix = false;
+        hasFix = false;
         heading = 0;
         return init();
     }
