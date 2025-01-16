@@ -12,7 +12,7 @@ public:
     GenericEventListener() : IEventListener() {}
     virtual ~GenericEventListener() {}
 
-    virtual void onEvent(strToInt eventID, const void *data) override
+    virtual void onEvent(EventID eventID, const void *data) override
     {
         switch (eventID)
         {

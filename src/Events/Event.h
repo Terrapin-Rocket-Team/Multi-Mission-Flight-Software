@@ -13,9 +13,8 @@
 
 namespace mmfs
 {
-    using strToInt = uint32_t;
+    using EventID = uint32_t;
 
-    // 1) Hashing stuff at top is fine
     constexpr uint32_t fnv1a_32(const char *s, size_t count)
     {
         uint32_t hash = 2166136261u;
@@ -43,7 +42,7 @@ namespace mmfs
         IEventListener();
         virtual ~IEventListener();
 
-        virtual void onEvent(strToInt eventID, const void *data) = 0;
+        virtual void onEvent(EventID eventID, const void *data) = 0;
 
     private:
         IEventListener *next = nullptr;
@@ -54,22 +53,22 @@ namespace mmfs
     public:
         void subscribe(IEventListener *l);
         void unsubscribe(IEventListener *l);
-        void invoke(strToInt eventID, const void *data = nullptr);
+        void invoke(EventID eventID, const void *data = nullptr);
 
     private:
         IEventListener *first = nullptr;
         IEventListener *last = nullptr;
     };
 
-    EventManager &eventManager();
+    EventManager &getEventManager();
 
     inline IEventListener::IEventListener()
     {
-        eventManager().subscribe(this);
+        getEventManager().subscribe(this);
     }
     inline IEventListener::~IEventListener()
     {
-        eventManager().unsubscribe(this);
+        getEventManager().unsubscribe(this);
     }
 
     inline void EventManager::subscribe(IEventListener *l)
@@ -117,7 +116,7 @@ namespace mmfs
         }
     }
 
-    inline void EventManager::invoke(strToInt eventID, const void *data)
+    inline void EventManager::invoke(EventID eventID, const void *data)
     {
         auto t = first;
         while (t)
@@ -127,7 +126,7 @@ namespace mmfs
         }
     }
 
-    inline EventManager &eventManager()
+    inline EventManager &getEventManager()
     {
         static EventManager em;
         return em;
