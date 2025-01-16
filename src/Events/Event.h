@@ -33,6 +33,17 @@ namespace mmfs
     // Forward-declare EventManager
     class EventManager;
 
+    class Event
+    {
+        friend class EventManager;
+
+    public:
+        Event(EventID id) : ID(id) {}
+        EventID ID;
+
+    private:
+        Event *next = nullptr;
+    };
 
     class IEventListener
     {
@@ -42,7 +53,7 @@ namespace mmfs
         IEventListener();
         virtual ~IEventListener();
 
-        virtual void onEvent(EventID eventID, const void *data) = 0;
+        virtual void onEvent(const Event *e) = 0;
 
     private:
         IEventListener *next = nullptr;
@@ -53,11 +64,11 @@ namespace mmfs
     public:
         void subscribe(IEventListener *l);
         void unsubscribe(IEventListener *l);
-        void invoke(EventID eventID, const void *data = nullptr);
+        void invoke(const Event &e);
 
     private:
-        IEventListener *first = nullptr;
-        IEventListener *last = nullptr;
+        IEventListener *firstLis = nullptr, *lastLis = nullptr;
+        Event *firstEvent = nullptr, *lastEvent = nullptr;
     };
 
     EventManager &getEventManager();
@@ -75,53 +86,53 @@ namespace mmfs
     {
         if (!l)
             return;
-        if (!first)
+        if (!firstLis)
         {
-            first = last = l;
+            firstLis = lastLis = l;
             return;
         }
-        auto t = first;
+        auto t = firstLis;
         while (t)
         {
             if (t == l)
                 return;
             t = t->next;
         }
-        last->next = l;
-        last = l;
+        lastLis->next = l;
+        lastLis = l;
     }
 
     inline void EventManager::unsubscribe(IEventListener *l)
     {
-        if (!l || !first)
+        if (!l || !firstLis)
             return;
-        if (first == l)
+        if (firstLis == l)
         {
-            first = first->next;
-            if (!first)
-                last = nullptr;
+            firstLis = firstLis->next;
+            if (!firstLis)
+                lastLis = nullptr;
             return;
         }
-        auto t = first;
+        auto t = firstLis;
         while (t->next)
         {
             if (t->next == l)
             {
                 t->next = t->next->next;
                 if (!t->next)
-                    last = t;
+                    lastLis = t;
                 return;
             }
             t = t->next;
         }
     }
 
-    inline void EventManager::invoke(EventID eventID, const void *data)
+    inline void EventManager::invoke(const Event &e)
     {
-        auto t = first;
+        auto t = firstLis;
         while (t)
         {
-            t->onEvent(eventID, data);
+            t->onEvent(&e);
             t = t->next;
         }
     }
@@ -132,4 +143,5 @@ namespace mmfs
         return em;
     }
 }
+
 #endif
