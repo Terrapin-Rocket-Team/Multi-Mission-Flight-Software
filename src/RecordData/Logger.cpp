@@ -55,9 +55,7 @@ Logger::Logger()
             psramReady = true;
     }
 #ifndef PIO_UNIT_TESTING // This is a workaround because testing this logger is hard when it's writing its own variable data to the log file
-    char data[100];
-    snprintf(data, 100, "This flight is running MMFS v%s", APP_VERSION);
-    recordLogData(INFO_, data);
+    recordLogData(INFO_, 100, "This flight is running MMFS v%s", APP_VERSION);
 #endif
 }
 

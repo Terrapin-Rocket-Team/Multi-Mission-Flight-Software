@@ -126,9 +126,7 @@ namespace mmfs
         {
             getLogger().recordLogData(INFO_, "Timezone: UTC");
         }
-        char log[100];
-        snprintf(log, 100, "Timezone offset: %d", hrOffset);
-        getLogger().recordLogData(INFO_, log);
+        getLogger().recordLogData(INFO_, 100, "Timezone offset: %d", hrOffset);
     }
 
 #pragma endregion // GPS Specific Functions
@@ -146,7 +144,7 @@ namespace mmfs
         if (!hasFix && fixQual >= 4)
         {
             hasFix = true;
-            getLogger().recordLogData(INFO_, "GPS has first fix.");
+            getLogger().recordLogData(INFO_, "GPS acquired fix.");
             eventManager().invoke("GPS_FIX"_i, &hasFix);
             findTimeZone();
 
@@ -162,7 +160,7 @@ namespace mmfs
             if(fixQual < 4)
             {
                 hasFix = false;
-                getLogger().recordLogData(INFO_, "GPS lost fix.");
+                getLogger().recordLogData(WARNING_, "GPS lost fix.");
                 eventManager().invoke("GPS_LOST_FIX"_i, &hasFix);
             }
             if (biasCorrectionMode)

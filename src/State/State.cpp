@@ -36,7 +36,6 @@ namespace mmfs
 
     bool State::init(bool useBiasCorrection)
     {
-        char *logData = new char[100];
         int good = 0, tryNumSensors = 0;
         for (int i = 0; i < maxNumSensors; i++)
         {
@@ -46,19 +45,16 @@ namespace mmfs
                 if (sensors[i]->begin(useBiasCorrection))
                 {
                     good++;
-                    snprintf(logData, 100, "%s [%s] initialized.", sensors[i]->getTypeString(), sensors[i]->getName());
-                    getLogger().recordLogData(INFO_, logData);
+                    getLogger().recordLogData(INFO_, 100, "%s [%s] initialized.", sensors[i]->getTypeString(), sensors[i]->getName());
                 }
                 else
                 {
-                    snprintf(logData, 100, "%s [%s] failed to initialize.", sensors[i]->getTypeString(), sensors[i]->getName());
-                    getLogger().recordLogData(ERROR_, logData);
+                    getLogger().recordLogData(ERROR_, 100, "%s [%s] failed to initialize.", sensors[i]->getTypeString(), sensors[i]->getName());
                 }
             }
             else
             {
-                snprintf(logData, 100, "A sensor in the array was null!");
-                getLogger().recordLogData(ERROR_, logData);
+                getLogger().recordLogData(ERROR_, "A sensor in the array was null!");
             }
         }
         if (useFilter)

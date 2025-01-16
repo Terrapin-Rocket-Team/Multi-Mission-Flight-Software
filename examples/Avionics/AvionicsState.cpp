@@ -62,9 +62,7 @@ void AvionicsState::determineStage()
     else if (stage == 2 && baroVelocity <= 0 && timeSinceLaunch > 5)
     {
         bb.aonoff(BUZZER_PIN, 200, 3);
-        char logData[100];
-        snprintf(logData, 100, "Apogee detected at %.2f m.", position.z());
-        getLogger().recordLogData(INFO_, logData);
+        getLogger().recordLogData(INFO_, 100, "Apogee detected at %.2f m.", position.z());
         timeOfLastStage = currentTime;
         stage = 3;
         getLogger().recordLogData(INFO_, "Drogue conditions detected.");
