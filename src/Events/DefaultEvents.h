@@ -5,9 +5,11 @@
 namespace mmfs
 {
     enum Dest;
+    class GPS;
     class GPSFix : public Event
     {
     public:
+        GPS *gps;
         GPSFix(EventID id, bool hasFix) : Event(id), hasFix(hasFix) {}
         bool hasFix;
     };

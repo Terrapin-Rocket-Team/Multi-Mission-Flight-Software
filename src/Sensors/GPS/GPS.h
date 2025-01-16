@@ -27,6 +27,13 @@ namespace mmfs
 
         virtual const char *getTimeOfDay() const;
 
+        virtual int8_t getHour() const;
+        virtual int8_t getMinute() const;
+        virtual int8_t getSecond() const;
+        virtual uint8_t getDay() const;
+        virtual uint8_t getMonth() const;
+        virtual uint16_t getYear() const;
+
     protected:
         GPS();
         Vector<3> position;     // latitude, longitude, alt
@@ -49,6 +56,7 @@ namespace mmfs
 
         int8_t hr, min, sec;
         uint8_t day, month;
+        uint16_t year;
         int8_t hrOffset = 0;
     };
 }

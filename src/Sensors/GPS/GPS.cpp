@@ -73,10 +73,17 @@ namespace mmfs
         return val;
     }
 
-    const char *GPS::getTimeOfDay() const
-    {
-        return tod;
-    }
+#pragma region Time Functions
+
+    int8_t GPS::getHour() const { return hr; }
+    int8_t GPS::getMinute() const { return min; }
+    int8_t GPS::getSecond() const { return sec; }
+
+    uint8_t GPS::getDay() const { return day; }
+    uint8_t GPS::getMonth() const { return month; }
+    uint16_t GPS::getYear() const { return year; }
+
+    const char *GPS::getTimeOfDay() const { return tod; }
 
     void GPS::findTimeZone()
     {
@@ -144,8 +151,7 @@ namespace mmfs
         if (!hasFix && fixQual >= 4)
         {
             hasFix = true;
-            getLogger().recordLogData(INFO_, "GPS acquired fix.");
-            getEventManager().invoke(GPSFix {"GPS_FIX"_i, true});
+            getEventManager().invoke(GPSFix{"GPS_FIX"_i, true});
             findTimeZone();
 
             bb.aonoff(BUZZER_PIN, 1000);
@@ -157,11 +163,10 @@ namespace mmfs
         }
         if (hasFix)
         {
-            if(fixQual < 4)
+            if (fixQual < 4)
             {
                 hasFix = false;
-                getLogger().recordLogData(WARNING_, "GPS lost fix.");
-                getEventManager().invoke(GPSFix {"GPS_FIX"_i, false});
+                getEventManager().invoke(GPSFix{"GPS_FIX"_i, false});
             }
             if (biasCorrectionMode)
             {

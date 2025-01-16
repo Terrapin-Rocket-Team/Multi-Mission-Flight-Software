@@ -3,11 +3,13 @@
 #include "PSRAMFile.h"
 #include "DataFormatter.h"
 #include "../Events/DefaultEvents.h"
+#include "../Sensors/GPS/GPS.h"
 
 using namespace mmfs;
 
 static const char *logTypeStrings[] = {"LOG", "ERROR", "WARNING", "INFO", "CUSTOM"};
 
+#pragma region Constructor and Initialization
 // Constructor for Logger class
 Logger::Logger()
 {
@@ -105,6 +107,9 @@ bool Logger::init(DataReporter **dataReporters, int numReporters, uint16_t buffe
     return ready = sdReady;
 }
 
+#pragma endregion Constructor and Initialization
+
+#pragma region Flight Data Logging
 // Records flight data to the SD card or PSRAM
 void Logger::recordFlightData()
 {
@@ -179,6 +184,11 @@ void Logger::recordFlightData()
         }
     }
 }
+
+#pragma endregion Flight Data Logging
+
+#pragma region Log Data Logging
+
 void Logger::recordLogData(const char *msg, Dest dest, LogType type)
 {
     if (dest == BOTH || dest == TO_USB)
@@ -264,6 +274,35 @@ void Logger::recordLogData(double timeStamp, LogType type, const char *msg)
     recordLogData(timeStamp, type, BOTH, strlen(msg), msg);
 }
 
+#pragma endregion Log Data Logging
+
+#pragma region Event Handling
+
+void Logger::onEvent(const Event *e)
+{
+    if (e->ID == "GPS_FIX"_i)
+    {
+        const GPSFix *fix = static_cast<const GPSFix *>(e);
+        if (fix->hasFix)
+        {
+            modifyFileDates(fix->gps);
+            recordLogData(INFO_, 50, "%s acquired fix.", fix->gps->getName());
+        }
+        else
+            recordLogData(WARNING_, 50, "%s lost fix.", fix->gps->getName());
+    }
+}
+
+void Logger::modifyFileDates(const GPS *gps)
+{
+    flightDataFile.timestamp(T_CREATE | T_WRITE | T_ACCESS, gps->getYear(), gps->getMonth(), gps->getDay(), gps->getHour(), gps->getMinute(), gps->getSecond());
+    preFlightFile.timestamp(T_CREATE | T_WRITE | T_ACCESS, gps->getYear(), gps->getMonth(), gps->getDay(), gps->getHour(), gps->getMinute(), gps->getSecond());
+    logFile.timestamp(T_WRITE | T_WRITE | T_ACCESS, gps->getYear(), gps->getMonth(), gps->getDay(), gps->getHour(), gps->getMinute(), gps->getSecond());
+}
+
+#pragma endregion Event Handling
+
+#pragma region Others
 // Sets the recording mode and handles necessary transitions
 void Logger::setRecordMode(Mode m)
 {
