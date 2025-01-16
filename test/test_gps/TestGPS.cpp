@@ -37,7 +37,7 @@ void tearDown(void)
 void test_gps_distance_formula()
 {   
     gps.begin(false);
-    gps.setFixQual(3);
+    gps.setFixQual(4);
     gps.set(lat1, lon1, 0);
     gps.update();
     TEST_ASSERT_EQUAL_FLOAT(0, gps.getDisplacement().x());
@@ -104,11 +104,11 @@ void test_gps_first_fix()
     TEST_ASSERT_EQUAL_FLOAT(lon1, gps.getPos().y());
     TEST_ASSERT_EQUAL_FLOAT(0, gps.getPos().z());
 
-    gps.setFixQual(3);
+    gps.setFixQual(4);
     gps.update();
 
     TEST_ASSERT_TRUE(gps.getHasFirstFix());
-    TEST_ASSERT_EQUAL(3, gps.getFixQual());
+    TEST_ASSERT_EQUAL(4, gps.getFixQual());
     TEST_ASSERT_EQUAL_FLOAT(0, gps.getDisplacement().x());
     TEST_ASSERT_EQUAL_FLOAT(0, gps.getDisplacement().y());
     TEST_ASSERT_EQUAL_FLOAT(0, gps.getDisplacement().z());
@@ -123,7 +123,7 @@ void test_gps_first_fix()
     gps.update();
 
     TEST_ASSERT_TRUE(gps.getHasFirstFix());
-    TEST_ASSERT_EQUAL(3, gps.getFixQual());
+    TEST_ASSERT_EQUAL(4, gps.getFixQual());
     double distance = sqrt(gps.getDisplacement().x() * gps.getDisplacement().x() + gps.getDisplacement().y() * gps.getDisplacement().y());
     TEST_ASSERT_FLOAT_WITHIN(12819.0 / 1000.0 * 5.0, 12819, distance);
     TEST_ASSERT_EQUAL_FLOAT(1000, gps.getDisplacement().z());
@@ -140,7 +140,7 @@ void test_gps_no_bias_correction()
     gps.begin(false);
     TEST_ASSERT_FALSE(gps.isInBiasCorrectionMode());
     gps.set(lat1, lon1, 0);
-    gps.setFixQual(3);
+    gps.setFixQual(4);
     gps.update();
     TEST_ASSERT_EQUAL_FLOAT(0, gps.getDisplacement().x());
     TEST_ASSERT_EQUAL_FLOAT(0, gps.getDisplacement().y());
@@ -168,7 +168,7 @@ void test_gps_no_bias_correction()
 
 void test_gps_bias_correction(){
     gps.set(lat1, lon1, 0);
-    gps.setFixQual(3);
+    gps.setFixQual(4);
     gps.update();
 
     gps.set(lat1, lon1, 0);
