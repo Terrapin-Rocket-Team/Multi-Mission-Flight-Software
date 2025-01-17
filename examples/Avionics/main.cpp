@@ -16,7 +16,6 @@ DPS310 baro;
 Sensor *sensors[3] = {&gps, &imu055, &baro};
 AvionicsKF kfilter;
 AvionicsState avionicsState(sensors, 3, &kfilter);
-PSRAM *psram;
 ErrorHandler errorHandler;
 
 const int UPDATE_RATE = 10;
@@ -30,7 +29,6 @@ void setup()
     //If you need to change these values, do that here (in setup, before anything else)
     //SENSOR_BIAS_CORRECTION_DATA_LENGTH = 2;
     //SENSOR_BIAS_CORRECTION_DATA_IGNORE = 1;
-    psram = new PSRAM();
     getLogger().init({&avionicsState, &baro, &gps, &imu055}, 4);
 
 

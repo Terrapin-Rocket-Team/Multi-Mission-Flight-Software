@@ -4,7 +4,7 @@
 // include other headers you need to test here
 
 #include "../../src/Events/DefaultEvents.h"
-#include "../../lib/NativeTestMocks/FakeSensors.h"
+#include "../../lib/NativeTestMocks/UnitTestSensors.h"
 
 // ---
 
