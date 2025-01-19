@@ -51,7 +51,7 @@ namespace mmfs
         ALTERNATE_
     };
 
-    class Logger : public IEventListener
+    class Logger
     {
 
     public:
@@ -84,7 +84,40 @@ namespace mmfs
 
         void writeCsvHeader();
 
-        void onEvent(const Event *e) override;
+        void setPackData(bool pack)
+        {
+            if (!ready)
+                this->packData = pack;
+            else
+                recordLogData(WARNING_, "Attempted to set PackData value after Logger already initalized!");
+        }
+        void setGroundMode(GroundMode mode)
+        {
+            if (!ready)
+                this->groundMode = mode;
+            else
+                recordLogData(WARNING_, "Attempted to set GroundMode value after Logger already initalized!");
+        }
+        void setBufferTime(int time)
+        {
+            if (!ready)
+                this->bufferTime = time;
+            else
+                recordLogData(WARNING_, "Attempted to set BufferTime value after Logger already initalized!");
+        }
+        void setBufferInterval(int interval)
+        {
+            if (!ready)
+                this->bufferInterval = interval;
+            else
+                recordLogData(WARNING_, "Attempted to set BufferInterval value after Logger already initalized!");
+        }
+        bool getPackData() const { return packData; }
+        GroundMode getGroundMode() const { return groundMode; }
+        int getBufferTime() const { return bufferTime; }
+        int getBufferInterval() const { return bufferInterval; }
+
+        void modifyFileDates(const GPS *gps);
 
     protected:
         void recordLogData(double timeStamp, LogType type, Dest dest, int size, const char *format, va_list args);
@@ -121,7 +154,6 @@ namespace mmfs
         int numBufferLines = 0;
         int bufferIterations = 0;
 
-        void modifyFileDates(const GPS *gps);
     };
 
     Logger &getLogger();

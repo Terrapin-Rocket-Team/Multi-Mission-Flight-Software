@@ -8,14 +8,9 @@
 #include "../../src/Error/ErrorHandler.h"
 #include <string>
 #ifdef PIO_UNIT_TESTING
+#define UNITY_INCLUDE_DOUBLE
 #include <unity.h>
 #endif // PIO_UNIT_TESTING
 
-#define UNITY_INCLUDE_DOUBLE
-
-extern int allowed_pins[];
-extern BlinkBuzz bb;
-extern mmfs::Logger logger;
-extern mmfs::ErrorHandler errorHandler;
 
 #endif // NATIVE_TEST_HELPER_H

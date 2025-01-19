@@ -20,6 +20,13 @@ namespace mmfs
         LogType type;
         const char *data;
     };
+
+    class BoolEvent : public Event
+    {
+    public:
+        BoolEvent(EventID id, bool value) : Event(id), value(value) {}
+        bool value;
+    };
 }
 
 #endif // _DEFAULT_EVENTS_H
