@@ -92,6 +92,8 @@ bool Logger::isReady() const
     return ready;
 }
 
+
+
 // Initializes the logger, returning whether SD card is ready
 bool Logger::init(DataReporter **dataReporters, int numReporters, uint16_t bufferTime, int bufferInterval)
 {
@@ -277,21 +279,6 @@ void Logger::recordLogData(double timeStamp, LogType type, const char *msg)
 #pragma endregion Log Data Logging
 
 #pragma region Event Handling
-
-void Logger::onEvent(const Event *e)
-{
-    if (e->ID == "GPS_FIX"_i)
-    {
-        const GPSFix *fix = static_cast<const GPSFix *>(e);
-        if (fix->hasFix)
-        {
-            modifyFileDates(fix->gps);
-            recordLogData(INFO_, 50, "%s acquired fix.", fix->gps->getName());
-        }
-        else
-            recordLogData(WARNING_, 50, "%s lost fix.", fix->gps->getName());
-    }
-}
 
 void Logger::modifyFileDates(const GPS *gps)
 {

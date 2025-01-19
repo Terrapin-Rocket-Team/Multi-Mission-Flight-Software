@@ -7,9 +7,9 @@ using namespace mmfs;
 
 PSRAM::PSRAM()
 {
-    for (int i = 0; i < numClusters; i++)
+    for (unsigned int i = 0; i < numClusters; i++)
         clusterMap[i] = 0;
-    for (int i = 0; i < MAX_PSRAM_FILES; i++)
+    for (unsigned int i = 0; i < MAX_PSRAM_FILES; i++)
         fileMap[i] = 0;
 }
 
@@ -103,7 +103,7 @@ uint8_t PSRAM::getNextFreeCluster(uint8_t currentCluster)
 PSRAMFile *PSRAM::open(const char *name, uint8_t mode, bool create)
 {
     // Find the file in the fileMap
-    for (int i = 0; i < MAX_PSRAM_FILES; i++)
+    for (unsigned int i = 0; i < MAX_PSRAM_FILES; i++)
     {
         if (fileMap[i] != 0)
         {

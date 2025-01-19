@@ -153,8 +153,6 @@ namespace mmfs
             hasFix = true;
             getEventManager().invoke(GPSFix{"GPS_FIX"_i, this, true});
             findTimeZone();
-
-            bb.aonoff(BUZZER_PIN, 1000);
             origin.x() = position.x();
             origin.y() = position.y();
             origin.z() = position.z();
