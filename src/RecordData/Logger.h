@@ -78,6 +78,19 @@ namespace mmfs
         void recordLogData(LogType type, const char *msg);
         void recordLogData(double timeStamp, LogType type, const char *msg);
 
+        // Custom prefix
+
+        // use $time to wite 3 decimals of time data.
+        // ex: setLogPrefix("[$time] - CUSTOM");
+        void setCustomLogPrefix(const char *prefix);
+        // use $time to wite 3 decimals of time data.
+        // ex: setLogPrefix("[$time] - CUSTOM");
+        void setCustomLogPrefix(int size, const char *format, ...);
+
+        //use $time and $logType to access the time and log type of the current log.
+        // ex: setLogPrefix("[$time] - $logType:"); -> [0.000] - [INFO]: {log message}
+        void setLogPrefixFormatting(const char *prefix);
+
         void setRecordMode(Mode mode);
 
         void dumpData();
@@ -153,6 +166,14 @@ namespace mmfs
 
         int numBufferLines = 0;
         int bufferIterations = 0;
+
+        //
+
+        char *logPrefixFormat = nullptr;
+        int logPrefixLen = 0;
+        char *customLogPrefix = nullptr;
+        int customLogPrefixLen = 0;
+        bool timeFirst = true;
 
     };
 

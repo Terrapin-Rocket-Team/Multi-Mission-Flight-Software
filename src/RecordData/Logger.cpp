@@ -57,6 +57,9 @@ Logger::Logger()
         if (ramLogFile && ramFlightDataFile && ramBufferFile)
             psramReady = true;
     }
+    setLogPrefixFormatting("$time -  [$logType]: ");
+    setCustomLogPrefix("$time - [CUSTOM]: ");
+
 #ifndef PIO_UNIT_TESTING // This is a workaround because testing this logger is hard when it's writing its own variable data to the log file
     recordLogData(INFO_, 100, "This flight is running MMFS v%s", APP_VERSION);
 #endif
@@ -68,6 +71,8 @@ Logger::~Logger()
     delete[] flightDataFileName;
     delete[] preFlightFileName;
     delete[] logFileName;
+    delete[] logPrefixFormat;
+    delete[] customLogPrefix;
     delete ramLogFile;
     delete ramFlightDataFile;
     delete ramBufferFile;
@@ -91,8 +96,6 @@ bool Logger::isReady() const
 {
     return ready;
 }
-
-
 
 // Initializes the logger, returning whether SD card is ready
 bool Logger::init(DataReporter **dataReporters, int numReporters, uint16_t bufferTime, int bufferInterval)
@@ -193,6 +196,8 @@ void Logger::recordFlightData()
 
 void Logger::recordLogData(const char *msg, Dest dest, LogType type)
 {
+    int prefixLen = type == CUSTOM_ ? customLogPrefixLen : logPrefixLen;
+    
     if (dest == BOTH || dest == TO_USB)
     {
         Serial.println(msg);
@@ -214,15 +219,30 @@ void Logger::recordLogData(const char *msg, Dest dest, LogType type)
 }
 void Logger::recordLogData(double timeStamp, LogType type, Dest dest, int size, const char *format, va_list args)
 {
-    int prefSize = 15 + 7; // 15 for the timestamp and extra chars, 7 for the log type
-    char logPrefix[prefSize];
-    snprintf(logPrefix, prefSize, "%.3f - [%s] ", timeStamp, logTypeStrings[type]);
-
+    int len;
+    char *logPrefix = nullptr;
+    if (type == CUSTOM_)
+    {
+        len = customLogPrefixLen;
+        logPrefix = new char[customLogPrefixLen];
+        snprintf(logPrefix, customLogPrefixLen, customLogPrefix, timeStamp);
+        delete[] logPrefix;
+    }
+    else
+    {
+        len = logPrefixLen;
+        logPrefix = new char[logPrefixLen];
+        if (timeFirst)
+            snprintf(logPrefix, logPrefixLen, logPrefixFormat, timeStamp, logTypeStrings[type]);
+        else
+            snprintf(logPrefix, logPrefixLen, logPrefixFormat, logTypeStrings[type], timeStamp);
+        delete[] logPrefix;
+    }
     char *msg = new char[size + 1];
     vsnprintf(msg, size + 1, format, args);
 
-    char *logMsg = new char[prefSize + strlen(msg) + 1];
-    snprintf(logMsg, prefSize + strlen(msg) + 1, "%s%s", logPrefix, msg);
+    char *logMsg = new char[len + strlen(msg) + 1];
+    snprintf(logMsg, len + strlen(msg) + 1, "%s%s", logPrefix, msg);
     recordLogData(logMsg, dest, type);
     delete[] msg;
     delete[] logMsg;
@@ -275,6 +295,118 @@ void Logger::recordLogData(double timeStamp, LogType type, const char *msg)
 {
     recordLogData(timeStamp, type, BOTH, strlen(msg), msg);
 }
+
+#pragma region Custom Prefixes
+
+void Logger::setCustomLogPrefix(const char *prefix)
+{
+    unsigned int idxTime = -1;
+    if (char *t = strstr(prefix, "$time"))
+        idxTime = t - prefix;
+
+    delete[] customLogPrefix;
+    if (idxTime == (unsigned int) -1)
+    {
+        recordLogData(WARNING_, "Set a custom prefix without $time!");
+        customLogPrefixLen = strlen(prefix) + 1;
+        customLogPrefix = new char[customLogPrefixLen];
+        strcpy(customLogPrefix, prefix);
+    }
+    else
+    {
+        customLogPrefixLen = strlen(prefix) + 15 + 1; // 15 for the timestamp and extra chars
+        customLogPrefix = new char[customLogPrefixLen];
+        unsigned int cursor = 0;
+        unsigned int cursorFormat = 0;
+        while (cursor < idxTime)
+            logPrefixFormat[cursorFormat++] = prefix[cursor++];
+        strcpy(logPrefixFormat + cursorFormat, "%0.3f");
+        cursorFormat += 5;
+        cursor += sizeof("$time") - 1;
+        while (cursor < strlen(prefix))
+            logPrefixFormat[cursorFormat++] = prefix[cursor++];
+        logPrefixFormat[cursorFormat] = '\0';
+    }
+}
+
+void Logger::setCustomLogPrefix(int size, const char *format, ...)
+{
+    char *msg = new char[size + 1];
+    va_list args;
+    va_start(args, format);
+    vsnprintf(msg, size + 1, format, args);
+    va_end(args);
+    setCustomLogPrefix(msg);
+    delete[] msg;
+}
+
+void Logger::setLogPrefixFormatting(const char *prefix)
+{
+    if (ready)
+    {
+        recordLogData(ERROR_, "Attempted to set log prefix formatting after Logger already initalized!");
+        return;
+    }
+    unsigned int idxTime = -1;
+    unsigned int idxLogType = -1;
+    if (char *t = strstr(prefix, "$time"))
+        idxTime = t - prefix;
+    if (char *t = strstr(prefix, "$logType"))
+        idxLogType = t - prefix;
+    if (idxTime == (unsigned int)-1 || idxLogType == (unsigned int) -1)
+    {
+        recordLogData(ERROR_, "Attempted to set a log prefix format without $time or $logType!");
+        return;
+    }
+
+    logPrefixLen = strlen(prefix) + 15 + 1; // 15 for the timestamp and extra chars, 7 for the log type
+    delete[] logPrefixFormat;
+    logPrefixFormat = new char[logPrefixLen];
+    if (idxTime > idxLogType)
+    {
+        timeFirst = false;
+        unsigned int cursorArg = 0;
+        unsigned int cursorFormat = 0;
+
+        while (cursorArg < idxLogType)
+            logPrefixFormat[cursorFormat++] = prefix[cursorArg++];
+        strcpy(logPrefixFormat + cursorFormat, "%s");
+        cursorFormat += 2;
+        cursorArg += sizeof("$logType") - 1;
+
+        while (cursorArg < idxTime)
+            logPrefixFormat[cursorFormat++] = prefix[cursorArg++];
+        strcpy(logPrefixFormat + cursorFormat, "%0.3f");
+        cursorFormat += 5;
+        cursorArg += sizeof("$time") - 1;
+        while (cursorArg < strlen(prefix))
+            logPrefixFormat[cursorFormat++] = prefix[cursorArg++];
+        logPrefixFormat[cursorFormat] = '\0';
+    }
+    else
+    {
+        timeFirst = true;
+        unsigned int cursorArg = 0;
+        unsigned int cursorFormat = 0;
+
+        while (cursorArg < idxTime)
+            logPrefixFormat[cursorFormat++] = prefix[cursorArg++];
+        strcpy(logPrefixFormat + cursorFormat, "%0.3f");
+        cursorFormat += 5;
+        cursorArg += sizeof("$time") - 1;
+
+        while (cursorArg < idxLogType)
+            logPrefixFormat[cursorFormat++] = prefix[cursorArg++];
+        strcpy(logPrefixFormat + cursorFormat, "%s");
+        cursorFormat += 2;
+        cursorArg += sizeof("$logType") - 1;
+        while (cursorArg < strlen(prefix))
+            logPrefixFormat[cursorFormat++] = prefix[cursorArg++];
+        logPrefixFormat[cursorFormat] = '\0';
+    }
+}
+
+#pragma endregion Custom Prefixes
 
 #pragma endregion Log Data Logging
 
