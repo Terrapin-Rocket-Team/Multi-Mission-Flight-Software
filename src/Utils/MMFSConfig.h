@@ -77,7 +77,7 @@ namespace mmfs
 
         // Change the formatting of the log prefix.
         // use $time and $logType to access the time and log type of the current log.
-        // Default: `"$time - [$logType]: "`
+        // Default: `"$time - [$logType] "`
         MMFSConfig &withLogPrefixFormatting(const char *prefix);
 
         MMFSConfig();

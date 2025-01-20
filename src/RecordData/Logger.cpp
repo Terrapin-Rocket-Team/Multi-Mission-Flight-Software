@@ -57,8 +57,8 @@ Logger::Logger()
         if (ramLogFile && ramFlightDataFile && ramBufferFile)
             psramReady = true;
     }
-    setLogPrefixFormatting("$time -  [$logType]: ");
-    setCustomLogPrefix("$time - [CUSTOM]: ");
+    setLogPrefixFormatting("$time - [$logType] ");
+    setCustomLogPrefix("$time - [CUSTOM] ");
     recordCrashReport();
 
 #ifndef PIO_UNIT_TESTING // This is a workaround because testing this logger is hard when it's writing its own variable data to the log file
@@ -273,7 +273,6 @@ void Logger::recordLogData(double timeStamp, LogType type, Dest dest, int size, 
         len = customLogPrefixLen;
         logPrefix = new char[customLogPrefixLen];
         snprintf(logPrefix, customLogPrefixLen, customLogPrefix, timeStamp);
-        delete[] logPrefix;
     }
     else
     {
@@ -283,16 +282,16 @@ void Logger::recordLogData(double timeStamp, LogType type, Dest dest, int size, 
             snprintf(logPrefix, logPrefixLen, logPrefixFormat, timeStamp, logTypeStrings[type]);
         else
             snprintf(logPrefix, logPrefixLen, logPrefixFormat, logTypeStrings[type], timeStamp);
-        delete[] logPrefix;
     }
     char *msg = new char[size + 1];
-    vsnprintf(msg, size + 1, format, args);
+    int p = vsnprintf(msg, size + 1, format, args);
 
-    char *logMsg = new char[len + strlen(msg) + 1];
-    snprintf(logMsg, len + strlen(msg) + 1, "%s%s", logPrefix, msg);
+    char *logMsg = new char[len + p + 1];
+    snprintf(logMsg, len + p + 1, "%s%s", logPrefix, msg);
     recordLogData(logMsg, dest, type);
     delete[] msg;
     delete[] logMsg;
+    delete[] logPrefix;
 }
 void Logger::recordLogData(double timeStamp, LogType type, Dest dest, int size, const char *format, ...)
 {
@@ -374,13 +373,13 @@ void Logger::setCustomLogPrefix(const char *prefix)
         unsigned int cursor = 0;
         unsigned int cursorFormat = 0;
         while (cursor < idxTime)
-            logPrefixFormat[cursorFormat++] = prefix[cursor++];
-        strcpy(logPrefixFormat + cursorFormat, "%0.3f");
+            customLogPrefix[cursorFormat++] = prefix[cursor++];
+        strcpy(customLogPrefix + cursorFormat, "%0.3f");
         cursorFormat += 5;
         cursor += sizeof("$time") - 1;
         while (cursor < strlen(prefix))
-            logPrefixFormat[cursorFormat++] = prefix[cursor++];
-        logPrefixFormat[cursorFormat] = '\0';
+            customLogPrefix[cursorFormat++] = prefix[cursor++];
+        customLogPrefix[cursorFormat] = '\0';
     }
 }
 

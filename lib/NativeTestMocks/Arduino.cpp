@@ -78,3 +78,4 @@ void SerialClass::clearBuffer()
 }
 
 SerialClass Serial;
+CrashReportClass CrashReport;
