@@ -28,7 +28,8 @@ namespace mmfs
         ERROR_,
         WARNING_,
         INFO_,
-        CUSTOM_
+        CUSTOM_,
+        NONE_
     };
 
     enum Dest
@@ -134,7 +135,8 @@ namespace mmfs
 
     protected:
         void recordLogData(double timeStamp, LogType type, Dest dest, int size, const char *format, va_list args);
-        void recordLogData(const char *msg, Dest dest = BOTH, LogType type = CUSTOM_);
+        void recordLogData(const char *msg, Dest dest = BOTH, LogType type = NONE_);
+        void recordCrashReport();
         SdFs sd;
         FsFile logFile;
         FsFile flightDataFile;

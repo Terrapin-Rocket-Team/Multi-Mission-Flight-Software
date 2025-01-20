@@ -59,6 +59,7 @@ Logger::Logger()
     }
     setLogPrefixFormatting("$time -  [$logType]: ");
     setCustomLogPrefix("$time - [CUSTOM]: ");
+    recordCrashReport();
 
 #ifndef PIO_UNIT_TESTING // This is a workaround because testing this logger is hard when it's writing its own variable data to the log file
     recordLogData(INFO_, 100, "This flight is running MMFS v%s", APP_VERSION);
@@ -196,8 +197,16 @@ void Logger::recordFlightData()
 
 void Logger::recordLogData(const char *msg, Dest dest, LogType type)
 {
-    int prefixLen = type == CUSTOM_ ? customLogPrefixLen : logPrefixLen;
-    
+    int prefixLen = 0;
+    if(type == CUSTOM_)
+    {
+        prefixLen = customLogPrefixLen;
+    }
+    else if(type != NONE_)
+    {
+        prefixLen = logPrefixLen;
+    }
+
     if (dest == BOTH || dest == TO_USB)
     {
         Serial.println(msg);
@@ -206,12 +215,50 @@ void Logger::recordLogData(const char *msg, Dest dest, LogType type)
     {
         if (mode != GROUND && psramReady)
         {
-            ramLogFile->println(msg);
+            if (const char *i = strstr(msg, "\n")) // find the first newline
+            {
+                int cursor = 0;
+                int lenToWrite = i - msg + 1; // length of the string to write
+                ramLogFile->write(msg + cursor, lenToWrite);
+                cursor += lenToWrite;
+                for (i = msg; (i = strstr(i, "\n")) != nullptr; i++) // loop through the string until we find a newline
+                {
+                    for (int j = 0; j < prefixLen; j++)
+                    {
+                        ramLogFile->write(" ", 1);
+                    }
+                    int lenToWrite = i - msg + 1; // length of the string to write
+                    ramLogFile->write(msg + cursor, lenToWrite);
+                    cursor += lenToWrite;
+                }
+            }
+            else
+                ramLogFile->println(msg);
         }
         else
         {
             logFile = sd.open(logFileName, FILE_WRITE);
-            logFile.println(msg);
+            if (const char *i = strstr(msg, "\n")) // find the first newline
+            {
+                int cursor = 0;
+                int lenToWrite = i - msg + 1; // length of the string to write
+                logFile.write(msg + cursor, lenToWrite);
+                cursor += lenToWrite;
+                for (i = msg; (i = strstr(i, "\n")) != nullptr; i++) // loop through the string until we find a newline
+                {
+                    for (int j = 0; j < prefixLen; j++)
+                    {
+                        logFile.write(" ", 1);
+                    }
+                    int lenToWrite = i - msg + 1; // length of the string to write
+                    logFile.write(msg + cursor, lenToWrite);
+                    cursor += lenToWrite;
+                }
+            }
+            else
+            {
+                logFile.println(msg);
+            }
             logFile.close();
         }
     }
@@ -296,6 +343,14 @@ void Logger::recordLogData(double timeStamp, LogType type, const char *msg)
     recordLogData(timeStamp, type, BOTH, strlen(msg), msg);
 }
 
+void Logger::recordCrashReport()
+{
+    if(CrashReport)
+    {
+        recordLogData(ERROR_, 500, "CRASH REPORT: %s", CrashReport);
+    }
+}
+
 #pragma region Custom Prefixes
 
 void Logger::setCustomLogPrefix(const char *prefix)
@@ -305,7 +360,7 @@ void Logger::setCustomLogPrefix(const char *prefix)
         idxTime = t - prefix;
 
     delete[] customLogPrefix;
-    if (idxTime == (unsigned int) -1)
+    if (idxTime == (unsigned int)-1)
     {
         recordLogData(WARNING_, "Set a custom prefix without $time!");
         customLogPrefixLen = strlen(prefix) + 1;
@@ -353,7 +408,7 @@ void Logger::setLogPrefixFormatting(const char *prefix)
         idxTime = t - prefix;
     if (char *t = strstr(prefix, "$logType"))
         idxLogType = t - prefix;
-    if (idxTime == (unsigned int)-1 || idxLogType == (unsigned int) -1)
+    if (idxTime == (unsigned int)-1 || idxLogType == (unsigned int)-1)
     {
         recordLogData(ERROR_, "Attempted to set a log prefix format without $time or $logType!");
         return;

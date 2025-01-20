@@ -82,12 +82,12 @@ namespace mmfs
     }
     MMFSConfig &MMFSConfig::withBuzzerPin(unsigned int buzzerPin)
     {
-        if (BUZZER == buzzerPin)
+        if ((unsigned int) BUZZER == buzzerPin)
             return *this;
         BUZZER = buzzerPin;
         for (int i = 0; i < 50; i++)
         {
-            if (pins[i] == buzzerPin)
+            if ((unsigned int) pins[i] == buzzerPin)
             {
                 getLogger().recordLogData(WARNING_, "Attempted to set buzzer pin %d to BlinkBuzz, but it is already in use.", buzzerPin);
                 return *this;
@@ -105,7 +105,7 @@ namespace mmfs
     {
         for (int i = 0; i < 50; i++)
         {
-            if (pins[i] == bbPin)
+            if ((unsigned int) pins[i] == bbPin)
             {
                 getLogger().recordLogData(WARNING_, "Attempted to add pin %d to BlinkBuzz, but it is already in use.", bbPin);
                 return *this;
@@ -189,6 +189,7 @@ namespace mmfs
     MMFSConfig &MMFSConfig::withLogPrefixFormatting(const char *prefix)
     {
         getLogger().setLogPrefixFormatting(prefix);
+        return *this;
     }
 
 }

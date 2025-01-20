@@ -21,8 +21,8 @@ constexpr int MAX_DIGITS_LAT_LON = 12; // 180.0000000
 // ------------------ Sensor Constants ------------------
 
 constexpr double MEAN_SEA_LEVEL_PRESSURE_HPA = 1013.25;
-inline int SENSOR_BIAS_CORRECTION_DATA_LENGTH = 2; // in seconds
-inline int SENSOR_BIAS_CORRECTION_DATA_IGNORE = 1; // in seconds (how many seconds to ignore the most recent data for bias correction)
+inline unsigned int SENSOR_BIAS_CORRECTION_DATA_LENGTH = 2; // in seconds
+inline unsigned int SENSOR_BIAS_CORRECTION_DATA_IGNORE = 1; // in seconds (how many seconds to ignore the most recent data for bias correction)
 
 // ------------------------------------------------------
 

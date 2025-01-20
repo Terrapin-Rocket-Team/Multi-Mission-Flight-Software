@@ -39,7 +39,8 @@ namespace mmfs
         PSRAMFile(const char *name, PSRAM *psram);
         ~PSRAMFile();
 
-        void write(uint8_t *data, int size);
+        void write(const uint8_t *data, int size);
+        void write(const char *data, int size);
         void print(const char *data);
         void println(const char *data);
 
