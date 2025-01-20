@@ -136,7 +136,7 @@ PSRAMFile *PSRAM::open(const char *name, uint8_t mode, bool create)
 
 PSRAMFile *PSRAM::open(int index, uint8_t mode)
 {
-    if (index < 0 || index >= MAX_PSRAM_FILES)
+    if (index < 0 || (unsigned int) index >= MAX_PSRAM_FILES)
         return nullptr;
 
     if (fileMap[index] != 0)

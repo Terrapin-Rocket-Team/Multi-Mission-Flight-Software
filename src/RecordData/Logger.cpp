@@ -385,6 +385,9 @@ void Logger::writeCsvHeader()
     flightDataFile = sd.open(flightDataFileName, FILE_WRITE);
     flightDataFile.println(header);
     flightDataFile.close();
+    preFlightFile = sd.open(preFlightFileName, FILE_WRITE);
+    preFlightFile.println(header);
+    preFlightFile.close();
 }
 #ifdef PIO_UNIT_TESTING
 static Logger *testLogger = nullptr;

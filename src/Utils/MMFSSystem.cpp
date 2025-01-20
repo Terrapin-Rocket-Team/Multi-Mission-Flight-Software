@@ -54,12 +54,12 @@ bool MMFSSystem::update(double ms)
         init();
     }
     // loop based on time and interval and update bb.
+    bb.update();
     if (ms == -1)
         ms = millis();
     if (ms - lastUdpate > UPDATE_INTERVAL)
     {
         lastUdpate = ms;
-        bb.update();
         if (config->state)
             config->state->updateState();
         else
