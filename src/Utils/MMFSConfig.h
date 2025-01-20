@@ -74,7 +74,6 @@ namespace mmfs
         // Remove the default event handler from the event manager.
         // Useful if you have your own that alters the behavior.
         MMFSConfig &withNoDefaultEventListener();
-
         // Change the formatting of the log prefix.
         // use $time and $logType to access the time and log type of the current log.
         // Default: `"$time - [$logType] "`

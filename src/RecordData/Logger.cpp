@@ -355,7 +355,7 @@ void Logger::recordCrashReport()
 void Logger::setCustomLogPrefix(const char *prefix)
 {
     unsigned int idxTime = -1;
-    if (char *t = strstr(prefix, "$time"))
+    if (const char *t = strstr(prefix, "$time"))
         idxTime = t - prefix;
 
     delete[] customLogPrefix;
@@ -403,9 +403,9 @@ void Logger::setLogPrefixFormatting(const char *prefix)
     }
     unsigned int idxTime = -1;
     unsigned int idxLogType = -1;
-    if (char *t = strstr(prefix, "$time"))
+    if (const char *t = strstr(prefix, "$time"))
         idxTime = t - prefix;
-    if (char *t = strstr(prefix, "$logType"))
+    if (const char *t = strstr(prefix, "$logType"))
         idxLogType = t - prefix;
     if (idxTime == (unsigned int)-1 || idxLogType == (unsigned int)-1)
     {
