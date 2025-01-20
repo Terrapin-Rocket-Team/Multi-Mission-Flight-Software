@@ -186,4 +186,9 @@ namespace mmfs
         return *this;
     }
 
+    MMFSConfig &MMFSConfig::withLogPrefixFormatting(const char *prefix)
+    {
+        getLogger().setLogPrefixFormatting(prefix);
+    }
+
 }
