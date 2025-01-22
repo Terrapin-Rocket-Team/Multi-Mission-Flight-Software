@@ -34,7 +34,7 @@ void AvionicsState::determineStage()
 
     // essentially, if we have either sensor and they meet launch threshold, launch. Otherwise, it will never detect a launch.
     {
-        bb.aonoff(33, 200);
+        bb.aonoff(BUZZER_PIN, 200);
         logger.setRecordMode(FLIGHT);
         stage = 1;
         timeOfLaunch = currentTime;
@@ -54,14 +54,14 @@ void AvionicsState::determineStage()
     } // TODO: Add checks for each sensor being ok and decide what to do if they aren't.
     else if (stage == 1 && abs(acceleration.z()) < 10)
     {
-        bb.aonoff(33, 200, 2);
+        bb.aonoff(BUZZER_PIN, 200, 2);
         timeOfLastStage = currentTime;
         stage = 2;
         logger.recordLogData(INFO_, "Coasting detected.");
     }
     else if (stage == 2 && baroVelocity <= 0 && timeSinceLaunch > 5)
     {
-        bb.aonoff(33, 200, 3);
+        bb.aonoff(BUZZER_PIN, 200, 3);
         char logData[100];
         snprintf(logData, 100, "Apogee detected at %.2f m.", position.z());
         logger.recordLogData(INFO_, logData);
@@ -71,20 +71,21 @@ void AvionicsState::determineStage()
     }
     else if (stage == 3 && baro->getAGLAltFt() < 1000 && timeSinceLaunch > 10)
     {
-        bb.aonoff(33, 200, 4);
+        bb.aonoff(BUZZER_PIN, 200, 4);
         stage = 4;
         timeOfLastStage = currentTime;
         logger.recordLogData(INFO_, "Main parachute conditions detected.");
     }
     else if (stage == 4 && baroVelocity > -1 && baro->getAGLAltFt() < 66 && timeSinceLaunch > 15)
     {
-        bb.aonoff(33, 200, 5);
+        bb.aonoff(BUZZER_PIN, 200, 5);
         timeOfLastStage = currentTime;
         stage = 5;
         logger.recordLogData(INFO_, "Landing detected. Waiting for 5 seconds to dump data.");
     }
     else if (stage == 5 && currentTime - timeOfLastStage > 5)
     {
+        stage = 6;
         logger.setRecordMode(GROUND);
         logger.recordLogData(INFO_, "Dumped data after landing.");
     }

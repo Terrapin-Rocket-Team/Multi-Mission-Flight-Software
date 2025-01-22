@@ -7,7 +7,6 @@
 #include "../Sensors/Baro/Barometer.h"
 #include "../Sensors/GPS/GPS.h"
 #include "../Sensors/IMU/IMU.h"
-#include "../Radio/Radio.h"
 #include "../RecordData/Logger.h"
 #include "../Constants.h"
 #include "../Math/Vector.h"

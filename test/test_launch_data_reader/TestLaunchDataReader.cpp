@@ -66,7 +66,7 @@ void test_read_line() {
 
      bool res = reader.readColumnHeaders(numCols, cols);
 
-     float* measurements = (float*) malloc(numCols * sizeof(float));
+     float* measurements = new float[numCols];
 
      int line = 0;
      while(reader.readLine(measurements)) {
@@ -83,6 +83,7 @@ void test_read_line() {
      }
 
      TEST_ASSERT_EQUAL(6, line);
+     delete[] measurements;
 }
 // ---
 

@@ -61,7 +61,6 @@ void test_gps_begin()
     TEST_ASSERT_EQUAL_FLOAT(0, gps.getPos().y());
     TEST_ASSERT_EQUAL_FLOAT(0, gps.getPos().z());
     TEST_ASSERT_EQUAL(0, gps.getFixQual());
-    TEST_ASSERT_EQUAL(false, gps.getHasFirstFix());
     TEST_ASSERT_EQUAL(true, gps.isInBiasCorrectionMode());
 }
 

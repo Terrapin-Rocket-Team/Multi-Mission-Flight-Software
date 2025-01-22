@@ -4,9 +4,18 @@
 namespace mmfs
 {
 
-    MAX_M10S::MAX_M10S(const char *name) : m10s()
+    MAX_M10S::MAX_M10S(const char *name, uint8_t address, TwoWire *wire) : m10s()
     {
         setName(name);
+        this->wire = wire;
+        this->address = address;
+    }
+
+    MAX_M10S::MAX_M10S(uint8_t address, TwoWire *wire) : m10s()
+    {
+        setName("MAX-M10S");
+        this->wire = wire;
+        this->address = address;
     }
 
     bool MAX_M10S::init()
@@ -15,14 +24,14 @@ namespace mmfs
         // myGNSS.enableDebugging(); // Uncomment this line to enable helpful debug messages on Serial
 
         int count = 0;
-        while (m10s.begin() == false && count < 3) // Connect to the u-blox module using Wire port
+        while (m10s.begin(*wire, address) == false && count < 3) // Connect to the u-blox module using Wire port
         {
             // Serial.println(F("u-blox GNSS not detected at default I2C address. Retrying..."));
             // TODO: RECORD FAILURE IN RECORDDATA?
             delay(250);
             count++;
         }
-        if (!m10s.begin())
+        if (!m10s.begin(*wire, address))
             return initialized = false;
 
         m10s.setI2COutput(COM_TYPE_UBX);            // Set the I2C port to output UBX only (turn off NMEA noise)
@@ -46,5 +55,10 @@ namespace mmfs
         position.z() = m10s.getAltitude() / 1000.0;
         heading = m10s.getHeading();
         fixQual = m10s.getSIV();
+        hr = m10s.getHour();
+        min = m10s.getMinute();
+        sec = m10s.getSecond();
+        day = m10s.getDay();
+        month = m10s.getMonth();
     }
 }

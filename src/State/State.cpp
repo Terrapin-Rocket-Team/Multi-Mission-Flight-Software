@@ -17,7 +17,6 @@ namespace mmfs
         this->sensors = sensors;
         this->filter = filter;
         useFilter = filter != nullptr;
-        setUpPackedData();
     }
 
     State::~State()
@@ -36,6 +35,7 @@ namespace mmfs
 
     bool State::init(bool useBiasCorrection)
     {
+        setUpPackedData();
         char *logData = new char[100];
         int good = 0, tryNumSensors = 0;
         for (int i = 0; i < maxNumSensors; i++)
@@ -116,7 +116,7 @@ namespace mmfs
             // imu x y z
             inputs[0] = acceleration.x() = imu->getAccelerationGlobal().x();
             inputs[1] = acceleration.y() = imu->getAccelerationGlobal().y();
-            inputs[2] = acceleration.z() = imu->getAccelerationGlobal().z();
+            inputs[2] = acceleration.z() = imu->getAccelerationGlobal().z() - 9.81;
 
             stateVars[0] = position.x();
             stateVars[1] = position.y();

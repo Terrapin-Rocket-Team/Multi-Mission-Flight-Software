@@ -1,6 +1,6 @@
 {
     "name": "TRT-MMFS",
-    "version": "2.3.0",
+    "version": "2.3.5",
     "description": "Terrapin Rocket Team's Multi-Mission Flight Software. Designed to be used with any FC and any sensor suite.",
     "keywords": "MMFS, TRT, Terrapin Rocket Team, Flight Software",
     "repository": 
@@ -62,10 +62,6 @@
         {
             "name": "RTClib",
             "owner": "adafruit"
-        },
-        {
-            "name": "RadioHead",
-            "version": "https://github.com/Awbmilne/Patched-RadioHead.git"
         },
         {
             "name": "Bolder Flight Systems BMI088",
