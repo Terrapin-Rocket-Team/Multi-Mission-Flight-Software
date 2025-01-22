@@ -1,6 +1,6 @@
 
-#include <MockGPS.h>
 #ifndef PIO_UNIT_TESTING
+#include <MockGPS.h>
 #include <iostream>
 #include <MockBarometer.h>
 #include <MockIMU.h>
