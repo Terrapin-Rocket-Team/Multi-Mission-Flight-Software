@@ -8,7 +8,7 @@
 #include "AvionicsState.h"
 #include "AvionicsKF.h"
 
-template <int N> void printVec(mmfs::Vector<N> vec) {
+template <uint8_t N> void printVec(mmfs::Vector<N> vec) {
     for (int i = 0; i < N; i++) {
         printf("%7.2f ", vec[i]);
     }
@@ -51,9 +51,9 @@ int main()
 
     while(baro.isInitialized() && gps.isInitialized() && imu.isInitialized()) {
         avState.updateState();
-        printVec<3>(avState.getPosition());
-        printVec<3>(avState.getAcceleration());
-        printVec<3>(avState.getAcceleration());
+        printVec(avState.getPosition());
+        printVec(avState.getAcceleration());
+        printVec(avState.getAcceleration());
         printf("\n");
     }
 
