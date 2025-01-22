@@ -15,7 +15,7 @@ namespace mmfs
     private:
         bool ready = false;
         MMFSConfig *config = nullptr;
-        double lastUdpate = 0;
+        double lastUpdate = 0;
     };
 }
 #endif

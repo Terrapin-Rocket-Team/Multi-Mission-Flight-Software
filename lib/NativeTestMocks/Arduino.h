@@ -5,6 +5,7 @@
 #include <string.h>
 #include <chrono>
 #include <stdarg.h>
+#include "Wire.h"
 #ifdef WIN32
 #include <windows.h>
 #endif

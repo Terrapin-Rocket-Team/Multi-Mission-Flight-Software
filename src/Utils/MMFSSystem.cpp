@@ -2,7 +2,7 @@
 #include "Error/ErrorHandler.h"
 #include "BlinkBuzz/BlinkBuzz.h"
 #include "State/State.h"
-#include <Wire.h>
+#include "Wire.h"
 
 using namespace mmfs;
 BlinkBuzz bb;
@@ -59,9 +59,9 @@ bool MMFSSystem::update(double ms)
     bb.update();
     if (ms == -1)
         ms = millis();
-    if (ms - lastUdpate > UPDATE_INTERVAL)
+    if (ms - lastUpdate > UPDATE_INTERVAL)
     {
-        lastUdpate = ms;
+        lastUpdate = ms;
         if (config->state)
             config->state->updateState();
         else
