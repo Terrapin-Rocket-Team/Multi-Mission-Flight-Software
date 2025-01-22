@@ -165,6 +165,8 @@ namespace mmfs
         }
 
         orientation = sensorOK(imu) ? imu->getOrientation() : Quaternion(1, 0, 0, 0);
+
+        determineStage();
     }
 
     Sensor *State::getSensor(SensorType type, int sensorNum) const

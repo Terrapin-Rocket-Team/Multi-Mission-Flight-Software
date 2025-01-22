@@ -13,6 +13,13 @@
 
 // Set up and global variables or mocks for testing here
 
+class TestState : public State
+{
+public:
+    TestState(Sensor **sensors, int numSensors, Filter *filter) : State(sensors, numSensors, filter) {}
+    void determineStage() override {}
+};
+
 using namespace mmfs;
 char *fakepsram = nullptr;
 FsFileData *flightFile, *logFile, *preFlightFile;
@@ -20,14 +27,14 @@ FsFileData *flightFile, *logFile, *preFlightFile;
 FakeGPS gps;
 FakeBarometer baro;
 Sensor *sensors[2] = {&gps, &baro};
-State state(sensors, 2, nullptr);
+TestState state(sensors, 2, nullptr);
 DataReporter *arr[] = {&state, &gps, &baro};
 TestingLogger *testLogger;
 
-    // ---
+// ---
 
-    // These two functions are called before and after each test function, and are required in unity, even if empty.
-    void setUp(void)
+// These two functions are called before and after each test function, and are required in unity, even if empty.
+void setUp(void)
 {
     // set stuff up before each test here, if needed
 }

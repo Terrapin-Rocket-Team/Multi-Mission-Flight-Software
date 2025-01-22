@@ -55,6 +55,9 @@ namespace mmfs
         // DataReporter functions
         virtual const char *getName() const override { return "State"; }
 
+        //MUST BE IMPLEMENTED IN OVERRIDE CLASS
+        virtual void determineStage() = 0;
+
     protected:
 
         double currentTime; // in s since uC turned on

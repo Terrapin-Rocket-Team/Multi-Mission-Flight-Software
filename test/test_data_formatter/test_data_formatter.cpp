@@ -10,11 +10,17 @@
 // ---
 
 // Set up and global variables or mocks for testing here
+class TestState : public State
+{
+public:
+    TestState(Sensor **sensors, int numSensors, Filter *filter) : State(sensors, numSensors, filter) {}
+    void determineStage() override {}
+};
 
 FakeBarometer baro;
 FakeGPS gps;
 Sensor *sensors[] = {&baro, &gps};
-mmfs::State state(sensors, 2, nullptr);
+TestState state(sensors, 2, nullptr);
 DataReporter *dr[] = {&state, &baro, &gps};
 // ---
 
