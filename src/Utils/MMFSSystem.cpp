@@ -2,6 +2,7 @@
 #include "Error/ErrorHandler.h"
 #include "BlinkBuzz/BlinkBuzz.h"
 #include "State/State.h"
+#include <Wire.h>
 
 using namespace mmfs;
 BlinkBuzz bb;
@@ -11,6 +12,7 @@ MMFSSystem::MMFSSystem(MMFSConfig *config) : config(config)
 }
 void MMFSSystem::init()
 {
+    Wire.begin();
     // BlinkBuzz first
     int pins = 0;
     for (int i = 0; i < 50; i++)

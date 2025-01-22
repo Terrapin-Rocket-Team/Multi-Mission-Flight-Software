@@ -60,7 +60,7 @@ namespace mmfs
         // ***DANGER** Must have working landing detection or data will never be saved to SD card.
         MMFSConfig &withUsePSRAM(bool usePSRAM);
         // Record reduced data rates to the SD card.
-        // Default true, `30` (in sec).
+        // Default `true`, `30` (in sec).
         // ***DANGER** Must have working launch detection or all data will be at the reduced rate.
         MMFSConfig &withReducedPreFlightDataRate(bool useReducedRate, unsigned int secondsBetweenRecords);
         // Use a full-data-rate pre-flight data buffer on the PSRAM.
