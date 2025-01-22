@@ -5,8 +5,8 @@
 #include <MockBarometer.h>
 #include <MockIMU.h>
 #include <State/State.h>
-#include <State/AvionicsState.h>
-#include <Filters/AvionicsKF.h>
+#include "AvionicsState.h"
+#include "AvionicsKF.h"
 
 template <int N> void printVec(mmfs::Vector<N> vec) {
     for (int i = 0; i < N; i++) {

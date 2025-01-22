@@ -1,9 +1,9 @@
 #ifndef AVIONICSSTATE_H
 #define AVIONICSSTATE_H
 
-#include "../src/State/State.h"
-#include "../src/BlinkBuzz/BlinkBuzz.h"
-#include "../src/Filters/LinearKalmanFilter.h"
+#include <State/State.h>
+#include <BlinkBuzz/BlinkBuzz.h>
+#include <Filters/LinearKalmanFilter.h>
 
 namespace mmfs
 {
