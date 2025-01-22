@@ -47,6 +47,7 @@ namespace mmfs
         virtual double getHeading() const { return heading; }
         virtual int getNumMaxSensors() const { return maxNumSensors; }
         virtual Sensor **getSensors() const { return sensors; }
+        virtual int getStage() const { return stage; }
         bool sensorOK(const Sensor *sensor) const;
 
         // State Setters
@@ -54,12 +55,11 @@ namespace mmfs
 
         // DataReporter functions
         virtual const char *getName() const override { return "State"; }
-        virtual const PackedType *getPackedOrder() const override;
-        virtual const int getNumPackedDataPoints() const override;
-        virtual const char **getPackedDataLabels() const override;
+
+        //MUST BE IMPLEMENTED IN OVERRIDE CLASS
+        virtual void determineStage() = 0;
 
     protected:
-        virtual void packData() override;
 
         double currentTime; // in s since uC turned on
         int lastTime;
@@ -89,6 +89,8 @@ namespace mmfs
         Filter *filter;
 
         bool initialized = false;
+
+        int stage = 0;
     };
 }
 #endif // STATE_H

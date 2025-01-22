@@ -60,5 +60,6 @@ namespace mmfs
         sec = m10s.getSecond();
         day = m10s.getDay();
         month = m10s.getMonth();
+        year = m10s.getYear();
     }
 }

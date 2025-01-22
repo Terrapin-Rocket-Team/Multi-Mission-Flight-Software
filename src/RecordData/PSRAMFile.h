@@ -4,6 +4,7 @@
 #include <cstdint>
 #include "../Constants.h"
 #include <stdio.h>
+#include "psram.h"
 
 namespace mmfs
 {
@@ -32,11 +33,14 @@ namespace mmfs
 
         uint8_t openMode = F_READ;
 
+        PSRAM *psram;
+
     public:
-        PSRAMFile(const char *name);
+        PSRAMFile(const char *name, PSRAM *psram);
         ~PSRAMFile();
 
-        void write(uint8_t *data, int size);
+        void write(const uint8_t *data, int size);
+        void write(const char *data, int size);
         void print(const char *data);
         void println(const char *data);
 

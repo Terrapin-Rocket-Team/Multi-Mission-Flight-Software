@@ -45,6 +45,4 @@ namespace mmfs
 
 } // namespace mmfs
 
-extern mmfs::PSRAM *psram;
-
 #endif // PSRAM_H

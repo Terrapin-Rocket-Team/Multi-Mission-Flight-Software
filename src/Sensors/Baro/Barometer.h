@@ -24,12 +24,6 @@ namespace mmfs
         virtual void update() override;
         virtual bool begin(bool useBiasCorrection = true) override;
 
-        // Data reporting
-        virtual const int getNumPackedDataPoints() const override;
-        virtual const PackedType *getPackedOrder() const override;
-        virtual const char **getPackedDataLabels() const override;
-        virtual void packData();
-
     protected:
         Barometer();
         double pressure = 0;

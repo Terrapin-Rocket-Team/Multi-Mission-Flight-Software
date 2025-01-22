@@ -25,10 +25,7 @@ namespace mmfs
     class Sensor : public DataReporter
     {
     public:
-        virtual ~Sensor()
-        {
-            delete[] name;
-        };
+        virtual ~Sensor(){};
 
         // ------------------------------- SENSOR TYPE IMPLEMMENTATION ---------------------------------------------
 

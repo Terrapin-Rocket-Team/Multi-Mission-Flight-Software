@@ -4,6 +4,8 @@
 #include <cstdio>
 #include <string.h>
 #include <chrono>
+#include <stdarg.h>
+#include "Wire.h"
 #ifdef WIN32
 #include <windows.h>
 #endif
@@ -25,18 +27,28 @@ void delay(int ms);
 
 void digitalWrite(int pin, int value);
 
-class SerialClass {
-    public:
-        void write(const char *data, int i);
-        void print(const char *data);
-        void println(const char *data);
-        void begin(int baud = 9600);
-        void clearBuffer();
+class SerialClass
+{
+public:
+    void write(const char *data, int i);
+    void print(const char *data);
+    void printf(const char *data, ...);
+    void println(const char *data);
+    void begin(int baud = 9600);
+    void clearBuffer();
 
     char fakeBuffer[1000];
     int cursor = 0;
 };
 
 extern SerialClass Serial;
+
+class CrashReportClass
+{
+public:
+    explicit CrashReportClass() {}
+    operator bool() const { return false; }
+};
+extern CrashReportClass CrashReport;
 
 #endif

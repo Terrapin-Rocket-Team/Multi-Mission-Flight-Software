@@ -1,7 +1,8 @@
 #include "Arduino.h"
 
-const uint64_t start = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
 
+const uint64_t start = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+WireClass Wire;
 uint64_t millis()
 {
     return (std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count() - start);
@@ -51,13 +52,22 @@ void SerialClass::write(const char *data, int i)
 void SerialClass::print(const char *data)
 {
     write(data, strlen(data));
- printf("%s", data); }
+    printf("%s", data);
+}
 
 void SerialClass::println(const char *data)
 {
     print(data);
     print("\n");
- printf("%s\n", data); }
+    printf("%s\n", data);
+}
+void SerialClass::printf(const char *data, ...)
+{
+    va_list args;
+    va_start(args, data);
+    vprintf(data, args);
+    va_end(args);
+}
 
 void SerialClass::begin(int baud) {}
 
@@ -68,3 +78,4 @@ void SerialClass::clearBuffer()
 }
 
 SerialClass Serial;
+CrashReportClass CrashReport;

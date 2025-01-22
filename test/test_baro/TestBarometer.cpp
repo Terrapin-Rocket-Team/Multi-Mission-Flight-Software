@@ -3,7 +3,7 @@
 
 // include other headers you need to test here
 
-#include "../../lib/NativeTestMocks/FakeSensors.h"
+#include "../../lib/NativeTestMocks/UnitTestSensors.h"
 
 // ---
 

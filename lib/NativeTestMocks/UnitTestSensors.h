@@ -7,10 +7,18 @@ using namespace mmfs;
 class FakeBarometer : public Barometer
 {
 public:
-    FakeBarometer() : Barometer() { initialized = true; setName("FakeBarometer"); }
+    FakeBarometer() : Barometer()
+    {
+        initialized = true;
+        setName("FakeBarometer");
+    }
     ~FakeBarometer() {}
 
-    void read() override { pressure = fakeP; temp = fakeT; }
+    void read() override
+    {
+        pressure = fakeP;
+        temp = fakeT;
+    }
     void set(double p, double t)
     {
         pressure = fakeP = p;
@@ -37,7 +45,11 @@ public:
 class FakeGPS : public GPS
 {
 public:
-    FakeGPS() : GPS() { initialized = true; setName("FakeGPS");  }
+    FakeGPS() : GPS()
+    {
+        initialized = true;
+        setName("FakeGPS");
+    }
     ~FakeGPS() {}
 
     void read() override {}
@@ -55,7 +67,11 @@ public:
 
     void setHasFirstFix(bool fix)
     {
-        hasFirstFix = fix;
+        hasFix = fix;
+        if (fix)
+            fixQual = 4;
+        else
+            fixQual = 0;
     }
     void setFixQual(int qual)
     {
@@ -75,12 +91,15 @@ public:
 class FakeIMU : public IMU
 {
 public:
-    FakeIMU() : IMU() { initialized = true; setName("FakeIMU"); }
+    FakeIMU() : IMU()
+    {
+        initialized = true;
+        setName("FakeIMU");
+    }
     ~FakeIMU() {}
 
-    void read() override 
+    void read() override
     {
-
     }
     void set(Vector<3> acc, Vector<3> gyro, Vector<3> mag)
     {
@@ -91,10 +110,10 @@ public:
 
     bool init() override
     {
-        measuredAcc = Vector<3>{0,0,0};
-        measuredGyro = Vector<3>{0,0,0};
-        measuredMag = Vector<3>{0,0,0};
-        orientation = Quaternion{1,0,0,0};
+        measuredAcc = Vector<3>{0, 0, 0};
+        measuredGyro = Vector<3>{0, 0, 0};
+        measuredMag = Vector<3>{0, 0, 0};
+        orientation = Quaternion{1, 0, 0, 0};
         return initialized;
     }
 };

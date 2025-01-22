@@ -7,14 +7,16 @@ using namespace mmfs;
 
 PSRAM::PSRAM()
 {
-    for (int i = 0; i < numClusters; i++)
+    for (unsigned int i = 0; i < numClusters; i++)
         clusterMap[i] = 0;
-    for (int i = 0; i < MAX_PSRAM_FILES; i++)
+    for (unsigned int i = 0; i < MAX_PSRAM_FILES; i++)
         fileMap[i] = 0;
 }
 
 PSRAM::~PSRAM()
 {
+    delete[] clusterMap;
+    delete[] fileMap;
 }
 
 bool PSRAM::init()
@@ -101,7 +103,7 @@ uint8_t PSRAM::getNextFreeCluster(uint8_t currentCluster)
 PSRAMFile *PSRAM::open(const char *name, uint8_t mode, bool create)
 {
     // Find the file in the fileMap
-    for (int i = 0; i < MAX_PSRAM_FILES; i++)
+    for (unsigned int i = 0; i < MAX_PSRAM_FILES; i++)
     {
         if (fileMap[i] != 0)
         {
@@ -114,7 +116,7 @@ PSRAMFile *PSRAM::open(const char *name, uint8_t mode, bool create)
         }
         else if (create && getNextFreeCluster(0) != (uint8_t)-1) // Create a new file if it doesn't exist
         {
-            PSRAMFile *file = new PSRAMFile(name);
+            PSRAMFile *file = new PSRAMFile(name, this);
             file->id = i;
             file->startCluster = getNextFreeCluster(0);
             file->eofCluster = file->startCluster;
@@ -134,7 +136,7 @@ PSRAMFile *PSRAM::open(const char *name, uint8_t mode, bool create)
 
 PSRAMFile *PSRAM::open(int index, uint8_t mode)
 {
-    if (index < 0 || index >= MAX_PSRAM_FILES)
+    if (index < 0 || (unsigned int) index >= MAX_PSRAM_FILES)
         return nullptr;
 
     if (fileMap[index] != 0)

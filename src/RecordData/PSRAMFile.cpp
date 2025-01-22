@@ -4,9 +4,10 @@
 
 using namespace mmfs;
 
-PSRAMFile::PSRAMFile(const char *name)
+PSRAMFile::PSRAMFile(const char *name, PSRAM *psram)
 {
     setName(name);
+    this->psram = psram;
 }
 
 PSRAMFile::~PSRAMFile()
@@ -14,11 +15,18 @@ PSRAMFile::~PSRAMFile()
     delete[] name;
 }
 
-void PSRAMFile::write(uint8_t *data, int size)
+void PSRAMFile::write(const uint8_t *data, int size)
 {
     if (!_open || openMode == F_READ)
         return;
     psram->writeFile(*this, (const char *)data, size);
+}
+
+void PSRAMFile::write(const char *data, int size)
+{
+    if (!_open || openMode == F_READ)
+        return;
+    psram->writeFile(*this, data, size);
 }
 
 void PSRAMFile::print(const char *data)
