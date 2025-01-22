@@ -47,6 +47,7 @@ namespace mmfs
         virtual double getHeading() const { return heading; }
         virtual int getNumMaxSensors() const { return maxNumSensors; }
         virtual Sensor **getSensors() const { return sensors; }
+        virtual int getStage() const { return stage; }
         bool sensorOK(const Sensor *sensor) const;
 
         // State Setters
@@ -88,6 +89,8 @@ namespace mmfs
         Filter *filter;
 
         bool initialized = false;
+
+        int stage = 0;
     };
 }
 #endif // STATE_H
