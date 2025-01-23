@@ -1,4 +1,7 @@
 #include "State.h"
+
+#include <iostream>
+#include <ostream>
 #pragma region Constructor and Destructor
 
 namespace mmfs
@@ -18,7 +21,14 @@ namespace mmfs
 
     State::~State()
     {
-        delete filter;
+        // Filter isn't owned by state and so isn't guaranteed
+        // to be allocated on the heap. Attempting to free here
+        // will cause an invalid free and crash. In general,
+        // it doesn't really make sense to deallocate members
+        // that aren't owned by the class in its destructor since
+        // other parts of the code might still expect them to be valid
+
+        // delete filter;
     }
 
 #pragma endregion
@@ -63,6 +73,8 @@ namespace mmfs
             size += sensors[i]->getPackedDataSize();
 
         initialized = true;
+
+        delete[] logData;
         return good == tryNumSensors;
     }
 

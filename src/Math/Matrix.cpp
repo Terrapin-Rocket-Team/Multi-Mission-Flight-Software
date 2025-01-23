@@ -25,7 +25,10 @@ Matrix::Matrix(int rows, int cols, double *array)
 // Destructor
 Matrix::~Matrix()
 {
-    delete[] this->array;
+    if (this->array != nullptr) {
+        delete[] this->array;
+        this->array = nullptr;
+    }
 }
 
 Matrix::Matrix(const Matrix &other)
