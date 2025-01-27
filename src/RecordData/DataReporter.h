@@ -35,7 +35,7 @@ namespace mmfs
     class DataReporter
     {
     public:
-        static int numReporters; // Only incremented throughout the life of the program
+        static int numReporters; // Only incremented throughout the life of the program, used to assign new unique names
 
         DataReporter(const char *name = nullptr);
         virtual ~DataReporter();
