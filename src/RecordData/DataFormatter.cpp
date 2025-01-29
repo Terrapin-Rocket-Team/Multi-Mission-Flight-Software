@@ -29,7 +29,6 @@ int DataFormatter::getPackedLen(DataReporter **drs, int numDrs)
 void DataFormatter::getCSVHeader(char *dest, int destLen, DataReporter **drs, int numDrs)
 {
     int offset = 0;
-    // sensors next
     for (int i = 0; i < numDrs; i++)
     {
         auto curDataPt = drs[i]->getPackedInfo();

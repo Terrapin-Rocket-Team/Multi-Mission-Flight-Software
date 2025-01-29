@@ -119,6 +119,7 @@ bool Logger::init(DataReporter **dataReporters, int numReporters, uint16_t buffe
     this->groundMode = bufferInterval > 0 ? ALTERNATE_ : bufferInterval == 0 ? SD_
                                                                              : PSRAM_;
     numBufferLines = bufferTime * UPDATE_RATE;
+    bufferIterations = bufferInterval * UPDATE_RATE - 1;
     recordLogData(INFO_, "Logger initialized.");
     return ready = sdReady;
 }
@@ -141,9 +142,9 @@ void Logger::recordFlightData()
         {
             char dest[500];
             DataFormatter::toCSVRow(dest, 500, dataReporters, numReporters);
-            flightDataFile = sd.open(preFlightFileName, FILE_WRITE);
-            flightDataFile.println(dest);
-            flightDataFile.close();
+            preFlightFile = sd.open(preFlightFileName, FILE_WRITE);
+            preFlightFile.println(dest);
+            preFlightFile.close();
         }
         else
         {
@@ -164,9 +165,9 @@ void Logger::recordFlightData()
                 {
                     char dest[500];
                     DataFormatter::toCSVRow(dest, 500, dataReporters, numReporters);
-                    flightDataFile = sd.open(preFlightFileName, FILE_WRITE);
-                    flightDataFile.println(dest);
-                    flightDataFile.close();
+                    preFlightFile = sd.open(preFlightFileName, FILE_WRITE);
+                    preFlightFile.println(dest);
+                    preFlightFile.close();
                 }
             }
         }
@@ -503,7 +504,6 @@ void Logger::setRecordMode(Mode m)
 // Dumps data from PSRAM to the SD card
 void Logger::dumpData()
 {
-
     if (!psramReady || !sdReady)
     {
         return; // Can't dump data if the PSRAM or SD card isn't working
@@ -579,9 +579,11 @@ void Logger::dumpData()
 
 void Logger::writeCsvHeader()
 {
-    if(!sdReady)
+    if(!sdReady){
+        printf("SD card not found. Cannot write CSV header.");
         return;
-    char header[2000]; // 2000 is arbitrary, but should be enough for basically any header
+    }
+    char header[5000]; // 2000 is arbitrary, but should be enough for basically any header
     DataFormatter::getCSVHeader(header, sizeof(header), dataReporters, numReporters);
     flightDataFile = sd.open(flightDataFileName, FILE_WRITE);
     flightDataFile.println(header);
