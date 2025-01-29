@@ -42,7 +42,6 @@ void DefaultEventHandler::handleLogData(const LogData *e)
 
 void DefaultEventHandler::handleInitEvent(const BoolEvent *e)
 {
-
     bb(e->value); // blink buzz on/off based on "ok" or "not ok"
 }
 

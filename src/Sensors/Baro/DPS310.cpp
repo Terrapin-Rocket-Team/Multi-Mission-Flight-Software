@@ -4,14 +4,14 @@
 
 namespace mmfs
 {
-    DPS310::DPS310(const char *name) : dps()
+    DPS310::DPS310(const char *name, TwoWire *bus, uint8_t addr) : bus(bus), addr(addr)
     {
         setName(name);
     }
 
     bool DPS310::init()
     {
-        if (!dps.begin_I2C())
+        if (!dps.begin_I2C(addr, bus))
         {
             printf("Failed to initialize DPS310 sensor\n");
             return initialized = false;

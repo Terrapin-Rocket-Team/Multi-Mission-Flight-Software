@@ -4,6 +4,7 @@
 #include "DataFormatter.h"
 #include "../Events/DefaultEvents.h"
 #include "../Sensors/GPS/GPS.h"
+#include "ArrPrint.h"
 
 using namespace mmfs;
 
@@ -15,6 +16,10 @@ Logger::Logger()
 {
     psram = new PSRAM;
     Serial.begin(115200);
+
+    setLogPrefixFormatting("$time - [$logType] ");
+    setCustomLogPrefix("$time - [CUSTOM] ");
+
     if (sd.begin(SD_CONFIG) || sd.restart())
     {
         sdReady = true;
@@ -48,7 +53,11 @@ Logger::Logger()
         preFlightFileName = new char[len];
         snprintf(preFlightFileName, len, "%s", fileName);
         preFlightFile.close();
+        recordLogData(INFO_, "SD card initialized.");
     }
+    else
+        recordLogData(ERROR_, "SD card not found.");
+
     if (psram->init())
     {
         ramLogFile = psram->open("Log", F_WRITE | F_READ, true);
@@ -56,9 +65,10 @@ Logger::Logger()
         ramBufferFile = psram->open("Buffer", F_WRITE | F_READ, true);
         if (ramLogFile && ramFlightDataFile && ramBufferFile)
             psramReady = true;
+        recordLogData(INFO_, "PSRAM initialized.");
     }
-    setLogPrefixFormatting("$time - [$logType] ");
-    setCustomLogPrefix("$time - [CUSTOM] ");
+    else
+        recordLogData(WARNING_, "PSRAM not found.");
     recordCrashReport();
 
 #ifndef PIO_UNIT_TESTING // This is a workaround because testing this logger is hard when it's writing its own variable data to the log file
@@ -109,7 +119,7 @@ bool Logger::init(DataReporter **dataReporters, int numReporters, uint16_t buffe
     this->groundMode = bufferInterval > 0 ? ALTERNATE_ : bufferInterval == 0 ? SD_
                                                                              : PSRAM_;
     numBufferLines = bufferTime * UPDATE_RATE;
-
+    recordLogData(INFO_, "Logger initialized.");
     return ready = sdReady;
 }
 
@@ -198,11 +208,11 @@ void Logger::recordFlightData()
 void Logger::recordLogData(const char *msg, Dest dest, LogType type)
 {
     int prefixLen = 0;
-    if(type == CUSTOM_)
+    if (type == CUSTOM_)
     {
         prefixLen = customLogPrefixLen;
     }
-    else if(type != NONE_)
+    else if (type != NONE_)
     {
         prefixLen = logPrefixLen;
     }
@@ -266,6 +276,7 @@ void Logger::recordLogData(const char *msg, Dest dest, LogType type)
 }
 void Logger::recordLogData(double timeStamp, LogType type, Dest dest, int size, const char *format, va_list args)
 {
+    timeStamp = timeStamp / 1000.0;
     int len;
     char *logPrefix = nullptr;
     if (type == CUSTOM_)
@@ -344,9 +355,11 @@ void Logger::recordLogData(double timeStamp, LogType type, const char *msg)
 
 void Logger::recordCrashReport()
 {
-    if(CrashReport)
+    if (CrashReport)
     {
-        recordLogData(ERROR_, 500, "CRASH REPORT: %s", CrashReport);
+        ArrPrint p(500);
+        p.print(CrashReport);
+        recordLogData(ERROR_, 500, "CRASH REPORT:\n%s", p.getArr());
     }
 }
 
@@ -566,6 +579,8 @@ void Logger::dumpData()
 
 void Logger::writeCsvHeader()
 {
+    if(!sdReady)
+        return;
     char header[2000]; // 2000 is arbitrary, but should be enough for basically any header
     DataFormatter::getCSVHeader(header, sizeof(header), dataReporters, numReporters);
     flightDataFile = sd.open(flightDataFileName, FILE_WRITE);

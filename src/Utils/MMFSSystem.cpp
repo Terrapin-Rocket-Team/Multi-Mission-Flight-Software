@@ -41,7 +41,6 @@ void MMFSSystem::init()
     delete[] reporters;
 
     // then State
-
     bool state = config->state->init(config->useBiasCorrection);
     getEventManager().invoke(BoolEvent{"STATE_INIT"_i, state});
     ready = true;
@@ -65,7 +64,7 @@ bool MMFSSystem::update(double ms)
         if (config->state)
             config->state->updateState();
         else
-            getLogger().recordLogData(WARNING_, "MMFS Attempted to udpate State without a reference to it! (use MMFSConfig.withStat(&stateVar))");
+            getLogger().recordLogData(WARNING_, "MMFS Attempted to udpate State without a reference to it! (use MMFSConfig.withState(&stateVar))");
         return true;
     }
     return false;

@@ -63,12 +63,11 @@ namespace mmfs
         }
         numSensors = good;
 
-        // Set up the packed data array's size
-        int size = sizeof(float) * 10; // 10 for the state data
-        for (int i = 0; i < numSensors; i++)
-            size += sensors[i]->getPackedDataSize();
-
         initialized = true;
+        if(good == tryNumSensors)
+            getLogger().recordLogData(INFO_, "State Initialized. All sensors OK.");
+        else
+            getLogger().recordLogData(WARNING_, "State Initialized. At least one sensor failed to initialize.");
         return good == tryNumSensors;
     }
 
