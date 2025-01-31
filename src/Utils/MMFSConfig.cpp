@@ -154,7 +154,7 @@ namespace mmfs
     }
     MMFSConfig &MMFSConfig::withPreFlightBuffer(bool useBuffer, unsigned int duration)
     {
-        // TODO (needs modifcation to logger)
+        // TODO (needs modification to logger)
         getLogger().recordLogData(WARNING_, "Pre-flight buffer changes not implemented yet.");
         return *this;
     }
