@@ -12,7 +12,7 @@ MMFSSystem::MMFSSystem(MMFSConfig *config) : config(config)
 }
 void MMFSSystem::init()
 {
-    getLogger().recordLogData(INFO_, TO_USB, "Initializing MMFS.");
+    getLogger().recordLogData(INFO_, "Initializing MMFS.");
     Wire.begin();
     // BlinkBuzz first
     int pins = 0;
