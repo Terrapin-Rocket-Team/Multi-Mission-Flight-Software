@@ -22,7 +22,6 @@ MMFSSystem sys(&config);
 
 void setup()
 {
-    Wire.begin();
     sys.init();
 }
 
