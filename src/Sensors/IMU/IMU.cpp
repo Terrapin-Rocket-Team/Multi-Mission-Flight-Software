@@ -110,7 +110,7 @@ namespace mmfs
     {
         // See the Readme for details.
         // As a programmer this function takes in dt (seconds), measuredGyro, measuredAcc, measuredMag,
-        // and current orientation and propgated the orientation to the next time step.
+        // and current orientation and propagated the orientation to the next time step.
 
         //----------------- GYRO ORIENTATION --------------//
         // 1. Determine rate of change of quaternion
@@ -118,7 +118,7 @@ namespace mmfs
         Quaternion q_w_BI = orientation.conjugate(); // Map from Inertia to body r_B = q_w_BI * r_I * q_w_BI^-1
         Quaternion q_w_BI_dot = w_b * q_w_BI * -.5;
 
-        // 2. Propogate gyro orientation
+        // 2. Propagate gyro orientation
         q_w_BI = q_w_BI + q_w_BI_dot * dt;
         q_w_BI.normalize();
         //-------------------------------------------------//
@@ -149,13 +149,13 @@ namespace mmfs
         double alpha = adaptiveAccelGain(accel_best_filtering_at_static, .1, .2);
         delta_q_acc = delta_q_acc.interpolation(Quaternion{1, 0, 0, 0}, alpha, .9);
 
-        // 6. Combine with gryo orientation to correct roll and pitch
+        // 6. Combine with gyro orientation to correct roll and pitch
         Quaternion q_wa_BI = q_w_BI * delta_q_acc;
         q_wa_BI.normalize();
         //-------------------------------------------------//
 
         //----------------- MAG ORIENTATION --------------//
-        orientation = q_wa_BI.conjugate(); // TODO come back to at some poin
+        orientation = q_wa_BI.conjugate(); // TODO come back to at some point
         return;
         // 7. Get magnetic field vector in interial frame
         Quaternion m_B = Quaternion{0, measuredMag};
@@ -184,7 +184,7 @@ namespace mmfs
         // 9. Interpolation to reduce high freq noise
         delta_q_mag = delta_q_mag.interpolation(Quaternion{1, 0, 0, 0}, mag_best_filtering_at_static, .9);
 
-        // 10. Combine with gryo/acc orientation to correct yaw
+        // 10. Combine with gyro/acc orientation to correct yaw
         Quaternion q_BI = q_wa_BI * delta_q_mag;
         q_BI.normalize();
         //-------------------------------------------------//

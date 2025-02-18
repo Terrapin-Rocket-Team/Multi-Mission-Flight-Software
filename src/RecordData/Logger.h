@@ -10,7 +10,6 @@
 #define LOGGER_H
 
 
-#include "psram.h"
 #include "../Constants.h"
 #include "SdFatBoilerplate.h"
 #include <stdarg.h>
@@ -59,9 +58,8 @@ namespace mmfs
         Logger(); // store 30 seconds, print to SD every 30 seconds
         virtual ~Logger();
 
-        virtual bool init(DataReporter **dataReporters, int numReporters, uint16_t bufferTime = 30, int bufferInterval = 30);
+        virtual bool init(DataReporter **dataReporters, int numReporters);
 
-        virtual bool isPsramReady() const;
         virtual bool isSdCardReady();
         virtual bool isReady() const;
 
@@ -94,17 +92,8 @@ namespace mmfs
 
         void setRecordMode(Mode mode);
 
-        void dumpData();
-
         void writeCsvHeader();
 
-        void setPackData(bool pack)
-        {
-            if (!ready)
-                this->packData = pack;
-            else
-                recordLogData(WARNING_, "Attempted to set PackData value after Logger already initalized!");
-        }
         void setGroundMode(GroundMode mode)
         {
             if (!ready)
@@ -112,24 +101,9 @@ namespace mmfs
             else
                 recordLogData(WARNING_, "Attempted to set GroundMode value after Logger already initalized!");
         }
-        void setBufferTime(int time)
-        {
-            if (!ready)
-                this->bufferTime = time;
-            else
-                recordLogData(WARNING_, "Attempted to set BufferTime value after Logger already initalized!");
-        }
-        void setBufferInterval(int interval)
-        {
-            if (!ready)
-                this->bufferInterval = interval;
-            else
-                recordLogData(WARNING_, "Attempted to set BufferInterval value after Logger already initalized!");
-        }
+
         bool getPackData() const { return packData; }
         GroundMode getGroundMode() const { return groundMode; }
-        int getBufferTime() const { return bufferTime; }
-        int getBufferInterval() const { return bufferInterval; }
 
         void modifyFileDates(const GPS *gps);
 
@@ -141,7 +115,6 @@ namespace mmfs
         FsFile logFile;
         FsFile flightDataFile;
         FsFile preFlightFile;
-        PSRAM *psram;
 
         //
 
@@ -156,20 +129,7 @@ namespace mmfs
         char *flightDataFileName = nullptr; // Name of the flight data file
         char *preFlightFileName = nullptr;  // Name of the pre-flight file
         bool sdReady = false;               // Whether the SD card has been initialized
-        bool psramReady = false;            // Whether the PSRAM has been initialized
         bool ready = false;                 // Whether the logger is ready
-        bool hasFilledBuffer = false;       // Whether the ram buffer has been filled yet
-
-        //
-
-        PSRAMFile *ramFlightDataFile = nullptr; // Pointer to the flight data file
-        PSRAMFile *ramLogFile = nullptr;        // Pointer to the log file
-        PSRAMFile *ramBufferFile = nullptr;     // Pointer to the buffer file
-
-        int numBufferLines = 0;
-        int bufferIterations = 0;
-
-        //
 
         char *logPrefixFormat = nullptr;
         int logPrefixLen = 0;

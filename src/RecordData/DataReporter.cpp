@@ -108,7 +108,6 @@ namespace mmfs
     {
         delete[] packedData;
         packedData = new uint8_t[packedDataSize];
-        printf("test");
     }
 
     uint8_t DataReporter::findSizeOfType(PackedType t, void *str)
