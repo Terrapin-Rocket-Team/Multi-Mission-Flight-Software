@@ -5,13 +5,26 @@
 #ifndef BLUETOOTHRADIO_H
 #define BLUETOOTHRADIO_H
 #include "Radio.h"
+#include <string>
+
+#define INIT_MESSAGE 0x01
+#define DATA_MESSAGE 0x02
+#define RECEIVE_BUFFER_SIZE 512
 
 namespace mmfs {
     class ESP32BluetoothRadio : public Radio {
     private:
         HardwareSerialIMXRT &port;
+        std::string name;
+        uint8_t receiveBuffer[RECEIVE_BUFFER_SIZE];
+        uint16_t receiveBufferSize = 0;
+
     public:
-        ESP32BluetoothRadio(HardwareSerialIMXRT &port);
+        // name here can either be the server name when used with an
+        // ESP32 module configured in server mode or the name of the
+        // server device to connect to when used with an ESP32 module
+        // in client mode.
+        ESP32BluetoothRadio(HardwareSerialIMXRT &port, std::string name);
 
         ~ESP32BluetoothRadio() override;
 

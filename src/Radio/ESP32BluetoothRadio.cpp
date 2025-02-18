@@ -4,36 +4,54 @@
 
 #include "ESP32BluetoothRadio.h"
 
-mmfs::ESP32BluetoothRadio::ESP32BluetoothRadio(HardwareSerialIMXRT &port) : port(port) {
+#include <utility>
 
-}
+mmfs::ESP32BluetoothRadio::ESP32BluetoothRadio(HardwareSerialIMXRT &port, std::string name) : port(port), name(std::move(name)) {}
 
 mmfs::ESP32BluetoothRadio::~ESP32BluetoothRadio() {
 }
 
 bool mmfs::ESP32BluetoothRadio::begin() {
     port.begin(9600);
-    return false;
+
+    if (port.write(INIT_MESSAGE) <= 0) return false;
+    if (port.write(name.c_str()) < name.size()) return false;
+
+    return true;
 }
 
 bool mmfs::ESP32BluetoothRadio::tx(const uint8_t *message, int len) {
+    port.write(DATA_MESSAGE);
     port.write(message, len);
-    return false;
+    return true;
 }
 
 bool mmfs::ESP32BluetoothRadio::rx() {
-    // uint8_t buf[1024];
-    // port.readBytes(buf, 1024);
+    if (port.available() > 0) {
+        uint16_t size = -1;
+        port.readBytes(reinterpret_cast<char*>(&size), sizeof(size));
+
+        if (size > 0) {
+            receiveBufferSize = size;
+            port.readBytes(receiveBuffer, size);
+            return true;
+        }
+    }
+    receiveBufferSize = 0;
     return false;
 }
 
 bool mmfs::ESP32BluetoothRadio::send(Data &data) {
     Message message;
     data.encode(message.buf, message.size);
-    return false;
+    return tx(message.buf, message.size);
 }
 
 bool mmfs::ESP32BluetoothRadio::receive(Data &data) {
+    if (rx()) {
+        data.encode(receiveBuffer, receiveBufferSize);
+        return true;
+    }
     return false;
 }
 
