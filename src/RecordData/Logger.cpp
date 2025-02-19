@@ -3,7 +3,10 @@
 #include "DataFormatter.h"
 #include "../Events/DefaultEvents.h"
 #include "../Sensors/GPS/GPS.h"
+
+#ifdef ARDUINO
 #include "ArrPrint.h"
+#endif
 
 using namespace mmfs;
 
@@ -51,10 +54,7 @@ Logger::Logger()
         preFlightFileName = new char[len];
         snprintf(preFlightFileName, len, "%s", fileName);
         preFlightFile.close();
-        recordLogData(INFO_, "SD card initialized.");
     }
-    else
-        recordLogData(ERROR_, "SD card not found.");
     recordCrashReport();
 
 #ifndef PIO_UNIT_TESTING // This is a workaround because testing this logger is hard when it's writing its own variable data to the log file
@@ -89,7 +89,6 @@ bool Logger::init(DataReporter **dataReporters, int numReporters)
 {
     this->dataReporters = dataReporters;
     this->numReporters = numReporters;
-    recordLogData(INFO_, "Logger initialized.");
     return ready = sdReady;
 }
 
@@ -107,7 +106,7 @@ void Logger::recordFlightData()
 
     char dest[500];
     DataFormatter::toCSVRow(dest, 500, dataReporters, numReporters);
-    const char *filename = mode == GROUND ? flightDataFileName : preFlightFileName;
+    const char *filename = mode == FLIGHT ? flightDataFileName : preFlightFileName;
     preFlightFile = sd.open(filename, FILE_WRITE);
     preFlightFile.println(dest);
     preFlightFile.close();
@@ -162,7 +161,6 @@ void Logger::recordLogData(const char *msg, Dest dest, LogType type)
 }
 void Logger::recordLogData(double timeStamp, LogType type, Dest dest, int size, const char *format, va_list args)
 {
-    timeStamp = timeStamp / 1000.0;
     int len;
     char *logPrefix = nullptr;
     if (type == CUSTOM_)
@@ -241,12 +239,14 @@ void Logger::recordLogData(double timeStamp, LogType type, const char *msg)
 
 void Logger::recordCrashReport()
 {
+#ifdef ARDUINO
     if (CrashReport)
     {
         ArrPrint p(500);
         p.print(CrashReport);
         recordLogData(ERROR_, 500, "CRASH REPORT:\n%s", p.getArr());
     }
+#endif
 }
 
 #pragma region Custom Prefixes

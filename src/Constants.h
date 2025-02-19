@@ -45,9 +45,7 @@ inline unsigned int UPDATE_INTERVAL = 100; // in ms
 
 inline unsigned int MAX_FILE_NAME_SIZE = 64; // in characters (including null terminator)
 inline uintptr_t PSRAM_STARTING_ADDRESS = 0x70000000;
-inline unsigned int PSRAM_CLUSTER_SIZE = 62500; // in bytes (32 KB because we are limited to 256 clusters (TODO))
 inline unsigned int ONE_MB = 1048576; // in bytes
-inline unsigned int MAX_PSRAM_FILES = 5; // in files, defaulted low to save memory
 
 // ------------------------------------------------------
 

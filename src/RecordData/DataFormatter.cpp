@@ -3,35 +3,12 @@
 
 using namespace mmfs;
 
-uint8_t *DataFormatter::packData(uint8_t *dest, DataReporter **drs, int numDrs)
-{
-    int offset = 0;
-    for (int i = 0; i < numDrs; i++)
-    {
-        drs[i]->packData();
-        memcpy((uint8_t *)dest + offset, drs[i]->getPackedData(), drs[i]->getPackedDataSize());
-        offset += drs[i]->getPackedDataSize();
-    }
-
-    return dest + offset;
-}
-
-int DataFormatter::getPackedLen(DataReporter **drs, int numDrs)
-{
-    int len = 0;
-    for (int i = 0; i < numDrs; i++)
-    {
-        len += drs[i]->getPackedDataSize();
-    }
-    return len;
-}
-
 void DataFormatter::getCSVHeader(char *dest, int destLen, DataReporter **drs, int numDrs)
 {
     int offset = 0;
     for (int i = 0; i < numDrs; i++)
     {
-        auto curDataPt = drs[i]->getPackedInfo();
+        auto curDataPt = drs[i]->getDataPoints();
         for (int j = 0; j < drs[i]->getNumColumns() && destLen > 0; j++)
         {
 
@@ -46,41 +23,39 @@ void DataFormatter::getCSVHeader(char *dest, int destLen, DataReporter **drs, in
 
 void DataFormatter::toCSVRow(char *dest, int destLen, DataReporter **drs, int numDrs, void *data)
 {
-    int dataOffset = 0;
-
-    char * cursor = dest;
+    char *cursor = dest;
     for (int i = 0; i < numDrs; i++)
-    {
-        if (data == nullptr)
-            dataOffset = 0;
-        drs[i]->packData();
-        cursor = toCSVSection(cursor, destLen, data == nullptr ? drs[i]->getPackedData() : (void *)data, dataOffset, drs[i]);
-    }
-    cursor[-1] = '\0';
+        cursor = toCSVSection(cursor, destLen, drs[i]);
+    cursor[-1] = '\0'; // Remove the last comma
 }
 
-char *DataFormatter::toCSVSection(char *dest, int &destLen, void *data, int &dataOffset, DataReporter *obj)
+char *DataFormatter::toCSVSection(char *dest, int &destLen, DataReporter *obj)
 {
     int strSize = 0;
-    auto curDataPt = obj->getPackedInfo();
+    auto curDataPt = obj->getDataPoints();
     for (int i = 0; i < obj->getNumColumns() && destLen > 0; i++)
     {
-        const void *dataPtr = (uint8_t *)data + dataOffset;
-        dataOffset += curDataPt->size;
+        const void *dataPtr = curDataPt->data;
         int printedSize = 0;
         switch (curDataPt->type)
         {
         case FLOAT:
-        case DOUBLE:
             printedSize = snprintf(dest + strSize, destLen, "%.3f,", *(float *)dataPtr);
+            break;
+        case DOUBLE:
+            printedSize = snprintf(dest + strSize, destLen, "%.3f,", *(double *)dataPtr);
             break;
         case DOUBLE_HP:
             printedSize = snprintf(dest + strSize, destLen, "%.7f,", *(double *)dataPtr);
             break;
         case INT:
-        case BYTE:
-        case SHORT:
             printedSize = snprintf(dest + strSize, destLen, "%d,", *(int *)dataPtr);
+            break;
+        case BYTE:
+            printedSize = snprintf(dest + strSize, destLen, "%hhd,", *(int8_t *)dataPtr);
+            break;
+        case SHORT:
+            printedSize = snprintf(dest + strSize, destLen, "%hd,", *(int16_t *)dataPtr);
             break;
         case LONG:
             printedSize = snprintf(dest + strSize, destLen, "%ld,", *(long *)dataPtr);

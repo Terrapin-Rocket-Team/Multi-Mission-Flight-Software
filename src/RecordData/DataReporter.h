@@ -9,27 +9,26 @@
 namespace mmfs
 {
 
-    enum PackedType
+    enum DataType
     {
         INT,
         BYTE,
         SHORT,
         FLOAT,
-        DOUBLE, // Compressed to a FLOAT
-        DOUBLE_HP, // Remains a double after compression
+        DOUBLE, // Displays with 3 decimal places
+        DOUBLE_HP, // Displays with 7 decimal places
         STRING,
         BOOL,
         LONG,
         UNKNOWN
     };
 
-    struct PackedInfo
+    struct DataPoint
     {
-        PackedType type = UNKNOWN;   // Type of the data
+        DataType type = UNKNOWN;   // Type of the data
         const char *label = nullptr; // Label for the data
-        PackedInfo *next = nullptr;  // Next packed info
+        DataPoint *next = nullptr;  // Next data point in the list
         void *data = nullptr;        // Pointer to the data the user gave
-        int8_t size = -1;            // Optional for floats/doubles/strings
     };
 
     class DataReporter
@@ -43,34 +42,25 @@ namespace mmfs
         virtual const char *getName() const;
         virtual void setName(const char *n);
 
-        uint8_t *getPackedData();
-        int getPackedDataSize();
         int getNumColumns();
-        PackedInfo *getPackedInfo();
-
-        virtual void packData();
+        DataPoint *getDataPoints();
 
     protected:
-        virtual void initializeDataReporting();
 
-        uint8_t *packedData = nullptr; // Packed data for RecordData
-        int packedDataSize = 0;        // Size of packedData in bytes
         uint8_t numColumns = 0;        // Number of fields in packedData
 
-        PackedInfo *first = nullptr, *last = nullptr;
+        DataPoint *first = nullptr, *last = nullptr;
 
         template <typename T>
-        void insertColumn(uint8_t place, PackedType t, T *variable, const char *label);
+        void insertColumn(uint8_t place, DataType t, T *variable, const char *label);
 
         template <typename T>
-        void addColumn(PackedType t, T *variable, const char *label);
+        void addColumn(DataType t, T *variable, const char *label);
 
         void removeColumn(const char *label);
 
     private:
         char *name = nullptr; // Name of the object
-
-        static uint8_t findSizeOfType(PackedType t, void *str);
     };
 
 } // namespace mmfs

@@ -36,7 +36,7 @@ void MMFSSystem::init()
     for (i = 0; i < config->numReporters; i++)
         reporters[j++] = config->reporters[i];
 
-    bool log = getLogger().init(reporters, j, 0, 0);
+    bool log = getLogger().init(reporters, j);
     getEventManager().invoke(BoolEvent{"LOGGER_INIT"_i, log});
 
     delay(10);

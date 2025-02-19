@@ -35,26 +35,11 @@ void tearDown(void)
 
 void test_constructor(){
     TEST_ASSERT_EQUAL_STRING(obj.getName(), "Reporter #1");
-    TEST_ASSERT_NOT_NULL(obj.getPackedData());
-    TEST_ASSERT_EQUAL_INT(obj.getPackedDataSize(), sizeof(int) + sizeof(float) + sizeof(double));
     TEST_ASSERT_EQUAL_INT(obj.getNumColumns(), 3);
-    TEST_ASSERT_NOT_NULL(obj.getPackedInfo());
-    TEST_ASSERT_EQUAL_STRING(obj.getPackedInfo()->label, "int");
-    TEST_ASSERT_EQUAL_STRING(obj.getPackedInfo()->next->label, "DtoF2");
-    TEST_ASSERT_EQUAL_STRING(obj.getPackedInfo()->next->next->label, "Double");
-}
-
-void test_pack(){
-    obj.packData();
-    TEST_ASSERT_EQUAL(0, *reinterpret_cast<int *>(&obj.getPackedData()[0]));
-    TEST_ASSERT_EQUAL(0, *reinterpret_cast<float *>(&obj.getPackedData()[4]));
-    TEST_ASSERT_EQUAL(0, *reinterpret_cast<double *>(&obj.getPackedData()[8]));
-    obj.var1 = 55;
-    obj.var2= 1000.01;
-    obj.packData();
-    TEST_ASSERT_EQUAL(55, *reinterpret_cast<int *>(&obj.getPackedData()[0]));
-    TEST_ASSERT_EQUAL_FLOAT(1000.01, *reinterpret_cast<float *>(&obj.getPackedData()[4]));
-    TEST_ASSERT_EQUAL_FLOAT(1000.01, *reinterpret_cast<double *>(&obj.getPackedData()[8]));
+    TEST_ASSERT_NOT_NULL(obj.getDataPoints());
+    TEST_ASSERT_EQUAL_STRING(obj.getDataPoints()->label, "int");
+    TEST_ASSERT_EQUAL_STRING(obj.getDataPoints()->next->label, "DtoF2");
+    TEST_ASSERT_EQUAL_STRING(obj.getDataPoints()->next->next->label, "Double");
 }
 
 // ---
@@ -67,7 +52,6 @@ int main(int argc, char **argv)
     // Add your tests here
     // RUN_TEST(test_function_name); // no parentheses after function name
     RUN_TEST(test_constructor);
-    RUN_TEST(test_pack);
     UNITY_END();
 }
 // ---

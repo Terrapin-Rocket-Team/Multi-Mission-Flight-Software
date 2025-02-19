@@ -5,7 +5,7 @@ namespace mmfs
     class testDR : public DataReporter
     {
     public:
-        PackedInfo *first = nullptr, *last = nullptr;
+        DataPoint *first = nullptr, *last = nullptr;
         int packedDataSize = 0;
         uint8_t numColumns = 0;
         uint8_t *packedData = nullptr;

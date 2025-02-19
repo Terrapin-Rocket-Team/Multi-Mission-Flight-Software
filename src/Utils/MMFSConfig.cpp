@@ -62,24 +62,6 @@ namespace mmfs
         this->useBiasCorrection = useBiasCorrection;
         return *this;
     }
-    MMFSConfig &MMFSConfig::withMaxPSRAMFiles(unsigned int maxPSRAMFiles)
-    {
-        if (MAX_PSRAM_FILES == maxPSRAMFiles)
-            return *this;
-        if (maxPSRAMFiles > 255)
-            maxPSRAMFiles = 255;
-        getLogger().recordLogData(LOG_, "Max PSRAM files modified from %d to %d.", MAX_PSRAM_FILES, maxPSRAMFiles);
-        MAX_PSRAM_FILES = maxPSRAMFiles;
-        return *this;
-    }
-    MMFSConfig &MMFSConfig::withPSRAMClusterSize(unsigned int psramClusterSize)
-    {
-        if (PSRAM_CLUSTER_SIZE == psramClusterSize)
-            return *this;
-        getLogger().recordLogData(LOG_, "PSRAM cluster size modified from %d to %d.", PSRAM_CLUSTER_SIZE, psramClusterSize);
-        PSRAM_CLUSTER_SIZE = psramClusterSize;
-        return *this;
-    }
     MMFSConfig &MMFSConfig::withBuzzerPin(unsigned int buzzerPin)
     {
         if ((unsigned int) BUZZER == buzzerPin)
@@ -125,37 +107,6 @@ namespace mmfs
             return *this;
         getLogger().recordLogData(LOG_, "BlinkBuzz async modified from %s to %s.", bbAsync ? "true" : "false", bbAsync ? "true" : "false");
         this->bbAsync = bbAsync;
-        return *this;
-    }
-    MMFSConfig &MMFSConfig::withCompressedFlightData(bool compressedData)
-    {
-        if (getLogger().getPackData() == compressedData)
-            return *this;
-        getLogger().recordLogData(LOG_, "Compress flight data modified from %s to %s.", compressedData ? "true" : "false", compressedData ? "true" : "false");
-        getLogger().setPackData(compressedData);
-        return *this;
-    }
-    MMFSConfig &MMFSConfig::withUsePSRAM(bool usePSRAM)
-    {
-        // if (this->usePSRAM == usePSRAM)
-        //     return *this;
-        // getLogger().recordLogData(LOG_, "Use PSRAM modified from %s to %s.", usePSRAM ? "true" : "false", usePSRAM ? "true" : "false");
-        // this->usePSRAM = usePSRAM;
-        // return *this;
-        // TODO: Implement this in Logger
-        getLogger().recordLogData(WARNING_, "PSRAM usage changes not implemented yet.");
-        return *this;
-    }
-    MMFSConfig &MMFSConfig::withReducedPreFlightDataRate(bool useReducedRate, unsigned int secondsBetweenRecords)
-    {
-        // TODO (needs modifications to logger)
-        getLogger().recordLogData(WARNING_, "Reduced pre-flight data rate changes not implemented yet.");
-        return *this;
-    }
-    MMFSConfig &MMFSConfig::withPreFlightBuffer(bool useBuffer, unsigned int duration)
-    {
-        // TODO (needs modification to logger)
-        getLogger().recordLogData(WARNING_, "Pre-flight buffer changes not implemented yet.");
         return *this;
     }
     MMFSConfig &MMFSConfig::withOtherDataReporters(DataReporter **others)
