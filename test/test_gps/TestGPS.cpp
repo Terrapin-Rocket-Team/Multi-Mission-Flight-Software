@@ -75,7 +75,7 @@ void test_gps_set()
 void test_gps_first_fix()
 {
     gps.begin(false);
-    TEST_ASSERT_FALSE(gps.getHasFirstFix());
+    TEST_ASSERT_FALSE(gps.getHasFix());
     TEST_ASSERT_EQUAL(0, gps.getFixQual());
     TEST_ASSERT_EQUAL_FLOAT(0, gps.getDisplacement().x());
     TEST_ASSERT_EQUAL_FLOAT(0, gps.getDisplacement().y());
@@ -91,7 +91,7 @@ void test_gps_first_fix()
     gps.set(lat1, lon1, 0);
     gps.update();
 
-    TEST_ASSERT_FALSE(gps.getHasFirstFix());
+    TEST_ASSERT_FALSE(gps.getHasFix());
     TEST_ASSERT_EQUAL(0, gps.getFixQual());
     TEST_ASSERT_EQUAL_FLOAT(0, gps.getDisplacement().x());
     TEST_ASSERT_EQUAL_FLOAT(0, gps.getDisplacement().y());
@@ -107,7 +107,7 @@ void test_gps_first_fix()
     gps.setFixQual(4);
     gps.update();
 
-    TEST_ASSERT_TRUE(gps.getHasFirstFix());
+    TEST_ASSERT_TRUE(gps.getHasFix());
     TEST_ASSERT_EQUAL(4, gps.getFixQual());
     TEST_ASSERT_EQUAL_FLOAT(0, gps.getDisplacement().x());
     TEST_ASSERT_EQUAL_FLOAT(0, gps.getDisplacement().y());
@@ -122,7 +122,7 @@ void test_gps_first_fix()
     gps.set(lat2, lon2, 1000);
     gps.update();
 
-    TEST_ASSERT_TRUE(gps.getHasFirstFix());
+    TEST_ASSERT_TRUE(gps.getHasFix());
     TEST_ASSERT_EQUAL(4, gps.getFixQual());
     double distance = sqrt(gps.getDisplacement().x() * gps.getDisplacement().x() + gps.getDisplacement().y() * gps.getDisplacement().y());
     TEST_ASSERT_FLOAT_WITHIN(12819.0 / 1000.0 * 5.0, 12819, distance);

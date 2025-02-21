@@ -17,19 +17,11 @@ namespace mmfs
     class State : public DataReporter
     {
     public:
-        // make numSensors the number of sensors you expect to have. This is used to determine how many sensors to expect in the sensorOrder array.
-        // Fill sensorOrder with one of each kind of sensor you expect to have. This is used to determine which sensor is which in the sensors[] array.
-        // example if you have more than one of the same sensor type:
-        // SensorType sensorOrder[numSensors] = {BAROMETER_, BAROMETER_, GPS_, IMU_}; or
-        // SensorType sensorOrder[numSensors] = {BAROMETER_, GPS_, IMU_, BAROMETER_}; It doesn't what order they're in, as long as they're in the array.
-        // useKalmanFilter: whether or not to use the Kalman Filter. If false, the state will use the raw sensor data.
-        // stateRecordsOwnData: whether or not the state should call recordFlightData() itself. If false, other funcitons must call recordFlightData() to record the state's data.
         State(Sensor **sensors, int numSensors, Filter *filter);
         virtual ~State();
 
-        // to be called after all applicable sensors have been added.
         // Returns false if any sensor failed to init. Check data log for failed sensor. Disables sensor if failed.
-        // useBiasCorrection: whether or not to use bias correction. If true, the override class for State must implement markLiftoff() to disable bias correction.
+        // useBiasCorrection: whether or not to use bias correction. If true, the override class must call sensor.useBiasCorrection(false) upon liftoff to disable bias correction.
         virtual bool init(bool useBiasCorrection = false);
 
         // Updates the state with the most recent sensor data. CurrentTime is the time in seconds since the uC was turned on. If not provided, the state will use the current time.
@@ -45,30 +37,45 @@ namespace mmfs
         virtual Quaternion getOrientation() const { return orientation; }
         virtual Vector<2> getCoordinates() const { return coordinates; } // lat long in decimal degrees
         virtual double getHeading() const { return heading; }
-        virtual int getNumMaxSensors() const { return maxNumSensors; }
+        virtual int getNumMaxSensors() const { return maxNumSensors; } // how many sensors were passed in the constructor
         virtual Sensor **getSensors() const { return sensors; }
         virtual int getStage() const { return stage; }
+
         bool sensorOK(const Sensor *sensor) const;
 
-        // State Setters
-        virtual void setUseFilter(bool useFilter) { this->useFilter = useFilter; }
 
-        // DataReporter functions
-        virtual const char *getName() const override { return "State"; }
-
-        //MUST BE IMPLEMENTED IN OVERRIDE CLASS
-        virtual void determineStage() = 0;
 
     protected:
-
         double currentTime; // in s since uC turned on
-        int lastTime;
+        double lastTime;
 
-        int maxNumSensors;
+        int maxNumSensors; // how many sensors were passed in the constructor
         Sensor **sensors;
         int numSensors; // how many sensors are actually enabled
 
+        // ----
+
+        // Update functions:
+        /* update(){
+            updateSensors();
+            updateVariables(){
+                if (filter)
+                    updateKF();
+                else
+                    updateWithoutKF();
+                // other variables
+            }
+            determineStage();
+        }
+        */
         virtual void updateSensors();
+        virtual void updateVariables();
+        virtual void updateKF();
+        virtual void updateWithoutKF(); // if no KF is set
+
+        virtual void determineStage() = 0; // MUST BE IMPLEMENTED IN OVERRIDE CLASS
+
+        // ----
 
         // Helper functions
 
@@ -85,7 +92,6 @@ namespace mmfs
         double baroOldAltitude; // in m
 
         // Kalman Filter settings
-        bool useFilter = true;
         Filter *filter;
 
         bool initialized = false;

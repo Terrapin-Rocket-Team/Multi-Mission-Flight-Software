@@ -18,7 +18,7 @@ namespace mmfs
         virtual Vector<3> getDisplacement() const;
         virtual int getFixQual() const;
         virtual double getHeading() const;
-        virtual bool getHasFirstFix() const;
+        virtual bool getHasFix() const;
         virtual void update() override;
         virtual bool begin(bool useBiasCorrection = true) override;
 

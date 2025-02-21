@@ -3,9 +3,9 @@
 
 namespace mmfs
 {
-
     State::State(Sensor **sensors, int numSensors, Filter *filter)
     {
+        setName("State");
         baroOldAltitude = 0;
         baroVelocity = 0;
         lastTime = 0;
@@ -13,7 +13,6 @@ namespace mmfs
         this->maxNumSensors = numSensors;
         this->sensors = sensors;
         this->filter = filter;
-        useFilter = filter != nullptr;
 
         addColumn(DOUBLE, &currentTime, "Time (s)");
         addColumn(DOUBLE, &position.x(), "PX (m)");
@@ -29,7 +28,7 @@ namespace mmfs
 
     State::~State()
     {
-        delete filter;
+    
     }
 
 #pragma endregion
@@ -57,18 +56,31 @@ namespace mmfs
                 getLogger().recordLogData(ERROR_, "A sensor in the array was null!");
             }
         }
-        if (useFilter)
-        {
+        if (filter)
             filter->initialize();
-        }
+
         numSensors = good;
 
         initialized = true;
-        if(good == tryNumSensors)
+        if (good == tryNumSensors)
             getLogger().recordLogData(INFO_, "State Initialized. All sensors OK.");
         else
             getLogger().recordLogData(WARNING_, "State Initialized. At least one sensor failed to initialize.");
         return good == tryNumSensors;
+    }
+
+#pragma region Update Functions
+
+    void State::updateState(double newTime)
+    {
+        lastTime = currentTime;
+        if (newTime != -1)
+            currentTime = newTime;
+        else
+            currentTime = millis() / 1000.0;
+        updateSensors();
+        updateVariables();
+        determineStage();
     }
 
     void State::updateSensors()
@@ -82,79 +94,20 @@ namespace mmfs
         }
     }
 
-    void State::updateState(double newTime)
+    void State::updateVariables()
     {
-        lastTime = currentTime;
-        if (newTime != -1)
-            currentTime = newTime;
-        else
-            currentTime = millis() / 1000.0;
-
-        updateSensors();
         GPS *gps = reinterpret_cast<GPS *>(getSensor(GPS_));
         IMU *imu = reinterpret_cast<IMU *>(getSensor(IMU_));
         Barometer *baro = reinterpret_cast<Barometer *>(getSensor(BAROMETER_));
 
-        if (useFilter && sensorOK(imu) && sensorOK(baro)) // we only really care about Z filtering.
-        {
-            double *measurements = new double[filter->getMeasurementSize()];
-            double *inputs = new double[filter->getInputSize()];
-            double *stateVars = new double[filter->getStateSize()];
-
-            // gps x y barometer z
-            measurements[0] = sensorOK(gps) ? gps->getDisplacement().x() : 0;
-            measurements[1] = sensorOK(gps) ? gps->getDisplacement().y() : 0;
-            measurements[2] = baro->getAGLAltM();
-
-            // imu x y z
-            inputs[0] = acceleration.x() = imu->getAccelerationGlobal().x();
-            inputs[1] = acceleration.y() = imu->getAccelerationGlobal().y();
-            inputs[2] = acceleration.z() = imu->getAccelerationGlobal().z() - 9.81;
-
-            stateVars[0] = position.x();
-            stateVars[1] = position.y();
-            stateVars[2] = position.z();
-            stateVars[3] = velocity.x();
-            stateVars[4] = velocity.y();
-            stateVars[5] = velocity.z();
-
-            filter->iterate(currentTime - lastTime, stateVars, measurements, inputs);
-            // pos x, y, z, vel x, y, z
-            position.x() = stateVars[0];
-            position.y() = stateVars[1];
-            position.z() = stateVars[2];
-            velocity.x() = stateVars[3];
-            velocity.y() = stateVars[4];
-            velocity.z() = stateVars[5];
-
-            if (sensorOK(baro))
-            {
-                baroVelocity = (baro->getAGLAltM() - baroOldAltitude) / (currentTime - lastTime);
-                baroOldAltitude = baro->getAGLAltM();
-            }
-
-            delete[] stateVars;
-        }
+        if (filter)
+            updateKF();
         else
-        {
-            if (sensorOK(gps))
-            {
-                position = gps->getDisplacement();
-            }
-            if (sensorOK(baro))
-            {
-                position.z() = baro->getAGLAltM();
-                baroVelocity = velocity.z() = (baro->getAGLAltM() - baroOldAltitude) / (currentTime - lastTime);
-                baroOldAltitude = position.z() = baro->getAGLAltM();
-            }
-            if (sensorOK(imu))
-            {
-                acceleration = imu->getAccelerationGlobal();
-            }
-        }
+            updateWithoutKF();
+
         if (sensorOK(gps))
         {
-            coordinates = gps->getHasFirstFix() ? Vector<2>(gps->getPos().x(), gps->getPos().y()) : Vector<2>(0, 0);
+            coordinates = gps->getHasFix() ? Vector<2>(gps->getPos().x(), gps->getPos().y()) : Vector<2>(0, 0);
             heading = gps->getHeading();
         }
         else
@@ -164,9 +117,76 @@ namespace mmfs
         }
 
         orientation = sensorOK(imu) ? imu->getOrientation() : Quaternion(1, 0, 0, 0);
-
-        determineStage();
     }
+
+    void State::updateWithoutKF()
+    {
+
+        GPS *gps = reinterpret_cast<GPS *>(getSensor(GPS_));
+        IMU *imu = reinterpret_cast<IMU *>(getSensor(IMU_));
+        Barometer *baro = reinterpret_cast<Barometer *>(getSensor(BAROMETER_));
+
+        if (sensorOK(gps))
+            position = gps->getDisplacement();
+
+        if (sensorOK(baro))
+        {
+            position.z() = baro->getAGLAltM();
+            baroVelocity = velocity.z() = (baro->getAGLAltM() - baroOldAltitude) / (currentTime - lastTime);
+            baroOldAltitude = position.z() = baro->getAGLAltM();
+        }
+
+        if (sensorOK(imu))
+            acceleration = imu->getAccelerationGlobal();
+    }
+
+    void State::updateKF()
+    {
+
+        GPS *gps = reinterpret_cast<GPS *>(getSensor(GPS_));
+        IMU *imu = reinterpret_cast<IMU *>(getSensor(IMU_));
+        Barometer *baro = reinterpret_cast<Barometer *>(getSensor(BAROMETER_));
+
+        double *measurements = new double[filter->getMeasurementSize()];
+        double *inputs = new double[filter->getInputSize()];
+        double *stateVars = new double[filter->getStateSize()];
+
+        // gps x y barometer z
+        measurements[0] = sensorOK(gps) ? gps->getDisplacement().x() : 0;
+        measurements[1] = sensorOK(gps) ? gps->getDisplacement().y() : 0;
+        measurements[2] = baro->getAGLAltM();
+
+        // imu x y z
+        inputs[0] = acceleration.x() = imu->getAccelerationGlobal().x();
+        inputs[1] = acceleration.y() = imu->getAccelerationGlobal().y();
+        inputs[2] = acceleration.z() = imu->getAccelerationGlobal().z() - 9.81;
+
+        stateVars[0] = position.x();
+        stateVars[1] = position.y();
+        stateVars[2] = position.z();
+        stateVars[3] = velocity.x();
+        stateVars[4] = velocity.y();
+        stateVars[5] = velocity.z();
+
+        filter->iterate(currentTime - lastTime, stateVars, measurements, inputs);
+        // pos x, y, z, vel x, y, z
+        position.x() = stateVars[0];
+        position.y() = stateVars[1];
+        position.z() = stateVars[2];
+        velocity.x() = stateVars[3];
+        velocity.y() = stateVars[4];
+        velocity.z() = stateVars[5];
+
+        if (sensorOK(baro))
+        {
+            baroVelocity = (baro->getAGLAltM() - baroOldAltitude) / (currentTime - lastTime);
+            baroOldAltitude = baro->getAGLAltM();
+        }
+
+        delete[] stateVars;
+    }
+
+#pragma endregion Update Functions
 
     Sensor *State::getSensor(SensorType type, int sensorNum) const
     {

@@ -31,7 +31,7 @@ namespace mmfs
 
     Vector<3> GPS::getOrigin() const { return origin; }
 
-    bool GPS::getHasFirstFix() const { return hasFix; }
+    bool GPS::getHasFix() const { return hasFix; }
 
     int GPS::getFixQual() const { return fixQual; }
 
