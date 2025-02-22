@@ -26,12 +26,13 @@
 #ifndef QUATERNION_H
 #define QUATERNION_H
 
-#include <math.h>
-#include <stdint.h>
-#include <stdlib.h>
-#include <string.h>
+//#include <math.h>
+//#include <stdint.h>
+//#include <stdlib.h>
+//#include <string.h>
 
 #include "Vector.h"
+#include "Matrix.h"
 
 namespace mmfs {
 
@@ -120,22 +121,22 @@ public:
     axis.z() = _z / sqw;
   }
 
-  // This is supposed to use imu::Matrix, but we arent using that, so to avoid confusion, it's been commented out.
-  // Matrix<3> toMatrix() const {
-  //   Matrix<3> ret;
-  //   ret.cell(0, 0) = 1 - 2 * _y * _y - 2 * _z * _z;
-  //   ret.cell(0, 1) = 2 * _x * _y - 2 * _w * _z;
-  //   ret.cell(0, 2) = 2 * _x * _z + 2 * _w * _y;
+  Matrix toMatrix() const {
+    double dcm00 = 1 - 2 * _y * _y - 2 * _z * _z;
+    double dcm01 = 2 * _x * _y - 2 * _w * _z;
+    double dcm02 = 2 * _x * _z + 2 * _w * _y;
+    double dcm10 = 2 * _x * _y + 2 * _w * _z;
+    double dcm11 = 1 - 2 * _x * _x - 2 * _z * _z;
+    double dcm12 = 2 * _y * _z - 2 * _w * _x;
+    double dcm20 = 2 * _x * _z - 2 * _w * _y;
+    double dcm21 = 2 * _y * _z + 2 * _w * _x;
+    double dcm22 = 1 - 2 * _x * _x - 2 * _y * _y;
 
-  //   ret.cell(1, 0) = 2 * _x * _y + 2 * _w * _z;
-  //   ret.cell(1, 1) = 1 - 2 * _x * _x - 2 * _z * _z;
-  //   ret.cell(1, 2) = 2 * _y * _z - 2 * _w * _x;
-
-  //   ret.cell(2, 0) = 2 * _x * _z - 2 * _w * _y;
-  //   ret.cell(2, 1) = 2 * _y * _z + 2 * _w * _x;
-  //   ret.cell(2, 2) = 1 - 2 * _x * _x - 2 * _y * _y;
-  //   return ret;
-  // }
+    double* dcmArray = new double[9]{dcm00, dcm10, dcm20, dcm01, dcm11, dcm21, dcm02, dcm12, dcm22};
+    Matrix dcm(3, 3, dcmArray);
+    delete[] dcmArray; // Clean up memory after Matrix copies data
+    return dcm;
+  }
 
   // Returns euler angles that represent the quaternion.  Angles are
   // returned in rotation order and right-handed about the specified
