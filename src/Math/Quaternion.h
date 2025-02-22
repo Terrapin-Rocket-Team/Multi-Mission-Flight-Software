@@ -34,6 +34,7 @@
 #include "Vector.h"
 #include "Matrix.h"
 #include "../Error/ErrorHandler.h"
+#include <cstdio>
 
 namespace mmfs {
 

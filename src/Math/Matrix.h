@@ -1,7 +1,9 @@
-#include <cmath>
-#include <algorithm>
 #ifndef MATRIX_H
 #define MATRIX_H
+
+#include <cmath>
+#include <algorithm>
+#include <cstdio>
 
 namespace mmfs
 {
