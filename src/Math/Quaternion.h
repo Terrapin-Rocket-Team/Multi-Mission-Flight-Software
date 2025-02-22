@@ -77,38 +77,41 @@ public:
   }
 
 
+  void fromMatrix(Matrix &m) {
+    // Ensure that the matrix is 3x3
+    if (m.getRows() != 3 || m.getCols() != 3) {
+      throw std::invalid_argument("Matrix must be 3x3");
+    }
 
-// This is supposed to use imu::Matrix, but we arent using that, so to avoid confusion, it's been commented out.
-  // void fromMatrix(const Matrix<3> &m) {
-  //   double tr = m.trace();
+    double tr = m.trace();
 
-  //   double S;
-  //   if (tr > 0) {
-  //     S = sqrt(tr + 1.0) * 2;
-  //     _w = 0.25 * S;
-  //     _x = (m(2, 1) - m(1, 2)) / S;
-  //     _y = (m(0, 2) - m(2, 0)) / S;
-  //     _z = (m(1, 0) - m(0, 1)) / S;
-  //   } else if (m(0, 0) > m(1, 1) && m(0, 0) > m(2, 2)) {
-  //     S = sqrt(1.0 + m(0, 0) - m(1, 1) - m(2, 2)) * 2;
-  //     _w = (m(2, 1) - m(1, 2)) / S;
-  //     _x = 0.25 * S;
-  //     _y = (m(0, 1) + m(1, 0)) / S;
-  //     _z = (m(0, 2) + m(2, 0)) / S;
-  //   } else if (m(1, 1) > m(2, 2)) {
-  //     S = sqrt(1.0 + m(1, 1) - m(0, 0) - m(2, 2)) * 2;
-  //     _w = (m(0, 2) - m(2, 0)) / S;
-  //     _x = (m(0, 1) + m(1, 0)) / S;
-  //     _y = 0.25 * S;
-  //     _z = (m(1, 2) + m(2, 1)) / S;
-  //   } else {
-  //     S = sqrt(1.0 + m(2, 2) - m(0, 0) - m(1, 1)) * 2;
-  //     _w = (m(1, 0) - m(0, 1)) / S;
-  //     _x = (m(0, 2) + m(2, 0)) / S;
-  //     _y = (m(1, 2) + m(2, 1)) / S;
-  //     _z = 0.25 * S;
-  //   }
-  // }
+    double S;
+    if (tr > 0) {
+      S = sqrt(tr + 1.0) * 2;
+      _w = 0.25 * S;
+      _x = (m.get(2, 1) - m.get(1, 2)) / S;
+      _y = (m.get(0, 2) - m.get(2, 0)) / S;
+      _z = (m.get(1, 0) - m.get(0, 1)) / S;
+    } else if (m.get(0, 0) > m.get(1, 1) && m.get(0, 0) > m.get(2, 2)) {
+      S = sqrt(1.0 + m.get(0, 0) - m.get(1, 1) - m.get(2, 2)) * 2;
+      _w = (m.get(2, 1) - m.get(1, 2)) / S;
+      _x = 0.25 * S;
+      _y = (m.get(0, 1) + m.get(1, 0)) / S;
+      _z = (m.get(0, 2) + m.get(2, 0)) / S;
+    } else if (m.get(1, 1) > m.get(2, 2)) {
+        S = sqrt(1.0 + m.get(1, 1) - m.get(0, 0) - m.get(2, 2)) * 2;
+        _w = (m.get(0, 2) - m.get(2, 0)) / S;
+        _x = (m.get(0, 1) + m.get(1, 0)) / S;
+        _y = 0.25 * S;
+        _z = (m.get(1, 2) + m.get(2, 1)) / S;
+    } else {
+        S = sqrt(1.0 + m.get(2, 2) - m.get(0, 0) - m.get(1, 1)) * 2;
+        _w = (m.get(1, 0) - m.get(0, 1)) / S;
+        _x = (m.get(0, 2) + m.get(2, 0)) / S;
+        _y = (m.get(1, 2) + m.get(2, 1)) / S;
+        _z = 0.25 * S;
+    }
+  }
 
   void toAxisAngle(Vector<3> &axis, double &angle) const {
     double sqw = sqrt(1 - _w * _w);

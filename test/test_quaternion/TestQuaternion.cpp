@@ -88,6 +88,34 @@ void test_quat_to_matrix(void)
     }
 }
 
+void test_matrix_to_quat(void)
+{
+    // Define a 3x3 rotation matrix representing a 45-degree (π/4 rad) rotation about the Z-axis
+    double angle = M_PI / 4;  // 45 degrees
+    double half_angle = angle / 2;
+    mmfs::Matrix rotation_matrix(3, 3, new double[9]{
+        cos(angle), -sin(angle), 0.0,
+        sin(angle), cos(angle), 0.0,
+        0.0, 0.0, 1.0
+    });
+
+    // Create a quaternion and use the fromMatrix function to convert the rotation matrix to a quaternion
+    mmfs::Quaternion q;
+    q.fromMatrix(rotation_matrix);
+
+    // Expected quaternion for a 45-degree rotation about the Z-axis
+    double expected_w = cos(half_angle);
+    double expected_x = 0.0;
+    double expected_y = 0.0;
+    double expected_z = sin(half_angle);
+
+    // Compare the quaternion components
+    TEST_ASSERT_EQUAL_FLOAT(expected_w, q.w());
+    TEST_ASSERT_EQUAL_FLOAT(expected_x, q.x());
+    TEST_ASSERT_EQUAL_FLOAT(expected_y, q.y());
+    TEST_ASSERT_EQUAL_FLOAT(expected_z, q.z());
+}
+
 // Main function
 int main(int argc, char **argv)
 {
@@ -97,6 +125,7 @@ int main(int argc, char **argv)
     RUN_TEST(test_interpolation_lerp);
     RUN_TEST(test_interpolation_slerp);
     RUN_TEST(test_quat_to_matrix);
+    RUN_TEST(test_matrix_to_quat);
 
     UNITY_END();
 
