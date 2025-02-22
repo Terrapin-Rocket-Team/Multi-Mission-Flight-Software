@@ -29,6 +29,7 @@ namespace mmfs
         Matrix transpose();
         Matrix inv();
         Matrix inverse();
+        double trace();
         static Matrix ident(int n);
         void disp();
 

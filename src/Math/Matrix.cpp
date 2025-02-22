@@ -327,6 +327,20 @@ Matrix Matrix::inverse()
     return Matrix(n, n, inverse); // returns inverted matrix
 }
 
+// Get the trace of a square matrix
+double Matrix::trace()
+{
+    if (rows != cols) {
+        //throw std::invalid_argument("Matrix must be square to calculate trace.");
+    }
+
+    double traceValue = 0;
+    for (int i = 0; i < rows; ++i) {
+        traceValue += array[i + i * rows];  // Sum the diagonal elements
+    }
+    return traceValue;
+}
+
 // Get identity matrix of size [n n]
 Matrix Matrix::ident(int n)
 {

@@ -134,7 +134,6 @@ public:
 
     double* dcmArray = new double[9]{dcm00, dcm10, dcm20, dcm01, dcm11, dcm21, dcm02, dcm12, dcm22};
     Matrix dcm(3, 3, dcmArray);
-    //delete[] dcmArray; // Clean up memory after Matrix copies data
     return dcm;
   }
 
