@@ -33,6 +33,7 @@
 
 #include "Vector.h"
 #include "Matrix.h"
+#include "../Error/ErrorHandler.h"
 
 namespace mmfs {
 
