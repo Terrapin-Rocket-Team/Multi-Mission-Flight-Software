@@ -1,4 +1,5 @@
 #include "Matrix.h"
+#include "../Error/ErrorHandler.h"
 
 namespace mmfs {
 
@@ -25,7 +26,10 @@ Matrix::Matrix(int rows, int cols, double *array)
 // Destructor
 Matrix::~Matrix()
 {
-    delete[] this->array;
+    if (this->array != nullptr) {
+        delete[] this->array;
+        this->array = nullptr;
+    }
 }
 
 Matrix::Matrix(const Matrix &other)
@@ -91,7 +95,8 @@ Matrix Matrix::multiply(Matrix other)
 {
     if (this->cols != other.rows)
     {
-        //std::cerr << "Multiplication error: Dimensions do not match!" << std::endl;
+        getLogger().recordLogData(ERROR_, "Tried to multiple matrix with incorrect dimensions. This matrix cols: %d and other matrix rows: %d. Returning first Matrix.", cols, other.getRows());
+        return Matrix(this->rows, this->cols, this->array);
     }
 
     double *result = new double[this->rows * other.cols];
@@ -139,7 +144,8 @@ Matrix Matrix::add(Matrix other)
 {
     if (this->rows != other.rows || this->cols != other.cols)
     {
-        //std::cerr << "Addition error: Dimensions do not match!" << std::endl;
+        getLogger().recordLogData(ERROR_, "Addition error: Dimensions do not match! Matrix 1: row: %d, column: %d. Matrix 2: row: %d, column %d. Returning input Matrix.", rows, cols, other.getRows(), other.getCols());
+        return Matrix(this->rows, this->cols, this->array);
     }
 
     double *result = new double[this->rows * this->cols];
@@ -165,7 +171,8 @@ Matrix Matrix::subtract(Matrix other)
 {
     if (this->rows != other.rows || this->cols != other.cols)
     {
-        //std::cerr << "Subtraction error: Dimensions do not match!" << std::endl;
+        getLogger().recordLogData(ERROR_, "Subtraction error: Dimensions do not match! Matrix 1: row: %d, column: %d. Matrix 2: row: %d, column %d. Returning input Matrix.", rows, cols, other.getRows(), other.getCols()); 
+        return Matrix(this->rows, this->cols, this->array);
     }
 
     double *result = new double[this->rows * this->cols];
@@ -225,8 +232,7 @@ void Matrix::luDecompositionWithPartialPivoting(double *A, int *pivot, int n)
 
         if (max == 0.0)
         {
-            //std::cerr << "Inversion error: Matrix is singular!" << std::endl;
-            return;
+            getLogger().recordLogData(ERROR_, "Inversion error: Matrix is singular!");
         }
 
         // Swap rows in A matrix
@@ -285,7 +291,9 @@ Matrix Matrix::inverse()
 {
     if (this->rows != this->cols)
     {
-        //std::cerr << "Inversion error: Dimensions do not match!" << std::endl;
+        getLogger().recordLogData(ERROR_, "Tried to invert matrix with dimensions row: %d, column: %d. Returning input Matrix.", rows, cols);
+        return Matrix(rows, cols, array);
+
     }
 
     int n = this->rows;            // at this point, n = rows = cols
@@ -322,6 +330,21 @@ Matrix Matrix::inverse()
     delete[] temp;
 
     return Matrix(n, n, inverse); // returns inverted matrix
+}
+
+// Get the trace of a square matrix
+double Matrix::trace()
+{
+    if (rows != cols) {
+        getLogger().recordLogData(ERROR_, "Tried to take the trace of a matrix with dimensions row: %d, column: %d. Returning 1.", rows, cols);
+        return 1;
+    }
+
+    double traceValue = 0;
+    for (int i = 0; i < rows; ++i) {
+        traceValue += array[i + i * rows];  // Sum the diagonal elements
+    }
+    return traceValue;
 }
 
 // Get identity matrix of size [n n]

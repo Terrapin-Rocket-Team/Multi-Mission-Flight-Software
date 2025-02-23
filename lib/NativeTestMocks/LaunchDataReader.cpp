@@ -7,6 +7,10 @@
 #include <cstring>
 #include <iostream>
 
+#ifdef __APPLE__
+#include <sstream>
+#endif
+
 LaunchDataReader::LaunchDataReader(const std::filesystem::path &filePath) : filePath(filePath), fileStream(filePath) {
     if(!fileStream.is_open()) {
         std::cerr << "LaunchDataReader: Failed to open data file at " << filePath << std::endl;
