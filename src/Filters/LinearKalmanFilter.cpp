@@ -74,7 +74,7 @@ void LinearKalmanFilter::covarianceUpdate() {
 }
 
 void LinearKalmanFilter::covarianceExtrapolate(double dt) {
-    P = getF(dt) * P * getF(dt).transpose() + getQ();
+    P = getF(dt) * P * getF(dt).transpose() + getQ(dt);
 }
 
 } // namespace mmfs
