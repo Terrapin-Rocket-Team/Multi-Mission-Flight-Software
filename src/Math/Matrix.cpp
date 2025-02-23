@@ -95,9 +95,7 @@ Matrix Matrix::multiply(Matrix other)
 {
     if (this->cols != other.rows)
     {
-        char formattedMessage[256];
-        std::snprintf(formattedMessage, sizeof(formattedMessage), "Tried to multiple matrix with incorrect dimensions. This matrix cols: %d and other matrix rows: %d. Returning first Matrix.", cols, other.getRows());
-        errorHandler.addError(SOFTWARE_ERROR, formattedMessage);
+        getLogger().recordLogData(ERROR_, "Tried to multiple matrix with incorrect dimensions. This matrix cols: %d and other matrix rows: %d. Returning first Matrix.", cols, other.getRows());
         return Matrix(this->rows, this->cols, this->array);
     }
 
@@ -146,9 +144,7 @@ Matrix Matrix::add(Matrix other)
 {
     if (this->rows != other.rows || this->cols != other.cols)
     {
-        char formattedMessage[256];
-        std::snprintf(formattedMessage, sizeof(formattedMessage), "Addition error: Dimensions do not match! Matrix 1: row: %d, column: %d. Matrix 2: row: %d, column %d. Returning input Matrix.", rows, cols, other.getRows(), other.getCols());
-        errorHandler.addError(SOFTWARE_ERROR, formattedMessage);
+        getLogger().recordLogData(ERROR_, "Addition error: Dimensions do not match! Matrix 1: row: %d, column: %d. Matrix 2: row: %d, column %d. Returning input Matrix.", rows, cols, other.getRows(), other.getCols());
         return Matrix(this->rows, this->cols, this->array);
     }
 
@@ -175,9 +171,7 @@ Matrix Matrix::subtract(Matrix other)
 {
     if (this->rows != other.rows || this->cols != other.cols)
     {
-        char formattedMessage[256];
-        std::snprintf(formattedMessage, sizeof(formattedMessage), "Subtraction error: Dimensions do not match! Matrix 1: row: %d, column: %d. Matrix 2: row: %d, column %d. Returning input Matrix.", rows, cols, other.getRows(), other.getCols());
-        errorHandler.addError(SOFTWARE_ERROR, formattedMessage);
+        getLogger().recordLogData(ERROR_, "Subtraction error: Dimensions do not match! Matrix 1: row: %d, column: %d. Matrix 2: row: %d, column %d. Returning input Matrix.", rows, cols, other.getRows(), other.getCols()); 
         return Matrix(this->rows, this->cols, this->array);
     }
 
@@ -238,9 +232,7 @@ void Matrix::luDecompositionWithPartialPivoting(double *A, int *pivot, int n)
 
         if (max == 0.0)
         {
-            char formattedMessage[256];
-            std::snprintf(formattedMessage, sizeof(formattedMessage), "Inversion error: Matrix is singular!");
-            errorHandler.addError(SOFTWARE_ERROR, formattedMessage);
+            getLogger().recordLogData(ERROR_, "Inversion error: Matrix is singular!");
         }
 
         // Swap rows in A matrix
@@ -299,10 +291,8 @@ Matrix Matrix::inverse()
 {
     if (this->rows != this->cols)
     {
-        char formattedMessage[256];
-        std::snprintf(formattedMessage, sizeof(formattedMessage), "Tried to invert matrix with dimensions row: %d, column: %d. Returning input Matrix.", rows, cols);
-        errorHandler.addError(SOFTWARE_ERROR, formattedMessage);
-        return Matrix(rows, cols, array);;
+        getLogger().recordLogData(ERROR_, "Tried to invert matrix with dimensions row: %d, column: %d. Returning input Matrix.", rows, cols);
+        return Matrix(rows, cols, array);
 
     }
 
@@ -346,9 +336,7 @@ Matrix Matrix::inverse()
 double Matrix::trace()
 {
     if (rows != cols) {
-        char formattedMessage[256];
-        std::snprintf(formattedMessage, sizeof(formattedMessage), "Tried to take the trace of a matrix with dimensions row: %d, column: %d. Returning 1.", rows, cols);
-        errorHandler.addError(SOFTWARE_ERROR, formattedMessage);
+        getLogger().recordLogData(ERROR_, "Tried to take the trace of a matrix with dimensions row: %d, column: %d. Returning 1.", rows, cols);
         return 1;
     }
 
