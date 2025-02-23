@@ -44,19 +44,6 @@ bool MockIMU::init() {
         }
     }
 
-    // underscores indicate skipped fields
-    for(int j = 0; j < 3; j++) {
-        if(accColNames[j] == "_") {
-            accIndices[j] = MAX_NUM_COLS-1;
-        }
-        if(gyroColNames[j] == "_") {
-            gyroIndices[j] = MAX_NUM_COLS-1;
-        }
-        if(magColNames[j] == "_") {
-            magIndices[j] = MAX_NUM_COLS-1;
-        }
-    }
-
     for(int i = 0; i < 3; i++) {
         if(accIndices[i] == -1) {
             std::cerr << "[MockIMU]: Failed to find acceleration column index for name: " << accColNames[i] << std::endl;
@@ -74,14 +61,12 @@ bool MockIMU::init() {
         }
     }
 
-    initialized = true;
     return true;
 }
 
 void MockIMU::read() {
     if(!dataReader.readLine(launchData)) {
         std::cerr << "[MockIMU]: Failed to read data from file!" << std::endl;
-        initialized = false;
         return;
     }
     for(int i = 0; i < 3; i++) {

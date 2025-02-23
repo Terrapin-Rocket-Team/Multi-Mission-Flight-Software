@@ -48,23 +48,6 @@ bool MockGPS::init() {
         }
     }
 
-    // underscores indicate skipped fields
-    if(posXColName == "_") {
-        posXColIdx = MAX_NUM_COLS-1;
-    }
-    if(posYColName == "_") {
-        posYColIdx = MAX_NUM_COLS-1;
-    }
-    if(posZColName == "_") {
-        posZColIdx = MAX_NUM_COLS-1;
-    }
-    if(headingColName == "_") {
-        headingColIdx = MAX_NUM_COLS-1;
-    }
-    if(fixQualityColName == "_") {
-        fixQualityColIdx = MAX_NUM_COLS-1;
-    }
-
     if(posXColIdx == -1) {
         std::cerr << "[MockGPS]: Failed to find posX column index for name: " << posXColName << std::endl;
         return false;
@@ -86,15 +69,12 @@ bool MockGPS::init() {
         return false;
     }
 
-    initialized = true;
-
     return true;
 }
 
 void MockGPS::read() {
     if(!dataReader.readLine(launchData)) {
         std::cerr << "[MockGPS]: Failed to read data from file!" << std::endl;
-        initialized = false;
         return;
     }
     position.x() = launchData[posXColIdx];
@@ -117,7 +97,6 @@ double MockGPS::getHeading() const {
 int MockGPS::getFixQual() const {
     return GPS::getFixQual();
 }
-
 
 MockGPS::~MockGPS() {
     dataReader.close();
