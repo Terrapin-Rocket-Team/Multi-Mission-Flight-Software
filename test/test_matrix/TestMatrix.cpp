@@ -124,6 +124,24 @@ void test_inverse_large()
     TEST_ASSERT_FLOAT_WITHIN(1e-6, 1.0, m4.getArr()[15]);
 }
 
+void test_trace()
+{
+    // Case 1: m1 (2x2 Matrix)
+    double trace_m1 = m1.trace();
+    double expected_trace_m1 = 1.0 + 4.0; // a00 + a11
+    TEST_ASSERT_EQUAL_FLOAT(expected_trace_m1, trace_m1);
+
+    // Case 2: m2 (2x2 Matrix)
+    double trace_m2 = m2.trace();
+    double expected_trace_m2 = 5.0 + 8.0; // a00 + a11
+    TEST_ASSERT_EQUAL_FLOAT(expected_trace_m2, trace_m2);
+
+    // Case 3: m5 (4x4 Matrix)
+    double trace_m5 = m5.trace();
+    double expected_trace_m5 = 0.0 + 1.0 + 0.0 + 1.0; // a00 + a11 + a22 + a33
+    TEST_ASSERT_EQUAL_FLOAT(expected_trace_m5, trace_m5);
+}
+
 void setUp(void)
 {
     //runs before each test
@@ -150,6 +168,7 @@ int main(int argc, char **argv)
     RUN_TEST(test_transpose);
     RUN_TEST(test_inverse_small);
     RUN_TEST(test_inverse_large);
+    RUN_TEST(test_trace);
 
     UNITY_END();
 }
