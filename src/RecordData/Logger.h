@@ -14,6 +14,7 @@
 #include "SdFatBoilerplate.h"
 #include <stdarg.h>
 #include "../Events/Event.h"
+#include <LittleFS.h>
 
 namespace mmfs
 {
@@ -61,6 +62,7 @@ namespace mmfs
         virtual bool init(DataReporter **dataReporters, int numReporters);
 
         virtual bool isSdCardReady();
+        virtual bool isFlashReady() const;
         virtual bool isReady() const;
 
         void recordFlightData(); // records  flight data
@@ -115,6 +117,8 @@ namespace mmfs
         FsFile logFile;
         FsFile flightDataFile;
         FsFile preFlightFile;
+        LittleFS_QPINAND flash;
+        File flightDataFlashFile;
 
         //
 
@@ -129,6 +133,7 @@ namespace mmfs
         char *flightDataFileName = nullptr; // Name of the flight data file
         char *preFlightFileName = nullptr;  // Name of the pre-flight file
         bool sdReady = false;               // Whether the SD card has been initialized
+        bool flashReady = false;            // Whether the flash has been initialized
         bool ready = false;                 // Whether the logger is ready
 
         char *logPrefixFormat = nullptr;

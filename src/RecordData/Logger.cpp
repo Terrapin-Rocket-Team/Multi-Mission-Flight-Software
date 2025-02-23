@@ -38,10 +38,15 @@ Logger::Logger()
         // create files
 
         int len = 26; // max file name length
+
         flightDataFile = sd.open(fileName, FILE_WRITE);
         flightDataFileName = new char[len];
         snprintf(flightDataFileName, len, "%s", fileName);
         flightDataFile.close();
+
+        if(flash.exists(fileName))
+            flash.remove(fileName);
+        flightDataFlashFile = flash.open(fileName, FILE_WRITE);
 
         snprintf(fileName, MAX_FILE_NAME_SIZE, "%d_%s", fileNo, "Log.txt");
         logFile = sd.open(fileName, FILE_WRITE);
@@ -65,6 +70,7 @@ Logger::Logger()
 // Destructor for Logger class
 Logger::~Logger()
 {
+    flightDataFlashFile.close();
     delete[] flightDataFileName;
     delete[] preFlightFileName;
     delete[] logFileName;
@@ -76,6 +82,11 @@ Logger::~Logger()
 bool Logger::isSdCardReady()
 {
     return sdReady || sd.restart();
+}
+
+bool Logger::isFlashReady() const
+{
+    return flashReady;
 }
 
 // Returns whether the logger is ready
