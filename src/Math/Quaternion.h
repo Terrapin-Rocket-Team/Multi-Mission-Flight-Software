@@ -33,7 +33,7 @@
 
 #include "Vector.h"
 #include "Matrix.h"
-#include "../Error/ErrorHandler.h"
+#include "../RecordData/Logger.h"
 #include <cstdio>
 
 namespace mmfs {
