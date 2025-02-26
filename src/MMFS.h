@@ -16,6 +16,7 @@
 #include "Sensors/Baro/BMP390.h"
 #include "Sensors/Baro/DPS310.h"
 #include "Sensors/Baro/MS5611F.h"
+#include "Sensors/Baro/MockBarometer.h"
 
 // IMUs
 #include "Sensors/IMU/BNO055.h"
