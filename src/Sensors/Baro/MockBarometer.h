@@ -8,25 +8,26 @@
 #include "../SdDataReader.h"
 #include "Barometer.h"
 
+using namespace mmfs
+{
 class MockBarometer : public mmfs::Barometer {
-private:
-    SdDataReader dataReader;
+    private:
+        SdDataReader dataReader;
 
-    int pressureColIndex = -1;
-    int temperatureColIndex = -1;
+        int pressureColIndex = -1;
+        int temperatureColIndex = -1;
 
-    String pressureColName;
-    String temperatureColName;
+        String pressureColName;
+        String temperatureColName;
 
-    float sdData[MAX_NUM_COLS]{0.0f};
-public:
-    MockBarometer(const char* dataPath, const String& pressureColName, const String& temperatureColName);
-    ~MockBarometer() override;
+        float sdData[MAX_NUM_COLS]{0.0f};
+    public:
+        MockBarometer(const char* dataPath, const String& pressureColName, const String& temperatureColName);
+        ~MockBarometer() override;
 
-    bool init() override;
-    void read() override;
-};
-
-
+        bool init() override;
+        void read() override;
+    };
+}
 
 #endif //MOCKBAROMETER_H
