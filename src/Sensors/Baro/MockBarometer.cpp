@@ -7,7 +7,7 @@
 
 #include <iostream>
 
-MockBarometer::MockBarometer(const std::filesystem::path &dataPath, const String& pressureColName, const String& temperatureColName) :
+MockBarometer::MockBarometer(const char* &dataPath, const String& pressureColName, const String& temperatureColName) :
     dataReader(dataPath), pressureColName(pressureColName), temperatureColName(temperatureColName) {
     Sensor::setName("MockBarometer");
 }
@@ -54,13 +54,13 @@ bool MockBarometer::init() {
 }
 
 void MockBarometer::read() {
-    if(!dataReader.readLine(launchData)) {
+    if(!dataReader.readLine(sdData)) {
         getLogger().recordLogData(ERROR_, "[MockBarometer]: Failed to read data from file!");
         initialized = false;
         return;
     }
-    pressure = launchData[pressureColIndex];
-    temp = launchData[temperatureColIndex];
+    pressure = sdData[pressureColIndex];
+    temp = sdData[temperatureColIndex];
 }
 
 MockBarometer::~MockBarometer() {
