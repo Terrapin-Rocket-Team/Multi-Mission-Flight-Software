@@ -15,13 +15,14 @@ SdDataReader::SdDataReader(const char* filePath) {
     }
 
     if (!file.open(filePath, O_RDONLY)) {
-        getLogger().recordLogData(WARNING_, "SdDataReader: Failed to open file: " + String(filePath).c_str());
+        getLogger().recordLogData(WARNING_, "SdDataReader: Failed to open file: %s", filePath);
         initialized = false;
         return;
     }
     
     getLogger().recordLogData(INFO_, "SdDataReader: File opened successfully!");
     initialized = true;
+    filePath = filePath;
 }
 
 bool SdDataReader::readColumnHeaders(int &numCols, String colNames[]) {
@@ -55,8 +56,8 @@ bool SdDataReader::readLine(float *data) {
     if (!file.fgets(buffer, sizeof(buffer))) return false;
 
     String line(buffer);
-    if (line.empty()) return false;
-    if (line.back() != ',') line += ",";
+    if (line.length() == 0) return false;
+    if (line.charAt(line.length() - 1) != ',') line += ",";
 
     int startIdx = 0;
     size_t i = 0;
