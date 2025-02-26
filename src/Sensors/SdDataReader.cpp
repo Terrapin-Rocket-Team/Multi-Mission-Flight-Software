@@ -5,7 +5,7 @@
 
 #include "SdDataReader.h"
 
-namespace mmfs;
+namespace mmfs
 {
 SdDataReader::SdDataReader(const char* filePath) {
     if (!sd.begin(SD_CS_PIN, SD_SCK_MHZ(50))) {

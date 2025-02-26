@@ -5,7 +5,7 @@
 
 #include "MockBarometer.h"
 
-namespace mmfs;
+namespace mmfs
 {
 MockBarometer::MockBarometer(const char* dataPath, const String& pressureColName, const String& temperatureColName) :
     dataReader(dataPath), pressureColName(pressureColName), temperatureColName(temperatureColName) {

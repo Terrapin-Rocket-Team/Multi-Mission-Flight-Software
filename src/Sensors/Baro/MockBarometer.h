@@ -8,7 +8,7 @@
 #include "../SdDataReader.h"
 #include "Barometer.h"
 
-namespace mmfs;
+namespace mmfs
 {
 class MockBarometer : public mmfs::Barometer {
     private:
