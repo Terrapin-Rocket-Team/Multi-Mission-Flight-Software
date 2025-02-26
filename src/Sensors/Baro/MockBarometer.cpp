@@ -1,12 +1,13 @@
 //
 // Created by ramykaddouri on 10/29/24.
+// Modified by michael mallamaci on 2/26/25 for reading from SD card
 //
 
 #include "MockBarometer.h"
 
 #include <iostream>
 
-MockBarometer::MockBarometer(const std::filesystem::path &dataPath, const std::string& pressureColName, const std::string& temperatureColName) :
+MockBarometer::MockBarometer(const std::filesystem::path &dataPath, const String& pressureColName, const String& temperatureColName) :
     dataReader(dataPath), pressureColName(pressureColName), temperatureColName(temperatureColName) {
     Sensor::setName("MockBarometer");
 }
@@ -15,11 +16,11 @@ bool MockBarometer::init() {
     if(!dataReader.isInit()) return false;
 
     int numCols = -1;
-    std::string colNames[MAX_NUM_COLS];
+    String colNames[MAX_NUM_COLS];
     dataReader.readColumnHeaders(numCols, colNames);
 
     if(numCols == -1 || numCols > MAX_NUM_COLS) {
-        std::cerr << "[MockBarometer]: Invalid number of columns read: " << numCols << std::endl;
+        getLogger().recordLogData(ERROR_, "[MockBarometer]: Invalid number of columns read: %d", numCols);
         return false;
     }
 
@@ -40,11 +41,11 @@ bool MockBarometer::init() {
     }
 
     if(pressureColIndex == -1) {
-        std::cerr << "[MockBarometer]: Failed to find pressure column index for name: " << pressureColName << std::endl;
+        getLogger().recordLogData(ERROR_, "[MockBarometer]: Failed to find pressure column index for name: %d", pressureColName);
         return false;
     }
     if(temperatureColIndex == -1) {
-        std::cerr << "[MockBarometer]: Failed to find temperature column index for name: " << temperatureColName << std::endl;
+        getLogger().recordLogData(ERROR_, "[MockBarometer]: Failed to find temperature column index for name: %d", temperatureColName);
         return false;
     }
 
@@ -54,7 +55,7 @@ bool MockBarometer::init() {
 
 void MockBarometer::read() {
     if(!dataReader.readLine(launchData)) {
-        std::cerr << "[MockBarometer]: Failed to read data from file!" << std::endl;
+        getLogger().recordLogData(ERROR_, "[MockBarometer]: Failed to read data from file!");
         initialized = false;
         return;
     }
