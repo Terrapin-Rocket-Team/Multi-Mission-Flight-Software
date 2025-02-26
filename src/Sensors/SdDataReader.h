@@ -9,6 +9,7 @@
 #include "SdFat.h"
 #include "../RecordData/SdFatBoilerplate.h"
 #include "../RecordData/Logger.h"
+#include <Arduino.h>
 #define MAX_NUM_COLS 1024
 
 using namespace mmfs
@@ -27,7 +28,7 @@ public:
 
     //reads header of the CSV, sets numCols to number of columns and colNames
     //returns true if successful, false otherwise
-    bool readColumnHeaders(int& numCols, std::string colNames[]);
+    bool readColumnHeaders(int& numCols, String colNames[]);
 
     //reads next line in CSV, sets data to be an array of sensor observations
     //the order is consistent with colNames in read_column_header

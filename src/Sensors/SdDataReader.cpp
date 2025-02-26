@@ -4,7 +4,6 @@
 //
 
 #include "SdDataReader.h"
-#include <cstring>
 #include <iostream>
 
 SdDataReader::SdDataReader(const std::filesystem::path &filePath) : filePath(filePath), fileStream(filePath) {
@@ -15,7 +14,7 @@ SdDataReader::SdDataReader(const std::filesystem::path &filePath) : filePath(fil
     }
 
     if (!file.open(filePath, O_RDONLY)) {
-        getLogger().recordLogData(WARNING_, "SdDataReader: Failed to open file: " + std::string(filePath));
+        getLogger().recordLogData(WARNING_, "SdDataReader: Failed to open file: " + String(filePath));
         initialized = false;
         return;
     }
@@ -24,18 +23,18 @@ SdDataReader::SdDataReader(const std::filesystem::path &filePath) : filePath(fil
     initialized = true;
 }
 
-bool SdDataReader::readColumnHeaders(int &numCols, std::string colNames[]) {
+bool SdDataReader::readColumnHeaders(int &numCols, String colNames[]) {
     if (lineIdx == 0) {
         if (!file.fgets(buffer, sizeof(buffer))) {
             getLogger().recordLogData(WARNING_, "SdDataReader: Failed to read column headers!");
             return false;
         }
 
-        std::string line(buffer);
+        String line(buffer);
         if (line.back() != ',') line += ",";
 
         std::istringstream headerStream(line);
-        std::string col;
+        String col;
         numCols = 0;
 
         while (std::getline(headerStream, col, ',')) {
@@ -53,13 +52,13 @@ bool SdDataReader::readColumnHeaders(int &numCols, std::string colNames[]) {
 bool SdDataReader::readLine(float *data) {
     if (!file.fgets(buffer, sizeof(buffer))) return false;
 
-    std::string line(buffer);
+    String line(buffer);
     if (line.empty()) return false;
     if (line.back() != ',') line += ",";
 
     std::istringstream lineStream(line);
     size_t i = 0;
-    std::string col;
+    String col;
 
     while (std::getline(lineStream, col, ',') && i < MAX_NUM_COLS) {
         data[i++] = static_cast<float>(strtod(col.c_str(), nullptr));
