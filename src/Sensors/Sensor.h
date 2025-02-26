@@ -49,6 +49,8 @@ namespace mmfs
 
         virtual void setBiasCorrectionMode(bool mode) { biasCorrectionMode = mode; } // whether or not to continually re-zero self using incoming data.
 
+        virtual void setInputDataMode(InputDataMode mode) { inputDataMode = mode; }
+
         // ----------------------------------------------------------------------------------------------------------
 
     protected:
