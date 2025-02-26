@@ -8,8 +8,8 @@
 #include "../SdDataReader.h"
 #include "Barometer.h"
 
-using namespace mmfs;
-
+namespace mmfs;
+{
 class MockBarometer : public mmfs::Barometer {
     private:
         SdDataReader dataReader;
@@ -28,5 +28,6 @@ class MockBarometer : public mmfs::Barometer {
         bool init() override;
         void read() override;
     };
+}
 
 #endif //MOCKBAROMETER_H
