@@ -55,8 +55,6 @@ namespace mmfs
         // Default: `"$time - [$logType] "`
         MMFSConfig &withLogPrefixFormatting(const char *prefix);
 
-        MMFSConfig();
-
     private:
         State *state = nullptr;
         int pins[50];
