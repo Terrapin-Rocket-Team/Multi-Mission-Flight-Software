@@ -5,8 +5,8 @@
 
 #include "MockBarometer.h"
 
-using namespace mmfs
-{
+using namespace mmfs;
+
 MockBarometer::MockBarometer(const char* &dataPath, const String& pressureColName, const String& temperatureColName) :
     dataReader(dataPath), pressureColName(pressureColName), temperatureColName(temperatureColName) {
     Sensor::setName("MockBarometer");
@@ -65,5 +65,4 @@ void MockBarometer::read() {
 
 MockBarometer::~MockBarometer() {
     dataReader.close();
-}
 }
