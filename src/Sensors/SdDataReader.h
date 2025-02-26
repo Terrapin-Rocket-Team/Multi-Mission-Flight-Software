@@ -18,6 +18,7 @@ class SdDataReader {
     private:
         bool initialized = false;
         size_t lineIdx = 0;
+        const char* filePath;
         SdFat sd;
         SdFile file;
         char buffer[256]; // Buffer to read lines from the file TODO increase
