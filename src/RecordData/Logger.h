@@ -11,7 +11,7 @@
 
 
 #include "../Constants.h"
-#include "SdFatBoilerplate.h"
+#include <LittleFS.h>
 #include <stdarg.h>
 #include "../Events/Event.h"
 
@@ -111,12 +111,11 @@ namespace mmfs
         void recordLogData(double timeStamp, LogType type, Dest dest, int size, const char *format, va_list args);
         void recordLogData(const char *msg, Dest dest = BOTH, LogType type = NONE_);
         void recordCrashReport();
-        SdFs sd;
-        FsFile logFile;
-        FsFile flightDataFile;
-        FsFile preFlightFile;
-
-        //
+        
+        static LittleFS_QSPIFlash sd;
+        File logFile;
+        File flightDataFile;
+        File preFlightFile;
 
         Mode mode = GROUND;
         DataReporter **dataReporters = nullptr;

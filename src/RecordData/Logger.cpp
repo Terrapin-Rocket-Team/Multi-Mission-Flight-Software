@@ -10,6 +10,7 @@
 
 using namespace mmfs;
 
+LittleFS_QSPIFlash Logger::sd;
 static const char *logTypeStrings[] = {"LOG", "ERROR", "WARNING", "INFO", "CUSTOM"};
 
 #pragma region Constructor and Initialization
@@ -21,7 +22,7 @@ Logger::Logger()
     setLogPrefixFormatting("$time - [$logType] ");
     setCustomLogPrefix("$time - [CUSTOM] ");
 
-    if (sd.begin(SD_CONFIG) || sd.restart())
+    if (sd.begin()) 
     {
         sdReady = true;
 
@@ -75,7 +76,12 @@ Logger::~Logger()
 // Returns whether the SD card is ready
 bool Logger::isSdCardReady()
 {
-    return sdReady || sd.restart();
+    if (!sdReady)
+    {
+        // Attempt re-init:
+        sdReady = sd.begin();
+    }
+    return sdReady;
 }
 
 // Returns whether the logger is ready
@@ -98,7 +104,7 @@ bool Logger::init(DataReporter **dataReporters, int numReporters)
 // Records flight data to the SD card or PSRAM
 void Logger::recordFlightData()
 {
-    if (!sdReady && !sd.restart()) // If SD card not available, nothing to do.
+    if (!sdReady && !sd.begin()) // If SD card not available, nothing to do.
     {
         return;
     }
@@ -367,9 +373,11 @@ void Logger::setLogPrefixFormatting(const char *prefix)
 
 void Logger::modifyFileDates(const GPS *gps)
 {
-    flightDataFile.timestamp(T_CREATE | T_WRITE | T_ACCESS, gps->getYear(), gps->getMonth(), gps->getDay(), gps->getHour(), gps->getMinute(), gps->getSecond());
-    preFlightFile.timestamp(T_CREATE | T_WRITE | T_ACCESS, gps->getYear(), gps->getMonth(), gps->getDay(), gps->getHour(), gps->getMinute(), gps->getSecond());
-    logFile.timestamp(T_WRITE | T_WRITE | T_ACCESS, gps->getYear(), gps->getMonth(), gps->getDay(), gps->getHour(), gps->getMinute(), gps->getSecond());
+    // flightDataFile.timestamp(T_CREATE | T_WRITE | T_ACCESS, gps->getYear(), gps->getMonth(), gps->getDay(), gps->getHour(), gps->getMinute(), gps->getSecond());
+    // preFlightFile.timestamp(T_CREATE | T_WRITE | T_ACCESS, gps->getYear(), gps->getMonth(), gps->getDay(), gps->getHour(), gps->getMinute(), gps->getSecond());
+    // logFile.timestamp(T_WRITE | T_WRITE | T_ACCESS, gps->getYear(), gps->getMonth(), gps->getDay(), gps->getHour(), gps->getMinute(), gps->getSecond());
+
+    // LittleFS apparently doesn't support timestamps
 }
 
 #pragma endregion Event Handling
