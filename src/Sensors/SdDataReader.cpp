@@ -33,7 +33,7 @@ bool SdDataReader::readColumnHeaders(int &numCols, String colNames[]) {
         }
 
         String line(buffer);
-        if (line.back() != ',') line += ",";
+        if (line.charAt(line.length() - 1) != ',') line += ",";
 
         numCols = 0;
         int startIdx = 0;
