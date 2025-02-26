@@ -15,7 +15,7 @@ SdDataReader::SdDataReader(const char* filePath) {
     }
 
     if (!file.open(filePath, O_RDONLY)) {
-        getLogger().recordLogData(WARNING_, "SdDataReader: Failed to open file: " + String(filePath));
+        getLogger().recordLogData(WARNING_, "SdDataReader: Failed to open file: " + String(filePath).c_str());
         initialized = false;
         return;
     }
