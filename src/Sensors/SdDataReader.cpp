@@ -5,9 +5,9 @@
 
 #include "SdDataReader.h"
 
-namespace mmfs
-{
-SdDataReader::SdDataReader(const std::filesystem::path &filePath) : filePath(filePath), fileStream(filePath) {
+using namespace mmfs;
+
+SdDataReader::SdDataReader(const char* filePath) {
     if (!sd.begin(SD_CS_PIN, SD_SCK_MHZ(50))) {
         getLogger().recordLogData(ERROR_, "SdDataReader: SD initialization failed!");
         initialized = false;
@@ -34,12 +34,13 @@ bool SdDataReader::readColumnHeaders(int &numCols, String colNames[]) {
         String line(buffer);
         if (line.back() != ',') line += ",";
 
-        std::istringstream headerStream(line);
-        String col;
         numCols = 0;
-
-        while (std::getline(headerStream, col, ',')) {
-            colNames[numCols++] = col;
+        int startIdx = 0;
+        for (int i = 0; i < line.length(); ++i) {
+            if (line[i] == ',') {
+                colNames[numCols++] = line.substring(startIdx, i);
+                startIdx = i + 1;
+            }
         }
 
         lineIdx++;
@@ -57,18 +58,19 @@ bool SdDataReader::readLine(float *data) {
     if (line.empty()) return false;
     if (line.back() != ',') line += ",";
 
-    std::istringstream lineStream(line);
+    int startIdx = 0;
     size_t i = 0;
-    String col;
-
-    while (std::getline(lineStream, col, ',') && i < MAX_NUM_COLS) {
+    while (i < MAX_NUM_COLS) {
+        int commaIdx = line.indexOf(',', startIdx);
+        if (commaIdx == -1) break;
+        String col = line.substring(startIdx, commaIdx);
         data[i++] = static_cast<float>(strtod(col.c_str(), nullptr));
+        startIdx = commaIdx + 1;
     }
 
     lineIdx++;
     return i > 0;
 }
-
 
 bool SdDataReader::isInit() const {
     return initialized;
@@ -81,5 +83,4 @@ void SdDataReader::close() {
 
 SdDataReader::~SdDataReader() {
     close();
-}
 }
