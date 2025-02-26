@@ -5,8 +5,8 @@
 
 #include "SdDataReader.h"
 
-using namespace mmfs;
-
+namespace mmfs;
+{
 SdDataReader::SdDataReader(const char* filePath) {
     if (!sd.begin(SD_CS_PIN, SD_SCK_MHZ(50))) {
         getLogger().recordLogData(ERROR_, "SdDataReader: SD initialization failed!");
@@ -84,4 +84,5 @@ void SdDataReader::close() {
 
 SdDataReader::~SdDataReader() {
     close();
+}
 }

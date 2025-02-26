@@ -12,8 +12,8 @@
 #include <Arduino.h>
 #define MAX_NUM_COLS 1024
 
-using namespace mmfs;
-
+namespace mmfs;
+{
 class SdDataReader {
     private:
         bool initialized = false;
@@ -41,5 +41,6 @@ class SdDataReader {
     
         ~SdDataReader();
     };
+}
 
 #endif //SDDATAREADER_H
