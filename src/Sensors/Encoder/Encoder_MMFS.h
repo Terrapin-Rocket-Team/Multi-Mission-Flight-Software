@@ -15,7 +15,7 @@ namespace mmfs
         virtual const SensorType getType() const override;
         virtual void update() override;
         virtual bool begin(bool useBiasCorrection = true) override;
-        virtual void setCurrentRelativeSteps(int step) {currentRelativeSteps = step;};
+        virtual void setInitialSteps(int step) {initialSteps = step;};
 
     protected:
         Encoder_MMFS();
