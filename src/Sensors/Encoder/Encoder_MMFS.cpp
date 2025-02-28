@@ -17,7 +17,7 @@ namespace mmfs
 
     void Encoder_MMFS::setInitialSteps(int step){
         initialSteps = step;
-        getLogger().recordLogData(INFO_, "[Encoder]: Initial Steps set to: %d", step);
+        getLogger().recordLogData(INFO_, 100, "[Encoder]: Initial Steps set to: %d", step);
     }
 
 #pragma endregion // Encoder Specific Functions
