@@ -20,7 +20,7 @@ bool MockBarometer::init() {
     dataReader.readColumnHeaders(numCols, colNames);
 
     if(numCols == -1 || numCols > MAX_NUM_COLS) {
-        getLogger().recordLogData(ERROR_, "[MockBarometer]: Invalid number of columns read: %d", numCols);
+        getLogger().recordLogData(ERROR_, 100, "[MockBarometer]: Invalid number of columns read: %d", numCols);
         return false;
     }
 
@@ -41,11 +41,11 @@ bool MockBarometer::init() {
     }
 
     if(pressureColIndex == -1) {
-        getLogger().recordLogData(ERROR_, "[MockBarometer]: Failed to find pressure column index for name: %d", pressureColName);
+        getLogger().recordLogData(ERROR_, 100, "[MockBarometer]: Failed to find pressure column index for name: %d", pressureColName);
         return false;
     }
     if(temperatureColIndex == -1) {
-        getLogger().recordLogData(ERROR_, "[MockBarometer]: Failed to find temperature column index for name: %d", temperatureColName);
+        getLogger().recordLogData(ERROR_, 100, "[MockBarometer]: Failed to find temperature column index for name: %d", temperatureColName);
         return false;
     }
 
@@ -55,7 +55,7 @@ bool MockBarometer::init() {
 
 void MockBarometer::read() {
     if(!dataReader.readLine(sdData)) {
-        getLogger().recordLogData(ERROR_, "[MockBarometer]: Failed to read data from file!");
+        getLogger().recordLogData(ERROR_, 100, "[MockBarometer]: Failed to read data from file!");
         initialized = false;
         return;
     }
