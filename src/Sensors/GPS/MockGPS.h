@@ -39,10 +39,6 @@ public:
 
     bool init() override;
     void read() override;
-
-    mmfs::Vector<3> getPos() const override;
-    double getHeading() const override;
-    int getFixQual() const override;
 };
 
 }
