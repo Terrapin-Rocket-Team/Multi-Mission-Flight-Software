@@ -21,7 +21,10 @@
 // IMUs
 #include "Sensors/IMU/BNO055.h"
 #include "Sensors/IMU/BMI088andLIS3MDL.h"
+#include "Sensors/Baro/MockIMU.h"
 
+// GPSs
 #include "Sensors/GPS/MAX_M10S.h"
+#include "Sensors/Baro/MockGPS.h"
 
 #include "Utils/MMFSSystem.h"
