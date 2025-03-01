@@ -30,6 +30,11 @@ namespace mmfs
         return init();
     }
 
+    void Encoder_MMFS::setInitialSteps(int step){
+        initialSteps = step;
+        getLogger().recordLogData(INFO_, 100, "[Encoder]: Initial Steps set to: %d", step);
+    }
+
 #pragma region Data Reporting
 
     const char *Encoder_MMFS::getTypeString() const { return "Encoder"; }
