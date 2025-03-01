@@ -22,6 +22,7 @@ bool mmfs::ESP32BluetoothRadio::begin() {
 
 bool mmfs::ESP32BluetoothRadio::tx(const uint8_t *message, int len) {
     port.write(DATA_MESSAGE);
+    port.write(static_cast<uint16_t>(len));
     port.write(message, len);
     return true;
 }
