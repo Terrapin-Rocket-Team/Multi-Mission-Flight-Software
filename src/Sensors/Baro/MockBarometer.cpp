@@ -41,11 +41,11 @@ bool MockBarometer::init() {
     }
 
     if(pressureColIndex == -1) {
-        getLogger().recordLogData(ERROR_, 100, "[MockBarometer]: Failed to find pressure column index for name: %s", pressureColName);
+        getLogger().recordLogData(ERROR_, 100, "[MockBarometer]: Failed to find pressure column index for name: %s", pressureColName.c_str());
         return false;
     }
     if(temperatureColIndex == -1) {
-        getLogger().recordLogData(ERROR_, 100, "[MockBarometer]: Failed to find temperature column index for name: %s", temperatureColName);
+        getLogger().recordLogData(ERROR_, 100, "[MockBarometer]: Failed to find temperature column index for name: %s", temperatureColName.c_str());
         return false;
     }
 
