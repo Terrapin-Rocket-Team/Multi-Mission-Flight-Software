@@ -44,10 +44,6 @@ Logger::Logger()
         snprintf(flightDataFileName, len, "%s", fileName);
         flightDataFile.close();
 
-        if(flash.exists(fileName))
-            flash.remove(fileName);
-        flightDataFlashFile = flash.open(fileName, FILE_WRITE);
-
         snprintf(fileName, MAX_FILE_NAME_SIZE, "%d_%s", fileNo, "Log.txt");
         logFile = sd.open(fileName, FILE_WRITE);
         logFileName = new char[len];
@@ -70,7 +66,6 @@ Logger::Logger()
 // Destructor for Logger class
 Logger::~Logger()
 {
-    flightDataFlashFile.close();
     delete[] flightDataFileName;
     delete[] preFlightFileName;
     delete[] logFileName;

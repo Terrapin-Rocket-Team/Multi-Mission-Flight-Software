@@ -2,6 +2,9 @@
 #include "../src/Math/Quaternion.h"
 #include "../src/Math/Matrix.h"
 #include "../../lib/NativeTestMocks/NativeTestHelper.h"
+#ifndef M_PI
+    #define M_PI 3.14159265358979323846
+#endif
 
 using mmfs::Quaternion;
 

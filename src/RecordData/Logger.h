@@ -14,7 +14,6 @@
 #include "SdFatBoilerplate.h"
 #include <stdarg.h>
 #include "../Events/Event.h"
-#include <LittleFS.h>
 
 namespace mmfs
 {
@@ -117,8 +116,6 @@ namespace mmfs
         FsFile logFile;
         FsFile flightDataFile;
         FsFile preFlightFile;
-        LittleFS_QPINAND flash;
-        File flightDataFlashFile;
 
         //
 
