@@ -104,7 +104,7 @@ bool Logger::init(DataReporter **dataReporters, int numReporters)
 // Records flight data to the SD card or PSRAM
 void Logger::recordFlightData()
 {
-    if (!sdReady && !sd.restart()) // If SD card not available, nothing to do.
+    if (!sdReady) // If SD card not available, nothing to do.
     {
         return;
     }
