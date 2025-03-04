@@ -8,7 +8,7 @@
 #include "../../src/Sensors/GPS/GPS.h"
 
 
-class MockGPS : mmfs::GPS {
+class MockGPS : public mmfs::GPS {
 private:
     LaunchDataReader dataReader;
 

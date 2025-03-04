@@ -33,6 +33,14 @@ bool MockBarometer::init() {
         }
     }
 
+    // underscores indicate skipped fields
+    if(pressureColName == "_") {
+        pressureColIndex = MAX_NUM_COLS-1;
+    }
+    if(temperatureColName == "_") {
+        temperatureColIndex = MAX_NUM_COLS-1;
+    }
+
     if(pressureColIndex == -1) {
         std::cerr << "[MockBarometer]: Failed to find pressure column index for name: " << pressureColName << std::endl;
         return false;
@@ -42,12 +50,14 @@ bool MockBarometer::init() {
         return false;
     }
 
+    initialized = true;
     return true;
 }
 
 void MockBarometer::read() {
     if(!dataReader.readLine(launchData)) {
         std::cerr << "[MockBarometer]: Failed to read data from file!" << std::endl;
+        initialized = false;
         return;
     }
     pressure = launchData[pressureColIndex];

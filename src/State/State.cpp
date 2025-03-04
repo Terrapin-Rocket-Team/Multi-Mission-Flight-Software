@@ -1,4 +1,5 @@
 #include "State.h"
+
 #pragma region Constructor and Destructor
 
 namespace mmfs
