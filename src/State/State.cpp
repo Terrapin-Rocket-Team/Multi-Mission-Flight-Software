@@ -16,6 +16,7 @@ namespace mmfs
         this->filter = filter;
 
         addColumn(DOUBLE, &currentTime, "Time (s)");
+        addColumn(INT, &stage, "Stage");
         addColumn(DOUBLE, &position.x(), "PX (m)");
         addColumn(DOUBLE, &position.y(), "PY (m)");
         addColumn(DOUBLE, &position.z(), "PZ (m)");
