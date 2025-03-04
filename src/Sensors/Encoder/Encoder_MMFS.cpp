@@ -9,7 +9,7 @@ namespace mmfs
 
     Encoder_MMFS::Encoder_MMFS()
     {
-        setUpPackedData();
+        addColumn(INT, &currentRelativeSteps, "Rel Steps");
         // Additional constructor logic
     }
 
@@ -22,7 +22,6 @@ namespace mmfs
     void Encoder_MMFS::update()
     {
         read();
-        packData();
     }
 
     bool Encoder_MMFS::begin(bool useBiasCorrection)
@@ -31,31 +30,16 @@ namespace mmfs
         return init();
     }
 
+    void Encoder_MMFS::setInitialSteps(int step){
+        initialSteps = step;
+        getLogger().recordLogData(INFO_, 100, "[Encoder]: Initial Steps set to: %d", step);
+    }
+
 #pragma region Data Reporting
 
     const char *Encoder_MMFS::getTypeString() const { return "Encoder"; }
 
     const SensorType Encoder_MMFS::getType() const { return ENCODER_; }
-
-    const int Encoder_MMFS::getNumPackedDataPoints() const { return 1; }
-
-    const PackedType *Encoder_MMFS::getPackedOrder() const
-    {
-        static const PackedType order[] = {INT};
-        return order;
-    }
-
-    const char **Encoder_MMFS::getPackedDataLabels() const
-    {
-        static const char *labels[] = {"Rel Steps"};
-        return labels;
-    }
-
-    void Encoder_MMFS::packData()
-    {
-        int offset = 0;
-        memcpy(packedData + offset, &currentRelativeSteps, sizeof(int));
-    }
 
     // const char *Encoder_MMFS::getStaticDataString() const
     // {

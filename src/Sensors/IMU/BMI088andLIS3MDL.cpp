@@ -7,9 +7,6 @@
 using namespace mmfs;
 bool BMI088andLIS3MDL::init()
 {
-
-    Wire.begin();
-
     int accelStatus = accel.begin();
     int gyroStatus = gyro.begin();
 

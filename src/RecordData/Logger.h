@@ -9,53 +9,26 @@
 #ifndef LOGGER_H
 #define LOGGER_H
 
-#define SD_FAT_TYPE 3
 
-#include "psram.h"
-#include "SdFat.h"
-#include "Arduino.h"
 #include "../Constants.h"
+#include "SdFatBoilerplate.h"
+#include <stdarg.h>
+#include "../Events/Event.h"
 
-/*
-  Change the value of SD_CS_PIN if you are using SPI and
-  your hardware does not use the default value, SS.
-  Common values are:
-  Arduino Ethernet shield: pin 4
-  Sparkfun SD shield: pin 8
-  Adafruit SD shields and modules: pin 10
-*/
-
-// SDCARD_SS_PIN is defined for the built-in SD on some boards.
-#ifndef SDCARD_SS_PIN
-const uint8_t SD_CS_PIN = SS;
-#else  // SDCARD_SS_PIN
-// Assume built-in SD is used.
-const uint8_t SD_CS_PIN = SDCARD_SS_PIN;
-#endif // SDCARD_SS_PIN
-
-// Try max SPI clock for an SD. Reduce SPI_CLOCK if errors occur.
-#define SPI_CLOCK SD_SCK_MHZ(50)
-
-// Try to select the best SD card configuration.
-#if HAS_SDIO_CLASS
-#define SD_CONFIG SdioConfig(FIFO_SDIO)
-#elif ENABLE_DEDICATED_SPI
-#define SD_CONFIG SdSpiConfig(SD_CS_PIN, DEDICATED_SPI, SPI_CLOCK)
-#else // HAS_SDIO_CLASS
-#define SD_CONFIG SdSpiConfig(SD_CS_PIN, SHARED_SPI, SPI_CLOCK)
-#endif // HAS_SDIO_CLASS
-
-#undef SPI_CLOCK
 namespace mmfs
 {
-    class State; // Forward declaration
+    class State;        // Forward declaration
+    class DataReporter; // Forward declaration
+    class GPS;
 
     enum LogType
     {
         LOG_,
         ERROR_,
         WARNING_,
-        INFO_
+        INFO_,
+        CUSTOM_,
+        NONE_
     };
 
     enum Dest
@@ -82,58 +55,96 @@ namespace mmfs
     {
 
     public:
-        Logger(uint16_t bufferTime = 30, int bufferInterval = 30); // store 30 seconds, print to SD every 30 seconds
+        Logger(); // store 30 seconds, print to SD every 30 seconds
         virtual ~Logger();
 
-        virtual bool init(State *state);
+        virtual bool init(DataReporter **dataReporters, int numReporters);
 
-        virtual bool isPsramReady() const;
-        virtual bool isSdCardReady() const;
+        virtual bool isSdCardReady();
+        virtual bool isFlashReady() const;
         virtual bool isReady() const;
 
         void recordFlightData(); // records  flight data
 
-        void recordLogData(LogType type, const char *data, Dest dest = BOTH);
+        // recordLogData with format string
+        void recordLogData(LogType type, Dest dest, int size, const char *format, ...);
+        void recordLogData(double timeStamp, LogType type, Dest dest, int size, const char *format, ...);
+        void recordLogData(LogType type, int size, const char *format, ...);
+        void recordLogData(int size, const char *format, ...);
 
-        void recordLogData(double timeStamp, LogType type, const char *data, Dest dest = BOTH);
+        // recordLogData with no format string
+        void recordLogData(LogType type, Dest dest, const char *msg);
+        void recordLogData(double timeStamp, LogType type, Dest dest, const char *msg);
+        void recordLogData(LogType type, const char *msg);
+        void recordLogData(double timeStamp, LogType type, const char *msg);
+
+        // Custom prefix
+
+        // use $time to wite 3 decimals of time data.
+        // ex: setLogPrefix("[$time] - CUSTOM");
+        void setCustomLogPrefix(const char *prefix);
+        // use $time to wite 3 decimals of time data.
+        // ex: setLogPrefix("[$time] - CUSTOM");
+        void setCustomLogPrefix(int size, const char *format, ...);
+
+        //use $time and $logType to access the time and log type of the current log.
+        // ex: setLogPrefix("[$time] - $logType:"); -> [0.000] - [INFO]: {log message}
+        void setLogPrefixFormatting(const char *prefix);
 
         void setRecordMode(Mode mode);
 
-        void dumpData();
-
         void writeCsvHeader();
 
+        void setGroundMode(GroundMode mode)
+        {
+            if (!ready)
+                this->groundMode = mode;
+            else
+                recordLogData(WARNING_, "Attempted to set GroundMode value after Logger already initalized!");
+        }
+
+        bool getPackData() const { return packData; }
+        GroundMode getGroundMode() const { return groundMode; }
+
+        void modifyFileDates(const GPS *gps);
+
     protected:
+        void recordLogData(double timeStamp, LogType type, Dest dest, int size, const char *format, va_list args);
+        void recordLogData(const char *msg, Dest dest = BOTH, LogType type = NONE_);
+        void recordCrashReport();
         SdFs sd;
         FsFile logFile;
         FsFile flightDataFile;
+        FsFile preFlightFile;
 
         //
 
         Mode mode = GROUND;
-        State *state = nullptr;
+        DataReporter **dataReporters = nullptr;
+        int numReporters = 0;
         GroundMode groundMode = ALTERNATE_;
         bool packData = true;
         uint16_t bufferTime;
         int bufferInterval = 0;
         char *logFileName = nullptr;        // Name of the log file
         char *flightDataFileName = nullptr; // Name of the flight data file
+        char *preFlightFileName = nullptr;  // Name of the pre-flight file
         bool sdReady = false;               // Whether the SD card has been initialized
-        bool psramReady = false;            // Whether the PSRAM has been initialized
+        bool flashReady = false;            // Whether the flash has been initialized
         bool ready = false;                 // Whether the logger is ready
-        bool hasFilledBuffer = false;       // Whether the ram buffer has been filled yet
 
-        //
+        char *logPrefixFormat = nullptr;
+        int logPrefixLen = 0;
+        char *customLogPrefix = nullptr;
+        int customLogPrefixLen = 0;
+        bool timeFirst = true;
 
-        PSRAMFile *ramFlightDataFile = nullptr; // Pointer to the flight data file
-        PSRAMFile *ramLogFile = nullptr;        // Pointer to the log file
-        PSRAMFile *ramBufferFile = nullptr;     // Pointer to the buffer file
-
-        int numBufferLines = 0;
-        int bufferIterations = 0;
     };
-} // namespace mmfs
 
-extern mmfs::Logger logger;
+    Logger &getLogger();
+    #ifdef PIO_UNIT_TESTING
+    void setLogger(Logger *logger);
+    #endif
+} // namespace mmfs
 
 #endif // LOGGER_H

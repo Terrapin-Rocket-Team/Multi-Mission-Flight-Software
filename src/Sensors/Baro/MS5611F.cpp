@@ -3,7 +3,7 @@
 
 namespace mmfs
 {
-    mmfs::MS5611::MS5611(const char *name) : ms(0x76)
+    mmfs::MS5611::MS5611(const char *name, TwoWire *bus, uint8_t addr) : ms(addr, bus)
     {
         setName(name);
     }

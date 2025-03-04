@@ -27,8 +27,6 @@ int main()
     std::string magColNames[3] {
         "_", "_", "_"
     };
-
-    mmfs::Logger logger;
     MockBarometer baro(dataPath, "B-Pres (hPa)", "B-Temp (C)");
     MockGPS gps(dataPath, "G-Lat (deg)", "G-Lon (deg)", "G-Alt (m)", "_", "G-# of Sats");
     MockIMU imu(dataPath, accColNames, gyroColNames, magColNames);
@@ -41,7 +39,6 @@ int main()
 
     mmfs::AvionicsKF kf = mmfs::AvionicsKF();
     mmfs::AvionicsState avState = mmfs::AvionicsState(sensors, 3, &kf, true);
-    logger.init(&avState);
     avState.init();
 
     printf("%7s %7s %7s %7s %7s %7s %7s %7s %7s\n",

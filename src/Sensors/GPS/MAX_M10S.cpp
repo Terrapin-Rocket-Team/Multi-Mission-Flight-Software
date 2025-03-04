@@ -4,14 +4,14 @@
 namespace mmfs
 {
 
-    MAX_M10S::MAX_M10S(const char *name, uint8_t address, TwoWire *wire) : m10s()
+    MAX_M10S::MAX_M10S(const char *name, TwoWire *wire, uint8_t address) : m10s()
     {
         setName(name);
         this->wire = wire;
         this->address = address;
     }
 
-    MAX_M10S::MAX_M10S(uint8_t address, TwoWire *wire) : m10s()
+    MAX_M10S::MAX_M10S(TwoWire *wire, uint8_t address) : m10s()
     {
         setName("MAX-M10S");
         this->wire = wire;
@@ -21,7 +21,7 @@ namespace mmfs
     bool MAX_M10S::init()
     {
 
-        // myGNSS.enableDebugging(); // Uncomment this line to enable helpful debug messages on Serial
+        // m10s.enableDebugging(); // Uncomment this line to enable helpful debug messages on Serial
 
         int count = 0;
         while (m10s.begin(*wire, address) == false && count < 3) // Connect to the u-blox module using Wire port
@@ -60,5 +60,6 @@ namespace mmfs
         sec = m10s.getSecond();
         day = m10s.getDay();
         month = m10s.getMonth();
+        year = m10s.getYear();
     }
 }

@@ -1,6 +1,6 @@
 {
     "name": "TRT-MMFS",
-    "version": "2.3.6",
+    "version": "3.0.0",
     "description": "Terrapin Rocket Team's Multi-Mission Flight Software. Designed to be used with any FC and any sensor suite.",
     "keywords": "MMFS, TRT, Terrapin Rocket Team, Flight Software",
     "repository": 
@@ -10,6 +10,10 @@
     },
     "authors": 
     [
+        {
+            "name": "Drew Brandt",
+            "url": "https://github.com/DrewBrandt"
+        },
         {
             "name": "Michael Mallamaci",
             "url": "https://github.com/mallamacimj"
@@ -31,8 +35,8 @@
             "url": "https://github.com/avikomarlingam"
         },
         {
-            "name": "Drew Brandt",
-            "url": "https://github.com/DrewBrandt"
+            "name": "Ramy Kaddouri",
+            "url": "https://github.com/rk234"
         },
         {
             "name": "Terrapin Rocket Team",
@@ -81,6 +85,10 @@
         {
             "name": "MS5611",
             "version": "https://github.com/RobTillaart/MS5611.git#0.4.1"
+        },
+        {
+            "name": "LittleFS",
+	        "version": "https://github.com/PaulStoffregen/LittleFS.git"
         }
     ],
     "frameworks": "*",

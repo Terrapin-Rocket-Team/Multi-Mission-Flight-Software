@@ -15,10 +15,7 @@ namespace mmfs
         virtual const SensorType getType() const override;
         virtual void update() override;
         virtual bool begin(bool useBiasCorrection = true) override;
-        virtual const int getNumPackedDataPoints() const override;
-        virtual const PackedType *getPackedOrder() const override;
-        virtual const char **getPackedDataLabels() const override;
-        virtual void packData();
+        virtual void setInitialSteps(int step);
 
     protected:
         Encoder_MMFS();

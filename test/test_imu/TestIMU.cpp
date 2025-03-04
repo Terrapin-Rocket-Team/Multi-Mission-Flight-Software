@@ -3,7 +3,7 @@
 
 // include other headers you need to test here
 
-#include "../../lib/NativeTestMocks/FakeSensors.h"
+#include "../../lib/NativeTestMocks/UnitTestSensors.h"
 
 // ---
 
@@ -117,6 +117,7 @@ void test_quaternion_based_complimentary_filter()
     imu.set(Vector<3>{2.0, 2.0, 5.0}, Vector<3>{1.0, 1.0, 1.0}, Vector<3>{0.5, 0.5, 0.5}); // Random non-gravity forces
     imu.quaternionBasedComplimentaryFilter((double)UPDATE_INTERVAL/1000); // Run filter
 
+    TEST_IGNORE_MESSAGE("Quaternion based complimentary filter test case 3 not working.");
     // The result should deviate significantly from the identity quaternion
     expected_orientation = Quaternion{0.9517171, 0.06399739, 0.02944679, -0.29878383};
     TEST_ASSERT_EQUAL_FLOAT(expected_orientation.w(), imu.getOrientation().w());
@@ -139,8 +140,8 @@ int main(int argc, char **argv)
     RUN_TEST(test_imu_begin);
     RUN_TEST(test_imu_set);
     RUN_TEST(test_imu_adaptiveAccelGain);
-    //RUN_TEST(test_quaternion_based_complimentary_filter); // TODO: Fix test
-
+    
+    RUN_TEST(test_quaternion_based_complimentary_filter); // TODO: Fix test
     UNITY_END();
 
     return 0;

@@ -7,11 +7,18 @@ namespace mmfs
 
     GPS::GPS()
     {
-        setUpPackedData();
         hr = 0;
         min = 0;
         sec = 0;
         strcpy(tod, "00:00:00");
+        addColumn(DOUBLE_HP, &position.x(), "Lat");
+        addColumn(DOUBLE_HP, &position.y(), "Lon");
+        addColumn(DOUBLE, &position.z(), "Alt (m)");
+        addColumn(DOUBLE, &displacement.x(), "Disp X (m)");
+        addColumn(DOUBLE, &displacement.y(), "Disp Y (m)");
+        addColumn(DOUBLE, &displacement.z(), "Disp Z (m)");
+        addColumn(INT, &fixQual, "Fix Quality");
+        addColumn(STRING, tod, "Time of Day");
     }
 
     GPS::~GPS() {}
@@ -24,7 +31,7 @@ namespace mmfs
 
     Vector<3> GPS::getOrigin() const { return origin; }
 
-    bool GPS::getHasFirstFix() const { return hasFirstFix; }
+    bool GPS::getHasFix() const { return hasFix; }
 
     int GPS::getFixQual() const { return fixQual; }
 
@@ -66,10 +73,17 @@ namespace mmfs
         return val;
     }
 
-    const char *GPS::getTimeOfDay() const
-    {
-        return tod;
-    }
+#pragma region Time Functions
+
+    int8_t GPS::getHour() const { return hr; }
+    int8_t GPS::getMinute() const { return min; }
+    int8_t GPS::getSecond() const { return sec; }
+
+    uint8_t GPS::getDay() const { return day; }
+    uint8_t GPS::getMonth() const { return month; }
+    uint16_t GPS::getYear() const { return year; }
+
+    const char *GPS::getTimeOfDay() const { return tod; }
 
     void GPS::findTimeZone()
     {
@@ -77,51 +91,49 @@ namespace mmfs
         if (isDST)
         {
             hrOffset = 1;
-            logger.recordLogData(INFO_, "DST is in effect.");
+            getLogger().recordLogData(INFO_, "DST is in effect.");
         }
         else
         {
             hrOffset = 0;
-            logger.recordLogData(INFO_, "DST is not in effect.");
+            getLogger().recordLogData(INFO_, "DST is not in effect.");
         }
 
         if (getPos().x() > -82.5)
         {
             hrOffset -= 5;
-            logger.recordLogData(INFO_, "Timezone: Eastern Standard Time");
+            getLogger().recordLogData(INFO_, "Timezone: Eastern Standard Time");
         }
         else if (getPos().x() > -97.5)
         {
             hrOffset -= 6;
-            logger.recordLogData(INFO_, "Timezone: Central Standard Time");
+            getLogger().recordLogData(INFO_, "Timezone: Central Standard Time");
         }
         else if (getPos().x() > -112.5)
         {
             hrOffset -= 7;
-            logger.recordLogData(INFO_, "Timezone: Mountain Standard Time");
+            getLogger().recordLogData(INFO_, "Timezone: Mountain Standard Time");
         }
         else if (getPos().x() > -127.5)
         {
             hrOffset -= 8;
-            logger.recordLogData(INFO_, "Timezone: Pacific Standard Time");
+            getLogger().recordLogData(INFO_, "Timezone: Pacific Standard Time");
         }
         else if (getPos().x() > -135)
         {
             hrOffset -= 9;
-            logger.recordLogData(INFO_, "Timezone: Alaska Standard Time");
+            getLogger().recordLogData(INFO_, "Timezone: Alaska Standard Time");
         }
         else if (getPos().x() > -150)
         {
             hrOffset -= 10;
-            logger.recordLogData(INFO_, "Timezone: Hawaii-Aleutian Standard Time");
+            getLogger().recordLogData(INFO_, "Timezone: Hawaii-Aleutian Standard Time");
         }
         else
         {
-            logger.recordLogData(INFO_, "Timezone: UTC");
+            getLogger().recordLogData(INFO_, "Timezone: UTC");
         }
-        char log[100];
-        snprintf(log, 100, "Timezone offset: %d", hrOffset);
-        logger.recordLogData(INFO_, log);
+        getLogger().recordLogData(INFO_, 100, "Timezone offset: %d", hrOffset);
     }
 
 #pragma endregion // GPS Specific Functions
@@ -136,21 +148,24 @@ namespace mmfs
     {
         read();
 
-        if (!hasFirstFix && fixQual >= 3)
+        if (!hasFix && fixQual >= 4)
         {
-            logger.recordLogData(INFO_, "GPS has first fix.");
+            hasFix = true;
+            getEventManager().invoke(GPSFix{"GPS_FIX"_i, this, true});
             findTimeZone();
-
-            bb.aonoff(BUZZER_PIN, 1000);
-            hasFirstFix = true;
             origin.x() = position.x();
             origin.y() = position.y();
             origin.z() = position.z();
 
             calcInitialValuesForDistance();
         }
-        if (hasFirstFix)
+        if (hasFix)
         {
+            if (fixQual < 4)
+            {
+                hasFix = false;
+                getEventManager().invoke(GPSFix{"GPS_FIX"_i, this, false});
+            }
             if (biasCorrectionMode)
             {
                 originBuffer.push(position);
@@ -168,10 +183,9 @@ namespace mmfs
             hr += hrOffset;
             hr = (hr % 24 + 24) % 24; // in cpp -1 % 24 = -1, but we want it to be 23
             min = min % 60;
-            sec = sec % 60; // just in case
+            sec = sec % 60;                                    // just in case
             snprintf(tod, 12, "%02d:%02d:%02d", hr, min, sec); // size is really 9 but 12 ignores warnings about truncation. IRL it will never truncate
         }
-        packData();
     }
 
     bool GPS::begin(bool useBiasCorrection)
@@ -182,57 +196,10 @@ namespace mmfs
         origin = Vector<3>(0, 0, 0);
         originBuffer.clear();
         fixQual = 0;
-        hasFirstFix = false;
+        hasFix = false;
         heading = 0;
         return init();
     }
-
-#pragma region Packed Data Functions
-
-    const int GPS::getNumPackedDataPoints() const { return 8; }
-
-    const PackedType *GPS::getPackedOrder() const
-    {
-        static const PackedType order[] = {DOUBLE, DOUBLE, FLOAT, FLOAT, FLOAT, FLOAT, BYTE, STRING_10};
-        return order;
-    }
-    const char **GPS::getPackedDataLabels() const
-    {
-        static const char *labels[] = {"Lat", "Lon", "Alt (m)", "Disp X (m)", "Disp Y (m)", "Disp Z (m)", "Fix Quality", "Time of Day"};
-        return labels;
-    }
-    void GPS::packData()
-    {
-        float posz = float(position.z());
-        float dispx = float(displacement.x());
-        float dispy = float(displacement.y());
-        float dispz = float(displacement.z());
-        int fixQual = int(this->fixQual);
-        int offset = 0;
-        memcpy(packedData + offset, &position.x(), sizeof(double));
-        offset += sizeof(double);
-        memcpy(packedData + offset, &position.y(), sizeof(double));
-        offset += sizeof(double);
-        memcpy(packedData + offset, &posz, sizeof(float));
-        offset += sizeof(float);
-        memcpy(packedData + offset, &dispx, sizeof(float));
-        offset += sizeof(float);
-        memcpy(packedData + offset, &dispy, sizeof(float));
-        offset += sizeof(float);
-        memcpy(packedData + offset, &dispz, sizeof(float));
-        offset += sizeof(float);
-        memcpy(packedData + offset, &fixQual, PackedTypeToSize(BYTE));
-        offset += PackedTypeToSize(BYTE);
-        memcpy(packedData + offset, tod, PackedTypeToSize(STRING_10));
-    }
-
-    // const char *GPS::getStaticDataString() const
-    // {
-    //     sprintf(staticData, "Original Latitude (m): %.10f\nOriginal Longitude (m): %.10f\nOriginal Altitude (m): %.2f\n", origin.x(), origin.y(), origin.z());
-    //     return staticData;
-    // }
-
-#pragma endregion // Packed Data Functions
 
 #pragma endregion // Sensor Virtual Function Implementations
 }

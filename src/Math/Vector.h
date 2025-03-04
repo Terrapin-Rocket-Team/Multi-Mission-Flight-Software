@@ -34,6 +34,10 @@ namespace mmfs {
 
 template <uint8_t N> class Vector {
 public:
+  double * xp = &p_vec[0];
+  double * yp = &p_vec[1];
+  double * zp = &p_vec[2];
+
   Vector() { memset(p_vec, 0, sizeof(double) * N); }
 
   Vector(double a) {

@@ -20,11 +20,9 @@ constexpr int MAX_DIGITS_LAT_LON = 12; // 180.0000000
 
 // ------------------ Sensor Constants ------------------
 
-extern const int BUZZER_PIN;
-extern const int BUILTIN_LED_PIN;
 constexpr double MEAN_SEA_LEVEL_PRESSURE_HPA = 1013.25;
-inline int SENSOR_BIAS_CORRECTION_DATA_LENGTH = 2; // in seconds
-inline int SENSOR_BIAS_CORRECTION_DATA_IGNORE = 1; // in seconds (how many seconds to ignore the most recent data for bias correction)
+inline unsigned int SENSOR_BIAS_CORRECTION_DATA_LENGTH = 2; // in seconds
+inline unsigned int SENSOR_BIAS_CORRECTION_DATA_IGNORE = 1; // in seconds (how many seconds to ignore the most recent data for bias correction)
 
 // ------------------------------------------------------
 
@@ -38,18 +36,16 @@ inline int SENSOR_BIAS_CORRECTION_DATA_IGNORE = 1; // in seconds (how many secon
 
 // ------------------ State Constants -------------------
 
-extern const int UPDATE_RATE; // in hz
-extern const int UPDATE_INTERVAL; // in ms
+inline unsigned int UPDATE_RATE = 10; // in hz
+inline unsigned int UPDATE_INTERVAL = 100; // in ms
 
 // ------------------------------------------------------
 
 // ------------------ File Constants --------------------
 
-inline int MAX_FILE_NAME_SIZE = 64; // in characters (including null terminator)
+inline unsigned int MAX_FILE_NAME_SIZE = 64; // in characters (including null terminator)
 inline uintptr_t PSRAM_STARTING_ADDRESS = 0x70000000;
-inline int PSRAM_CLUSTER_SIZE = 62500; // in bytes (32 KB because we are limited to 256 clusters (TODO))
-inline int ONE_MB = 1048576; // in bytes
-inline int MAX_PSRAM_FILES = 5; // in files, defaulted low to save memory
+inline unsigned int ONE_MB = 1048576; // in bytes
 
 // ------------------------------------------------------
 

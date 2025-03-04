@@ -5,6 +5,7 @@
 #include "../../Constants.h"
 #include "../../Math/Vector.h"
 #include "../../RecordData/Logger.h"
+#include "../../Events/DefaultEvents.h"
 
 namespace mmfs
 {
@@ -17,18 +18,21 @@ namespace mmfs
         virtual Vector<3> getDisplacement() const;
         virtual int getFixQual() const;
         virtual double getHeading() const;
-        virtual bool getHasFirstFix() const;
+        virtual bool getHasFix() const;
         virtual void update() override;
         virtual bool begin(bool useBiasCorrection = true) override;
 
         virtual const char *getTypeString() const override;
         virtual const SensorType getType() const override;
 
-        virtual const int getNumPackedDataPoints() const override;
-        virtual const PackedType *getPackedOrder() const override;
-        virtual const char **getPackedDataLabels() const override;
-        virtual void packData() override;
         virtual const char *getTimeOfDay() const;
+
+        virtual int8_t getHour() const;
+        virtual int8_t getMinute() const;
+        virtual int8_t getSecond() const;
+        virtual uint8_t getDay() const;
+        virtual uint8_t getMonth() const;
+        virtual uint16_t getYear() const;
 
     protected:
         GPS();
@@ -36,7 +40,7 @@ namespace mmfs
         Vector<3> displacement; // displacement from starting location
         Vector<3> origin;       // lat(deg), long(deg), alt(m) of the original location
         int fixQual = 0;            // number of satellite connections
-        bool hasFirstFix;       // whether or not GPS has reached at least 3 satellites since restart
+        bool hasFix;       // whether or not GPS has reached at least 3 satellites since restart
         double heading = 0;
 
         // Distance-related calculations
@@ -50,8 +54,9 @@ namespace mmfs
 
         char tod[9];
 
-        int8_t hr, min, sec;
-        uint8_t day, month;
+        int8_t hr = 0, min = 0, sec = 0;
+        uint8_t day = 0, month = 0;
+        uint16_t year = 0;
         int8_t hrOffset = 0;
     };
 }

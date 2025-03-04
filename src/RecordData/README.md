@@ -40,7 +40,7 @@ Logger logger(30, 30); //30 second buffer, write one line every 30 seconds to th
 
 ## Setup
 
-In the `setup()` function of your main file, you'll need to initialize the PSRAM object and call `logger.init(State *stateInstance)`. This will set up the PSRAM object and the SD card, and create the files on the SD card. You need to pass in a pointer to the state object so that the logger can access the state object to get the format of the data it needs to log.
+In the `setup()` function of your main file, you'll need to initialize the PSRAM object and call `getLogger().init(State *stateInstance)`. This will set up the PSRAM object and the SD card, and create the files on the SD card. You need to pass in a pointer to the state object so that the logger can access the state object to get the format of the data it needs to log.
 
 This is also where you would change the values of the "File Constants" in `Constants.h`. You would put the new values in setup(). I recommend not changing the values if you don't need to.
 
@@ -56,16 +56,16 @@ void setup() {
     state = new State(...); //whatever you need to pass in for your version of state
 
     //initialize the logger
-    logger.init(state);
+    getLogger().init(state);
 
     // Now, you can check the state of the SD card and PSRAM
 
-    if(logger.isSdCardReady())
+    if(getLogger().isSdCardReady())
         Serial.println("SD Card Ready");
     else
         Serial.println("SD Card Not Ready");
     
-    if(logger.isPsramReady())
+    if(getLogger().isPsramReady())
         Serial.println("PSRAM Ready");
     else
         Serial.println("PSRAM Not Ready");
@@ -74,7 +74,7 @@ void setup() {
     state->init();
 
     // finally, you can send the csvHeader to the flight file
-    logger.writeCsvHeader();
+    getLogger().writeCsvHeader();
 }
 ```
 
@@ -91,7 +91,7 @@ void loop() {
     state->updateState();
 
     //log the state
-    logger.recordFlightData();
+    getLogger().recordFlightData();
 }
 ```
 
@@ -111,24 +111,24 @@ There are up to 4 arguments:
     - `BOTH` - Write to both the SD card and the serial monitor (default)
 
 ```cpp
-logger.recordLogData(WARNING_, "Warning: Something happened");
+getLogger().recordLogData(WARNING_, "Warning: Something happened");
 
 // OR
 
-logger.recordLogData(ERROR_, "Error: Something went wrong", TO_USB); //only write to the serial monitor
+getLogger().recordLogData(ERROR_, "Error: Something went wrong", TO_USB); //only write to the serial monitor
 
 // OR
 
-logger.recordLogData(5, INFO_, "Information: Something happened", TO_FILE); //only write to the SD card with timestamp of "5.000"
+getLogger().recordLogData(5, INFO_, "Information: Something happened", TO_FILE); //only write to the SD card with timestamp of "5.000"
 ```
 
 As long as you include the `RecordData/Logger.h` file, you can use these logging statements anywhere in your code to note events or errors.
 
 ## Flight Mode
 
-The logger has a flight mode that you can set it to stop using the buffer file and start recording every piece of data. When you detect launch, you can call `logger.setRecordMode(FLIGHT)` to start recording all data to the psram's flight file. When the flight is finished, call `logger.setRecordMode(GROUND)` to write all gathered data to the SD card.
+The logger has a flight mode that you can set it to stop using the buffer file and start recording every piece of data. When you detect launch, you can call `getLogger().setRecordMode(FLIGHT)` to start recording all data to the psram's flight file. When the flight is finished, call `getLogger().setRecordMode(GROUND)` to write all gathered data to the SD card.
 
-IMPORTANT NOTE: The logger will not write any data to the SD card until you call `logger.setRecordMode(GROUND)`. If you don't call this, you will lose all data gathered during the flight. This is to prevent the logger from writing data to the SD card during the flight, which can slow down the flight controller.
+IMPORTANT NOTE: The logger will not write any data to the SD card until you call `getLogger().setRecordMode(GROUND)`. If you don't call this, you will lose all data gathered during the flight. This is to prevent the logger from writing data to the SD card during the flight, which can slow down the flight controller.
 
 ---
 

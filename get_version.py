@@ -1,5 +1,4 @@
 import json
-from os.path import join
 Import("env")
 
 # Function to read the version from library.json

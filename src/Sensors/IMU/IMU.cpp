@@ -3,6 +3,23 @@
 
 namespace mmfs
 {
+
+    IMU::IMU()
+    {
+        addColumn(DOUBLE, &measuredAcc.x(), "AccX (m/s^2)");
+        addColumn(DOUBLE, &measuredAcc.y(), "AccY (m/s^2)");
+        addColumn(DOUBLE, &measuredAcc.z(), "AccZ (m/s^2)");
+        addColumn(DOUBLE, &measuredGyro.x(), "GyroX (rad/s)");
+        addColumn(DOUBLE, &measuredGyro.y(), "GyroY (rad/s)");
+        addColumn(DOUBLE, &measuredGyro.z(), "GyroZ (rad/s)");
+        addColumn(DOUBLE, &measuredMag.x(), "MagX (uT)");
+        addColumn(DOUBLE, &measuredMag.y(), "MagY (uT)");
+        addColumn(DOUBLE, &measuredMag.z(), "MagZ (uT)");
+        addColumn(DOUBLE, &orientation.x(), "OriX");
+        addColumn(DOUBLE, &orientation.y(), "OriY");
+        addColumn(DOUBLE, &orientation.z(), "OriZ");
+        addColumn(DOUBLE, &orientation.w(), "OriW");
+    }
     Quaternion IMU::getOrientation()
     {
         return orientation;
@@ -32,7 +49,6 @@ namespace mmfs
     void IMU::update()
     {
         read();
-        packData();
     }
 
     bool IMU::begin(bool useBiasCorrection)
@@ -40,51 +56,6 @@ namespace mmfs
         biasCorrectionMode = useBiasCorrection;
         return init();
     }
-
-void IMU::packData()
-{
-    float accX = float(measuredAcc.x());
-    float accY = float(measuredAcc.y());
-    float accZ = float(measuredAcc.z());
-    float gyroX = float(measuredGyro.x());
-    float gyroY = float(measuredGyro.y());
-    float gyroZ = float(measuredGyro.z());
-    float magX = float(measuredMag.x());
-    float magY = float(measuredMag.y());
-    float magZ = float(measuredMag.z());
-    float oriX = float(orientation.x());
-    float oriY = float(orientation.y());
-    float oriZ = float(orientation.z());
-    float oriW = float(orientation.w());
-
-    int offset = 0;
-    memcpy(packedData + offset, &accX, sizeof(float));
-    offset += sizeof(float);
-    memcpy(packedData + offset, &accY, sizeof(float));
-    offset += sizeof(float);
-    memcpy(packedData + offset, &accZ, sizeof(float));
-    offset += sizeof(float);
-    memcpy(packedData + offset, &gyroX, sizeof(float));
-    offset += sizeof(float);
-    memcpy(packedData + offset, &gyroY, sizeof(float));
-    offset += sizeof(float);
-    memcpy(packedData + offset, &gyroZ, sizeof(float));
-    offset += sizeof(float);
-    memcpy(packedData + offset, &magX, sizeof(float));
-    offset += sizeof(float);
-    memcpy(packedData + offset, &magY, sizeof(float));
-    offset += sizeof(float);
-    memcpy(packedData + offset, &magZ, sizeof(float));
-    offset += sizeof(float);
-    memcpy(packedData + offset, &oriX, sizeof(float));
-    offset += sizeof(float);
-    memcpy(packedData + offset, &oriY, sizeof(float));
-    offset += sizeof(float);
-    memcpy(packedData + offset, &oriZ, sizeof(float));
-    offset += sizeof(float);
-    memcpy(packedData + offset, &oriW, sizeof(float));
-    
-}
 
     void IMU::quaternionBasedComplimentaryFilterSetup()
     {
@@ -139,7 +110,7 @@ void IMU::packData()
     {
         // See the Readme for details.
         // As a programmer this function takes in dt (seconds), measuredGyro, measuredAcc, measuredMag,
-        // and current orientation and propgated the orientation to the next time step.
+        // and current orientation and propagated the orientation to the next time step.
 
         //----------------- GYRO ORIENTATION --------------//
         // 1. Determine rate of change of quaternion
@@ -147,7 +118,7 @@ void IMU::packData()
         Quaternion q_w_BI = orientation.conjugate(); // Map from Inertia to body r_B = q_w_BI * r_I * q_w_BI^-1
         Quaternion q_w_BI_dot = w_b * q_w_BI * -.5;
 
-        // 2. Propogate gyro orientation
+        // 2. Propagate gyro orientation
         q_w_BI = q_w_BI + q_w_BI_dot * dt;
         q_w_BI.normalize();
         //-------------------------------------------------//
@@ -178,13 +149,13 @@ void IMU::packData()
         double alpha = adaptiveAccelGain(accel_best_filtering_at_static, .1, .2);
         delta_q_acc = delta_q_acc.interpolation(Quaternion{1, 0, 0, 0}, alpha, .9);
 
-        // 6. Combine with gryo orientation to correct roll and pitch
+        // 6. Combine with gyro orientation to correct roll and pitch
         Quaternion q_wa_BI = q_w_BI * delta_q_acc;
         q_wa_BI.normalize();
         //-------------------------------------------------//
 
         //----------------- MAG ORIENTATION --------------//
-        orientation = q_wa_BI.conjugate(); // TODO come back to at some poin
+        orientation = q_wa_BI.conjugate(); // TODO come back to at some point
         return;
         // 7. Get magnetic field vector in interial frame
         Quaternion m_B = Quaternion{0, measuredMag};
@@ -213,7 +184,7 @@ void IMU::packData()
         // 9. Interpolation to reduce high freq noise
         delta_q_mag = delta_q_mag.interpolation(Quaternion{1, 0, 0, 0}, mag_best_filtering_at_static, .9);
 
-        // 10. Combine with gryo/acc orientation to correct yaw
+        // 10. Combine with gyro/acc orientation to correct yaw
         Quaternion q_BI = q_wa_BI * delta_q_mag;
         q_BI.normalize();
         //-------------------------------------------------//

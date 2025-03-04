@@ -24,7 +24,7 @@ public:
     virtual Matrix getG(double dt) = 0;
     virtual Matrix getH() = 0;
     virtual Matrix getR() = 0;
-    virtual Matrix getQ() = 0;
+    virtual Matrix getQ(double dt) = 0;
 
     Matrix iterate(double dt, Matrix measurement, Matrix control);
 

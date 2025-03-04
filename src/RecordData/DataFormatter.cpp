@@ -1,127 +1,76 @@
 #include "DataFormatter.h"
-
-#include "../State/State.h"
 #include "DataReporter.h"
 
 using namespace mmfs;
 
-uint8_t *DataFormatter::packData(uint8_t *dest, State *state)
+void DataFormatter::getCSVHeader(char *dest, int destLen, DataReporter **drs, int numDrs)
 {
     int offset = 0;
-    // pack state data
-    memcpy((void *)dest, state->getPackedData(), state->getPackedDataSize());
-    offset += state->getPackedDataSize();
-
-    // pack sensor data
-    for (int i = 0; i < state->getNumMaxSensors(); i++)
+    for (int i = 0; i < numDrs; i++)
     {
-        if (!state->sensorOK(state->getSensors()[i]))
-            continue;
-        memcpy((uint8_t *)dest + offset, state->getSensors()[i]->getPackedData(), state->getSensors()[i]->getPackedDataSize());
-        offset += state->getSensors()[i]->getPackedDataSize();
-    }
-
-    return dest + offset;
-}
-
-int DataFormatter::getPackedLen(State *state)
-{
-    int len = state->getPackedDataSize();
-    for (int i = 0; i < state->getNumMaxSensors(); i++)
-    {
-        if (!state->sensorOK(state->getSensors()[i]))
-            continue;
-        len += state->getSensors()[i]->getPackedDataSize();
-    }
-    return len;
-}
-
-void DataFormatter::getCSVHeader(char *dest, int destLen, State *state)
-{
-    int offset = 0;
-    // state first
-    const char **labels = state->getPackedDataLabels();
-    for (int i = 0; i < state->getNumPackedDataPoints() && destLen > 0; i++)
-    {
-        int len = strlen(state->getName()) + 3 + strlen(labels[i]) + 1; // "State - [header],"
-        snprintf(dest + offset, destLen, "%s - %s,", state->getName(), labels[i]);
-        offset += len;
-        destLen -= len;
-    }
-
-    // sensors next
-    for (int i = 0; i < state->getNumMaxSensors(); i++)
-    {
-        if (!state->sensorOK(state->getSensors()[i]))
-            continue;
-        labels = state->getSensors()[i]->getPackedDataLabels();
-        for (int j = 0; j < state->getSensors()[i]->getNumPackedDataPoints() && destLen > 0; j++)
+        auto curDataPt = drs[i]->getDataPoints();
+        for (int j = 0; j < drs[i]->getNumColumns() && destLen > 0; j++)
         {
 
-            int len = snprintf(dest + offset, destLen, "%s - %s,", state->getSensors()[i]->getName(), labels[j]);
+            int len = snprintf(dest + offset, destLen, "%s - %s,", drs[i]->getName(), curDataPt->label);
             offset += len;
             destLen -= len;
+            curDataPt = curDataPt->next;
         }
     }
     dest[offset - 1] = '\0';
 }
 
-void DataFormatter::toCSVRow(char *dest, int destLen, State *state, void *data)
+void DataFormatter::toCSVRow(char *dest, int destLen, DataReporter **drs, int numDrs, void *data)
 {
-    int dataOffset = 0;
-    // state first
-    uintptr_t cursor = toCSVSection(dest, destLen, data == nullptr ? state->getPackedData() : (void *)data, dataOffset, state);
-
-    // sensors next
-    for (int i = 0; i < state->getNumMaxSensors(); i++)
-    {
-        if (!state->sensorOK(state->getSensors()[i]))
-            continue;
-        if (data == nullptr)
-            dataOffset = 0;
-        cursor = toCSVSection((char *)cursor, destLen, data == nullptr ? state->getSensors()[i]->getPackedData() : (void *)data, dataOffset, state->getSensors()[i]);
-    }
-    ((char *)cursor)[-1] = '\0';
+    char *cursor = dest;
+    for (int i = 0; i < numDrs; i++)
+        cursor = toCSVSection(cursor, destLen, drs[i]);
+    cursor[-1] = '\0'; // Remove the last comma
 }
 
-uintptr_t DataFormatter::toCSVSection(char *dest, int &destLen, void *data, int &dataOffset, DataReporter *obj)
+char *DataFormatter::toCSVSection(char *dest, int &destLen, DataReporter *obj)
 {
     int strSize = 0;
-    for (int i = 0; i < obj->getNumPackedDataPoints() && destLen > 0; i++)
+    auto curDataPt = obj->getDataPoints();
+    for (int i = 0; i < obj->getNumColumns() && destLen > 0; i++)
     {
-        const void *dataPtr = (uint8_t *)data + dataOffset;
-        dataOffset += obj->PackedTypeToSize(obj->getPackedOrder()[i]);
+        const void *dataPtr = curDataPt->data;
         int printedSize = 0;
-        switch (obj->getPackedOrder()[i])
+        switch (curDataPt->type)
         {
         case FLOAT:
             printedSize = snprintf(dest + strSize, destLen, "%.3f,", *(float *)dataPtr);
             break;
         case DOUBLE:
+            printedSize = snprintf(dest + strSize, destLen, "%.3f,", *(double *)dataPtr);
+            break;
+        case DOUBLE_HP:
             printedSize = snprintf(dest + strSize, destLen, "%.7f,", *(double *)dataPtr);
-            break;
-        case BYTE:
-            printedSize = snprintf(dest + strSize, destLen, "%hhd,", *(int *)dataPtr);
-            break;
-        case SHORT:
-            printedSize = snprintf(dest + strSize, destLen, "%hd,", *(int *)dataPtr);
             break;
         case INT:
             printedSize = snprintf(dest + strSize, destLen, "%d,", *(int *)dataPtr);
             break;
-        case LONG:
-            printedSize = snprintf(dest + strSize, destLen, "%ld,", *(long int *)dataPtr);
+        case BYTE:
+            printedSize = snprintf(dest + strSize, destLen, "%hhd,", *(int8_t *)dataPtr);
             break;
-        case STRING_10:
-        case STRING_20:
-        case STRING_50:
+        case SHORT:
+            printedSize = snprintf(dest + strSize, destLen, "%hd,", *(int16_t *)dataPtr);
+            break;
+        case LONG:
+            printedSize = snprintf(dest + strSize, destLen, "%ld,", *(long *)dataPtr);
+            break;
+        case STRING:
             printedSize = snprintf(dest + strSize, destLen, "%s,", (char *)dataPtr);
             break;
+        case BOOL:
+            printedSize = snprintf(dest + strSize, destLen, "%s,", *((bool *)dataPtr) ? "True" : "False");
         default:
             break;
         }
         destLen -= printedSize;
         strSize += printedSize;
+        curDataPt = curDataPt->next;
     }
-    return (uintptr_t)dest + strSize;
+    return dest + strSize;
 }

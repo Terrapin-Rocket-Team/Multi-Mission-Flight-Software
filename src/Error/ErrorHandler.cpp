@@ -115,7 +115,7 @@ void ErrorHandler::addError(Error *error)
         errorTail = error;
     }
     // Log the error
-    logger.recordLogData(error->type == NONCRITICAL_WARNING ? WARNING_ : ERROR_, error->toString());
+    getLogger().recordLogData(error->type == NONCRITICAL_WARNING ? WARNING_ : ERROR_, error->toString());
 }
 
 void ErrorHandler::addError(ErrorType type, const char *message, int errorLocation, int pinNum, BBPattern *pattern)

@@ -1,7 +1,9 @@
-#include <cmath>
-#include <algorithm>
 #ifndef MATRIX_H
 #define MATRIX_H
+
+#include <cmath>
+#include <algorithm>
+#include <cstdio>
 
 namespace mmfs
 {
@@ -29,6 +31,7 @@ namespace mmfs
         Matrix transpose();
         Matrix inv();
         Matrix inverse();
+        double trace();
         static Matrix ident(int n);
         void disp();
 
