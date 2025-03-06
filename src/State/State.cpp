@@ -30,7 +30,7 @@ namespace mmfs
 
     State::~State()
     {
-    
+        delete[] stateVars;
     }
 
 #pragma endregion
@@ -58,8 +58,10 @@ namespace mmfs
                 getLogger().recordLogData(ERROR_, "A sensor in the array was null!");
             }
         }
-        if (filter)
+        if (filter){
             filter->initialize();
+            stateVars = new double[filter->getStateSize()];
+        }
 
         numSensors = good;
 
@@ -151,7 +153,6 @@ namespace mmfs
 
         double *measurements = new double[filter->getMeasurementSize()];
         double *inputs = new double[filter->getInputSize()];
-        double *stateVars = new double[filter->getStateSize()];
 
         // gps x y barometer z
         measurements[0] = sensorOK(gps) ? gps->getDisplacement().x() : 0;
@@ -184,8 +185,6 @@ namespace mmfs
             baroVelocity = (baro->getAGLAltM() - baroOldAltitude) / (currentTime - lastTime);
             baroOldAltitude = baro->getAGLAltM();
         }
-
-        delete[] stateVars;
     }
 
 #pragma endregion Update Functions

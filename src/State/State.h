@@ -97,6 +97,8 @@ namespace mmfs
         bool initialized = false;
 
         int stage = 0;
+
+        double *stateVars = nullptr;
     };
 }
 #endif // STATE_H
