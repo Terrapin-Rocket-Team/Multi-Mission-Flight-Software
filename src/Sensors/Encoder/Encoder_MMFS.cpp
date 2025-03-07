@@ -15,11 +15,6 @@ namespace mmfs
 
     int Encoder_MMFS::getSteps() const { return currentRelativeSteps; }
 
-    void Encoder_MMFS::setInitialSteps(int step){
-        initialSteps = step;
-        getLogger().recordLogData(INFO_, 100, "[Encoder]: Initial Steps set to: %d", step);
-    }
-
 #pragma endregion // Encoder Specific Functions
 
 #pragma region Sensor Virtual Function Implementations
