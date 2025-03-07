@@ -154,8 +154,11 @@ namespace mmfs
         {
             hasFix = true;
             getEventManager().invoke(GPSFix{"GPS_FIX"_i, this, !hasFirstFix}); // will be false the first time this runs, so invert it
-            hasFirstFix = true;
-            findTimeZone();
+            if (!hasFirstFix)
+            {
+                findTimeZone();
+                hasFirstFix = true;
+            }
             origin.x() = position.x();
             origin.y() = position.y();
             origin.z() = position.z();
