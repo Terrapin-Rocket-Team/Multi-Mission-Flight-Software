@@ -100,8 +100,4 @@ void MockGPS::read() {
     fixQual = static_cast<int>(sdData[fixQualityColIdx]);
 }
 
-MockGPS::~MockGPS() {
-    dataReader.close();
-}
-
 }  // namespace mmfs

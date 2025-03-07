@@ -6,14 +6,14 @@
 #ifndef MOCKIMU_H
 #define MOCKIMU_H
 
-#include "../SdDataReader.h"
+#include "../SerialReader.h"
 #include "IMU.h"
 
 namespace mmfs
 {
 class MockIMU : public mmfs::IMU {
     private:
-        SdDataReader dataReader;
+        SerialReader dataReader;
 
         int accIndices[3]{-1, -1, -1};
         int gyroIndices[3]{-1, -1, -1};
@@ -27,7 +27,6 @@ class MockIMU : public mmfs::IMU {
 
     public:
         MockIMU(const char* dataPath, const String accColNames[3], const String gyroColNames[3], const String magColNames[3]);
-        ~MockIMU() override;
 
         bool init() override;
         void read() override;

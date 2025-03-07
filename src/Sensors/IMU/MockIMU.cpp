@@ -93,7 +93,4 @@ void MockIMU::read() {
     }
 }
 
-MockIMU::~MockIMU() {
-    dataReader.close();
-}
 }

@@ -62,8 +62,4 @@ void MockBarometer::read() {
     pressure = sdData[pressureColIndex];
     temp = sdData[temperatureColIndex];
 }
-
-MockBarometer::~MockBarometer() {
-    dataReader.close();
-}
 }

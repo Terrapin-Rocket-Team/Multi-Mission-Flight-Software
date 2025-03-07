@@ -6,14 +6,14 @@
 #ifndef MOCKGPS_H
 #define MOCKGPS_H
 
-#include "../SdDataReader.h"
+#include "../SerialReader.h"
 #include "GPS.h"
 
 namespace mmfs
 {
 class MockGPS : public mmfs::GPS {
 private:
-    SdDataReader dataReader;
+    SerialReader dataReader;
 
     int posXColIdx = -1;
     int posYColIdx = -1;
@@ -35,7 +35,6 @@ public:
             const String& posZColName,
             const String& headingColName,
             const String& fixQualityColName);
-    ~MockGPS() override;
 
     bool init() override;
     void read() override;
