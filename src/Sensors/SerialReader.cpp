@@ -10,7 +10,7 @@ namespace mmfs
 {
 SerialReader::SerialReader(const char* dataPointer) {
     initialized = true;
-    dataPointer = dataPointer;
+    this->dataPointer = dataPointer;
     getLogger().recordLogData(INFO_, "SerialReader: Initialized");
 }
 
