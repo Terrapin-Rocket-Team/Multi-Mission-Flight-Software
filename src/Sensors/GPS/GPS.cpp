@@ -199,6 +199,7 @@ namespace mmfs
         originBuffer.clear();
         fixQual = 0;
         hasFix = false;
+        hasFirstFix = false;
         heading = 0;
         return init();
     }
