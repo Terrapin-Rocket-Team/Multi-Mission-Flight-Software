@@ -2,29 +2,25 @@
 //
 // Created by ramykaddouri on 10/22/24.
 // Modified by michael mallamaci on 2/26/25 for reading from SD card
+// Modified by michael mallamaci on 3/7/25 for reading from serial
 //
 
-#ifndef SDDATAREADER_H
-#define SDDATAREADER_H
-#include "SdFat.h"
-#include "../RecordData/SdFatBoilerplate.h"
+#ifndef SERIALREADER_H
+#define SERIALREADER_H
 #include "../RecordData/Logger.h"
 #include <Arduino.h>
 #define MAX_NUM_COLS 1024
 
 namespace mmfs
 {
-class SdDataReader {
+class SerialReader {
     private:
         bool initialized = false;
         size_t lineIdx = 0;
-        const char* filePath;
-        SdFat sd;
-        SdFile file;
-        char buffer[256]; // Buffer to read lines from the file TODO increase
+        const char* dataPointer;
     
     public:
-        SdDataReader(const char* filePath);
+        SerialReader(const char* dataPointer);
         bool isInit() const;
     
         //reads header of the CSV, sets numCols to number of columns and colNames
@@ -36,11 +32,8 @@ class SdDataReader {
         //returns true if successful, false otherwise
         bool readLine(float* data);
     
-        //close file stream
-        void close();
-    
-        ~SdDataReader();
+        ~SerialReader(){};
     };
 }
 
-#endif //SDDATAREADER_H
+#endif //SERIALREADER_H
