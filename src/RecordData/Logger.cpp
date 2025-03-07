@@ -56,7 +56,6 @@ Logger::Logger()
         snprintf(preFlightFileName, len, "%s", fileName);
         preFlightFile.close();
     }
-    recordCrashReport();
 
 #ifndef PIO_UNIT_TESTING // This is a workaround because testing this logger is hard when it's writing its own variable data to the log file
     recordLogData(INFO_, 100, "This flight is running MMFS v%s", APP_VERSION);

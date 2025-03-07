@@ -11,7 +11,8 @@ MMFSSystem::MMFSSystem(MMFSConfig *config) : config(config)
 {
 }
 void MMFSSystem::init()
-{
+{   
+    getLogger().recordCrashReport();
     getLogger().recordLogData(INFO_, "Initializing MMFS.");
     Wire.begin();
     // BlinkBuzz first
