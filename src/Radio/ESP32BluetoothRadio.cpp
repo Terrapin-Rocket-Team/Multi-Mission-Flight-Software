@@ -37,16 +37,30 @@ bool mmfs::ESP32BluetoothRadio::tx(const uint8_t *message, int len) {
 }
 
 bool mmfs::ESP32BluetoothRadio::rx() {
-    if (port.available() > 0) {
+    if (!port.available()) {
+        receiveBufferSize = 0;
+        return false;
+    }
+
+    uint8_t messageType = port.read();
+    if (messageType == DATA_MESSAGE) {
         uint16_t size = -1;
         port.readBytes(reinterpret_cast<char*>(&size), sizeof(size));
 
-        if (size > 0) {
+        if (size > 0 && size <= RECEIVE_BUFFER_SIZE) {
             receiveBufferSize = size;
             port.readBytes(receiveBuffer, size);
             return true;
         }
+    } else if (messageType == STATUS_MESSAGE) {
+        uint8_t status = port.read();
+        if (status == 1) {
+            ready = true;
+        } else {
+            ready = false;
+        }
     }
+
     receiveBufferSize = 0;
     return false;
 }
@@ -68,3 +82,8 @@ bool mmfs::ESP32BluetoothRadio::receive(Data &data) {
 int mmfs::ESP32BluetoothRadio::RSSI() {
     return 0;
 }
+
+bool mmfs::ESP32BluetoothRadio::isReady() {
+    return ready;
+}
+

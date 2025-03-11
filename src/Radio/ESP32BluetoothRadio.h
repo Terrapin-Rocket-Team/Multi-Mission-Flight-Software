@@ -7,8 +7,9 @@
 #include "Radio.h"
 #include <string>
 
-#define INIT_MESSAGE 0x01
-#define DATA_MESSAGE 0x02
+#define INIT_MESSAGE 1
+#define DATA_MESSAGE 2
+#define STATUS_MESSAGE 3
 #define RECEIVE_BUFFER_SIZE 512
 
 namespace mmfs {
@@ -18,7 +19,8 @@ namespace mmfs {
         std::string name;
         uint8_t receiveBuffer[RECEIVE_BUFFER_SIZE]{};
         uint16_t receiveBufferSize = 0;
-        bool hangForSerialOnInit;
+        bool hangForSerialOnInit = true;
+        bool ready = false;
 
     public:
         // name here can either be the server name when used with an
@@ -40,6 +42,10 @@ namespace mmfs {
         bool receive(Data &data) override;
 
         int RSSI() override;
+
+        // For a server: will return true if everything has been successfully initialized on the ESP32 side
+        // For a client: will return true if the client has successfully initialized and established a connection the server
+        bool isReady();
     };
 }
 
