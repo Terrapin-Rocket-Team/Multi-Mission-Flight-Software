@@ -108,7 +108,7 @@ namespace mmfs
             firstLis = lastLis = l;
             return true;
         }
-        while (t->next)
+        while (t)
         {
             if (t->isClass && l->isClass)
             {
