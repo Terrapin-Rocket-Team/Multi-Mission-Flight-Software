@@ -26,7 +26,7 @@ public:
             i = 5;
             break;
         case "GPS_FIX"_i:
-            a = static_cast<const GPSFix *>(e)->hasFix;
+            a = static_cast<const GPSFix *>(e)->firstFix;
             break;
         default:
             break;
@@ -34,6 +34,14 @@ public:
     }
 };
 EventListener e1, e2;
+
+char a[20] = "Hello, World!";
+void eventHandlingFunction(const Event *e)
+{
+    if (e->ID == "NONSENSE_EVENT"_i)
+        snprintf(a, 20, "Goodbye, World!");
+}
+
 // ---
 
 // These two functions are called before and after each test function, and are required in unity, even if empty.
@@ -75,18 +83,26 @@ void testCase2()
     TEST_ASSERT_TRUE(e2.a);
 }
 
+void testFunctionEvents()
+{
+    TEST_ASSERT_EQUAL_STRING("Hello, World!", a);
+    getEventManager().invoke(BoolEvent{"NONSENSE_EVENT"_i, true});
+    TEST_ASSERT_EQUAL_STRING("Goodbye, World!", a);
+}
+
 // ---
 
 // This is the main function that runs all the tests. It should be the last thing in the file.
 int main(int argc, char **argv)
 {
     UNITY_BEGIN();
-
+    getEventManager().subscribe(eventHandlingFunction);
     // Add your tests here
     // RUN_TEST(test_function_name); // no parentheses after function name
 
     RUN_TEST(testCase1);
     RUN_TEST(testCase2);
+    RUN_TEST(testFunctionEvents);
 
     UNITY_END();
 }

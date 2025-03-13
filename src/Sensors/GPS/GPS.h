@@ -41,6 +41,7 @@ namespace mmfs
         Vector<3> origin;       // lat(deg), long(deg), alt(m) of the original location
         int fixQual = 0;            // number of satellite connections
         bool hasFix;       // whether or not GPS has reached at least 3 satellites since restart
+        bool hasFirstFix;
         double heading = 0;
 
         // Distance-related calculations

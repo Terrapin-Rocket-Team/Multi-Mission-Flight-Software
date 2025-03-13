@@ -19,6 +19,8 @@ namespace mmfs
         addColumn(DOUBLE, &displacement.z(), "Disp Z (m)");
         addColumn(INT, &fixQual, "Fix Quality");
         addColumn(STRING, tod, "Time of Day");
+        hasFirstFix = false;
+        hasFix = false;
     }
 
     GPS::~GPS() {}
@@ -151,12 +153,15 @@ namespace mmfs
         if (!hasFix && fixQual >= 4)
         {
             hasFix = true;
-            getEventManager().invoke(GPSFix{"GPS_FIX"_i, this, true});
-            findTimeZone();
+            getEventManager().invoke(GPSFix{"GPS_FIX"_i, this, !hasFirstFix}); // will be false the first time this runs, so invert it
+            if (!hasFirstFix)
+            {
+                findTimeZone();
+                hasFirstFix = true;
+            }
             origin.x() = position.x();
             origin.y() = position.y();
             origin.z() = position.z();
-
             calcInitialValuesForDistance();
         }
         if (hasFix)
@@ -197,6 +202,7 @@ namespace mmfs
         originBuffer.clear();
         fixQual = 0;
         hasFix = false;
+        hasFirstFix = false;
         heading = 0;
         return init();
     }
