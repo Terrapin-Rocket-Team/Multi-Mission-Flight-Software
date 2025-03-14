@@ -11,7 +11,7 @@ namespace mmfs
 SerialReader::SerialReader(const char* dataPointer) {
     initialized = true;
     this->dataPointer = dataPointer;
-    getLogger().recordLogData(INFO_, "SerialReader: Initialized");
+    //getLogger().recordLogData(INFO_, "SerialReader: Initialized");
 }
 
 bool SerialReader::readColumnHeaders(int &numCols, String colNames[]) {
