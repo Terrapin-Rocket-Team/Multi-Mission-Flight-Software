@@ -13,6 +13,13 @@ def copyFile(ser: serial.Serial, src, dest = ""):
     ser.write("cp " + src)
     file = open(dest,"w")
     time.sleep(0.1)
+    if(not ser.readline().startswith("ok")):
+        print("Arduino did not recognize \"cp\" command")
+        return
+    resp = ser.readline()
+    if(resp != "Sending..."):
+        print(resp)
+        return
     while(ser.in_waiting > 0):
         file.write(ser.read(ser.in_waiting).decode())
     print(f"Copied \"{src}\" to \"dest\".")
@@ -21,6 +28,10 @@ def getlatestFiles(ser: serial.Serial):
     ser.write(("latest\n").encode())
     while(ser.in_waiting == 0):
         time.sleep(0.1)
+    if(not ser.readline().startswith("ok")):
+        print("Arduino did not recognize \"latest\" command")
+        return
+    
     num = int(ser.read(ser.in_waiting).decode().strip())
     if(num < 1):
         print("No files found.")

@@ -72,6 +72,7 @@ void SerialHandler::copyFile(char *args)
         Serial.println("File not found.");
         return;
     }
+    Serial.println("Sending...");
     FsFile f = sd.open(args, FILE_READ);
     char c;
     while(f.readBytes(&c, 1))
