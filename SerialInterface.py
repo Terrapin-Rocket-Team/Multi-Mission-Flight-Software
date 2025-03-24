@@ -1,10 +1,18 @@
 import serial
 import time
 
-# Update this to match your Arduino's port
-SERIAL_PORT = "COM7"  # Change to "/dev/ttyUSB0" or "/dev/ttyACM0" on Linux/macOS
-BAUD_RATE = 9600
+from serial.tools import list_ports
 
+def find_serial_port():
+    """
+    Automatically finds and returns the first available serial port.
+    Returns:
+        str: The name of the serial port if found, otherwise None.
+    """
+    ports = list(list_ports.comports())
+    if ports:
+        return ports[0].device
+    return None
 
 def copyFile(ser: serial.Serial, src, dest = ""):
     
@@ -78,10 +86,14 @@ def clearFiles(ser: serial.Serial):
         print("Error")
     
 def main():
-    try:
-        ser = serial.Serial(SERIAL_PORT, BAUD_RATE, timeout=1)
+    try: 
+        port = find_serial_port()
+        if not port:
+            print("No serial port found.")
+            return
+        ser = serial.Serial(port, 9600, timeout=1)
         time.sleep(.5)  # Wait for Arduino to initialize
-        print(f"Connected to {SERIAL_PORT}")
+        print(f"Connected to {port}")
 
         while True:
             # Send user input to Arduino
