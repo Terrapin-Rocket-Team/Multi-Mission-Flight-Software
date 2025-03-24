@@ -173,16 +173,16 @@ void Logger::recordLogData(double timeStamp, LogType type, Dest dest, int size, 
     {
         len = customLogPrefixLen;
         logPrefix = new char[customLogPrefixLen];
-        snprintf(logPrefix, customLogPrefixLen, customLogPrefix, timeStamp);
+        snprintf(logPrefix, customLogPrefixLen, customLogPrefix, timeStamp/1000.0);
     }
     else
     {
         len = logPrefixLen;
         logPrefix = new char[logPrefixLen];
         if (timeFirst)
-            snprintf(logPrefix, logPrefixLen, logPrefixFormat, timeStamp, logTypeStrings[type]);
+            snprintf(logPrefix, logPrefixLen, logPrefixFormat, timeStamp/1000.0, logTypeStrings[type]);
         else
-            snprintf(logPrefix, logPrefixLen, logPrefixFormat, logTypeStrings[type], timeStamp);
+            snprintf(logPrefix, logPrefixLen, logPrefixFormat, logTypeStrings[type], timeStamp/1000.0);
     }
     char *msg = new char[size + 1];
     int p = vsnprintf(msg, size + 1, format, args);
