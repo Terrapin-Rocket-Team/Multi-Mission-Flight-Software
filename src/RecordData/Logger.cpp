@@ -173,16 +173,16 @@ void Logger::recordLogData(double timeStamp, LogType type, Dest dest, int size, 
     {
         len = customLogPrefixLen;
         logPrefix = new char[customLogPrefixLen];
-        snprintf(logPrefix, customLogPrefixLen, customLogPrefix, timeStamp/1000.0);
+        snprintf(logPrefix, customLogPrefixLen, customLogPrefix, timeStamp);
     }
     else
     {
         len = logPrefixLen;
         logPrefix = new char[logPrefixLen];
         if (timeFirst)
-            snprintf(logPrefix, logPrefixLen, logPrefixFormat, timeStamp/1000.0, logTypeStrings[type]);
+            snprintf(logPrefix, logPrefixLen, logPrefixFormat, timeStamp, logTypeStrings[type]);
         else
-            snprintf(logPrefix, logPrefixLen, logPrefixFormat, logTypeStrings[type], timeStamp/1000.0);
+            snprintf(logPrefix, logPrefixLen, logPrefixFormat, logTypeStrings[type], timeStamp);
     }
     char *msg = new char[size + 1];
     int p = vsnprintf(msg, size + 1, format, args);
@@ -206,14 +206,14 @@ void Logger::recordLogData(LogType type, Dest dest, int size, const char *format
 
     va_list args;
     va_start(args, format);
-    recordLogData(millis(), type, dest, size, format);
+    recordLogData(millis()/1000.0, type, dest, size, format);
     va_end(args);
 }
 void Logger::recordLogData(LogType type, int size, const char *format, ...)
 {
     va_list args;
     va_start(args, format);
-    recordLogData(millis(), type, BOTH, size, format, args);
+    recordLogData(millis()/1000.0, type, BOTH, size, format, args);
     va_end(args);
 }
 void Logger::recordLogData(int size, const char *format, ...)
@@ -228,7 +228,7 @@ void Logger::recordLogData(int size, const char *format, ...)
 }
 void Logger::recordLogData(LogType type, Dest dest, const char *msg)
 {
-    recordLogData(millis(), type, dest, strlen(msg), msg);
+    recordLogData(millis()/1000.0, type, dest, strlen(msg), msg);
 }
 void Logger::recordLogData(double timeStamp, LogType type, Dest dest, const char *msg)
 {
@@ -236,7 +236,7 @@ void Logger::recordLogData(double timeStamp, LogType type, Dest dest, const char
 }
 void Logger::recordLogData(LogType type, const char *msg)
 {
-    recordLogData(millis(), type, BOTH, strlen(msg), msg);
+    recordLogData(millis()/1000.0, type, BOTH, strlen(msg), msg);
 }
 void Logger::recordLogData(double timeStamp, LogType type, const char *msg)
 {
