@@ -32,8 +32,6 @@ void setup()
 
 void loop()
 {
-    if(Serial.available()){
-        sh.handle();
-    }
+    sh.handle();
     sys.update();
 }

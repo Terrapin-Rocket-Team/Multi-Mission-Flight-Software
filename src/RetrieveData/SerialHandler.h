@@ -5,13 +5,6 @@ namespace mmfs
 {
     class SerialHandler
     {
-        enum Commands{
-            LS,
-            CP,
-            CLR,
-            LATEST,
-            RM
-        };
         public:
             void handle();
         private:
