@@ -77,7 +77,10 @@ bool MockIMU::init() {
     }
 
     initialized = true;
-    return true;
+    quaternionBasedComplimentaryFilterSetup();
+    setAccelBestFilteringAtStatic(.5);
+    setMagBestFilteringAtStatic(.5);
+    return initialized;
 }
 
 void MockIMU::read() {
@@ -91,6 +94,8 @@ void MockIMU::read() {
         measuredGyro[i] = sdData[gyroIndices[i]];
         measuredMag[i] = sdData[magIndices[i]];
     }
+
+    quaternionBasedComplimentaryFilter(UPDATE_INTERVAL / 1000.0);
 }
 
 }
