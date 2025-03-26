@@ -8,6 +8,7 @@ namespace mmfs
     {
         public:
             void handle();
+            const char *getLastLine() const;
         private:
             void fetchList();
             void clearFiles();
@@ -15,7 +16,7 @@ namespace mmfs
             void latestFiles();
             void copyFile(char *args);
         private:
-            char cmdBuffer[250];
+            char line[2500];
     };
     SerialHandler &getSerialHandler();
 }

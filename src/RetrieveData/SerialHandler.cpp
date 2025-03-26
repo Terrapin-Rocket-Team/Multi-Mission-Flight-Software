@@ -1,43 +1,50 @@
 #include "SerialHandler.h"
+#include "Events/Event.h"
 using namespace mmfs;
 
 void SerialHandler::handle()
 {
     if (Serial.available())
     {
-        int i = Serial.readBytesUntil('\n', cmdBuffer, sizeof(cmdBuffer));
-        cmdBuffer[i] = '\0';
-        char *cmd = strtok(cmdBuffer, " ");
-        char *args = strtok(nullptr, "");
-        if (strcmp(cmd, "ls") == 0)
+        int i = Serial.readBytesUntil('\n', line, sizeof(line));
+        if (strncmp("cmd/", line, 4) == 0)
         {
-            Serial.println("ok ls");
-            fetchList();
-        }
-        else if (strcmp(cmd, "clr") == 0)
-        {
-            Serial.println("ok clr");
-            clearFiles();
-        }
-        else if (strcmp(cmd, "cp") == 0)
-        {
-            Serial.println("ok cp");
-            copyFile(args);
-        }
+            line[i] = '\0';
+            char *cmd = strtok(line, " ");
+            char *args = strtok(nullptr, "");
+            if (strcmp(cmd, "ls") == 0)
+            {
+                Serial.println("ok ls");
+                fetchList();
+            }
+            else if (strcmp(cmd, "clr") == 0)
+            {
+                Serial.println("ok clr");
+                clearFiles();
+            }
+            else if (strcmp(cmd, "cp") == 0)
+            {
+                Serial.println("ok cp");
+                copyFile(args);
+            }
 
-        else if (strcmp(cmd, "rm") == 0)
-        {
-            Serial.println("ok rm");
-            removeFile(args);
+            else if (strcmp(cmd, "rm") == 0)
+            {
+                Serial.println("ok rm");
+                removeFile(args);
+            }
+            else if (strcmp(cmd, "latest") == 0)
+            {
+                Serial.println("ok latest");
+                latestFiles();
+            }
+            else
+            {
+                Serial.printf("no cmd: %s\n", cmd);
+            }
         }
-        else if (strcmp(cmd, "latest") == 0)
-        {
-            Serial.println("ok latest");
-            latestFiles();
-        }
-        else
-        {
-            Serial.printf("no cmd: %s\n", cmd);
+        else{
+            getEventManager().invoke(Event("SERIAL_LINE"_i));
         }
     }
 }
@@ -92,6 +99,10 @@ void SerialHandler::latestFiles()
 
 SerialHandler &mmfs::getSerialHandler()
 {
-        static SerialHandler SerialHandler;
-        return SerialHandler;
+    static SerialHandler SerialHandler;
+    return SerialHandler;
+}
+
+const char *SerialHandler::getLastLine() const{
+    return line;
 }

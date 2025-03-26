@@ -14,11 +14,16 @@ def find_serial_port():
         return ports[0].device
     return None
 
+ser = None
+
+def writeSer(text):
+    ser.write(("cmd/" + text + "\n").encode())
+
 def copyFile(ser: serial.Serial, src, dest = ""):
     
     if(dest == ""):
         dest = src
-    ser.write(("cp " + src + "\n").encode())
+    writeSer("cp " + src)
     file = open(dest,"wb")
     time.sleep(0.1)
     if(not ser.readline().decode().startswith("ok")):
@@ -35,7 +40,7 @@ def copyFile(ser: serial.Serial, src, dest = ""):
     print(f"Copied \"{src}\" to \"{dest}\".")
 
 def getlatestFiles(ser: serial.Serial):
-    ser.write(("latest\n").encode())
+    writeSer("latest")
     while(ser.in_waiting == 0):
         time.sleep(0.1)
     if(not ser.readline().decode().startswith("ok")):
@@ -62,7 +67,7 @@ def removeFile(ser: serial.Serial, path):
         print("Canceled.")
         return
     
-    ser.write(("rm " + path + "\n").encode())
+    writeSer("rm " + path)
     if(not ser.readline().decode().startswith("ok")):
         print("Arduino did not recognize \"rm\" command")
         return
@@ -77,7 +82,7 @@ def clearFiles(ser: serial.Serial):
     if(confirm[0].lower() != "y"):
         print("Canceled.")
         return
-    ser.write("clr\n".encode());
+    writeSer("clr")
     if(not ser.readline().decode().startswith("ok")):
         print("Arduino did not recognize \"clr\" command")
         return
@@ -149,7 +154,7 @@ def main():
                 clearFiles(ser)
             else:
                 print("Sending Command: " + cmd)
-                ser.write((cmd + "\n").encode())
+                writeSer(cmd)
 
             # Read and print all incoming data
             time.sleep(.1)  # Give Arduino time to respond
