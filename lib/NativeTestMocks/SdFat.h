@@ -27,6 +27,9 @@
 #define T_WRITE 2
 #define T_ACCESS 4
 
+#define LS_DATE 1
+#define LS_SIZE 2
+
 struct FsFileData
 {
     char *arr;
@@ -131,6 +134,7 @@ public:
     {
         return 0;
     }
+    int readBytes(char *c, int len) { return 0; }
 };
 
 class SdFs
@@ -203,6 +207,11 @@ public:
             files[i] = nullptr;
         }
     }
+    void ls(int i)
+    {
+    }
+    void format() {}
+    void remove(char *c){}
 };
 
 #endif

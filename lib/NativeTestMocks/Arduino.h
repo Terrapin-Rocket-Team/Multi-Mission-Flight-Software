@@ -34,8 +34,12 @@ public:
     void print(const char *data);
     void printf(const char *data, ...);
     void println(const char *data);
+    void println(int i);
     void begin(int baud = 9600);
     void clearBuffer();
+    bool available();
+    int readBytesUntil(char i, char *buf, size_t s);
+    void write(char &c);
 
     char fakeBuffer[1000];
     int cursor = 0;

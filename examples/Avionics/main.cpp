@@ -2,6 +2,7 @@
 #include "AvionicsState.h"
 #include "AvionicsKF.h"
 #include "MMFS.h"
+#include "RetrieveData/SerialHandler.h"
 
 using namespace mmfs;
 const int BUZZER_PIN = 33;
@@ -22,6 +23,7 @@ MMFSSystem sys(&config);
 
 void setup()
 {
+    Serial.println("Starting up");
     sys.init();
 }
 
