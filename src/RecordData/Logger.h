@@ -108,10 +108,11 @@ namespace mmfs
 
         void modifyFileDates(const GPS *gps);
 
+        void recordCrashReport();
+
     protected:
         void recordLogData(double timeStamp, LogType type, Dest dest, int size, const char *format, va_list args);
         void recordLogData(const char *msg, Dest dest = BOTH, LogType type = NONE_);
-        void recordCrashReport();
         SdFs sd;
         FsFile logFile;
         FsFile flightDataFile;
