@@ -1,0 +1,5 @@
+AHRS==0.3.1
+junit_xml==1.9
+numpy==2.2.4
+pyparsing==3.2.2
+pyserial==3.5

@@ -34,7 +34,7 @@ Logger::Logger()
             snprintf(fileName, MAX_FILE_NAME_SIZE, "%d_%s", ++fileNo, "FlightData.csv");
             exists = sd.exists(fileName);
         }
-
+        flightNum = fileNo;
         // create files
 
         int len = 26; // max file name length
@@ -384,6 +384,10 @@ void Logger::modifyFileDates(const GPS *gps)
 void Logger::setRecordMode(Mode m)
 {
     mode = m;
+}
+
+int Logger::getFlightNum(){
+    return flightNum;
 }
 
 void Logger::writeCsvHeader()

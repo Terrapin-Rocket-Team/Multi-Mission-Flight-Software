@@ -64,6 +64,8 @@ namespace mmfs
         virtual bool isFlashReady() const;
         virtual bool isReady() const;
 
+        int getFlightNum(); // returns # extension of current flight
+
         void recordFlightData(); // records  flight data
 
         // recordLogData with format string
@@ -107,13 +109,12 @@ namespace mmfs
         GroundMode getGroundMode() const { return groundMode; }
 
         void modifyFileDates(const GPS *gps);
-
+        SdFs sd;
         void recordCrashReport();
 
     protected:
         void recordLogData(double timeStamp, LogType type, Dest dest, int size, const char *format, va_list args);
         void recordLogData(const char *msg, Dest dest = BOTH, LogType type = NONE_);
-        SdFs sd;
         FsFile logFile;
         FsFile flightDataFile;
         FsFile preFlightFile;
@@ -139,7 +140,7 @@ namespace mmfs
         char *customLogPrefix = nullptr;
         int customLogPrefixLen = 0;
         bool timeFirst = true;
-
+        int flightNum = 0;
     };
 
     Logger &getLogger();
