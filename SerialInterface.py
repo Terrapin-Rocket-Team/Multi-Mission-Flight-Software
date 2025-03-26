@@ -84,6 +84,33 @@ def clearFiles(ser: serial.Serial):
     time.sleep(0.1)
     if(not ser.readline().decode().startswith("Removed")):
         print("Error")
+
+def help():
+    """
+    Serial File Management Commands (Arduino-side):
+    ----------------------------------------------
+    Commands must be sent over an active serial connection.
+    
+    1. ls  
+       - Lists all files stored on the Arduino.  
+
+    2. cp <filename> or cp <source> <dest>
+       - Downloads a file from the Arduino to the connected computer.  
+ 
+    3. rm <filename>  
+       - Deletes a file on the Arduino (confirmation required in Python). 
+
+    4. latest  
+       - Retrieves the most latest file from latest power cycle.
+
+    5. clr  
+       - Wipes ALL files on the Arduino (confirmation required in Python).  
+       
+    Note: 
+    - The Python wrappers handle serial communication and user prompts.  
+    - Use find_serial_port() to auto-detect the Arduino's serial port.  
+    """
+    print(help.__doc__)
     
 def main():
     try: 
@@ -108,6 +135,8 @@ def main():
                 break
             if(cmd.lower() == "latest"):
                 getlatestFiles(ser)
+            elif(cmd.lower() == "help"):
+                help()
             elif(cmd.lower() == "cp" and args[0].isdigit()):
                     copyFile(ser, f"{args[0]}_FlightData.csv")
                     time.sleep(0.1)

@@ -89,3 +89,9 @@ void SerialHandler::latestFiles()
 {
     Serial.println(getLogger().getFlightNum() - 1);
 }
+
+SerialHandler &mmfs::getSerialHandler()
+{
+        static SerialHandler SerialHandler;
+        return SerialHandler;
+}

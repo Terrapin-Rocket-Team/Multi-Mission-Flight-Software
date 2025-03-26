@@ -2,6 +2,7 @@
 #include <SdFat.h>
 #include "../RecordData/Logger.h"
 namespace mmfs
+
 {
     class SerialHandler
     {
@@ -16,4 +17,5 @@ namespace mmfs
         private:
             char cmdBuffer[250];
     };
+    SerialHandler &getSerialHandler();
 }

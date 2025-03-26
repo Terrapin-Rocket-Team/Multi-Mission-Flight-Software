@@ -3,6 +3,7 @@
 #include "BlinkBuzz/BlinkBuzz.h"
 #include "State/State.h"
 #include "Wire.h"
+#include "RetrieveData/SerialHandler.h"
 
 using namespace mmfs;
 BlinkBuzz bb;
@@ -55,6 +56,7 @@ bool MMFSSystem::update(double ms)
         getLogger().recordLogData(WARNING_, "Attempted to update MMFSSystem before it was initialized. Initializing it now...");
         init();
     }
+    getSerialHandler().handle();
     // loop based on time and interval and update bb.
     bb.update();
     if (ms == -1)

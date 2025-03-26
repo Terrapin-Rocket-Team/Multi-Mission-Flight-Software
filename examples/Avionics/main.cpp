@@ -21,9 +21,6 @@ MMFSConfig config = MMFSConfig()
 
 MMFSSystem sys(&config);
 
-
-SerialHandler sh;
-
 void setup()
 {
     Serial.println("Starting up");
@@ -32,6 +29,5 @@ void setup()
 
 void loop()
 {
-    sh.handle();
     sys.update();
 }
