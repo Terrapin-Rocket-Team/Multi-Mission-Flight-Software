@@ -8,9 +8,9 @@ namespace mmfs
     class GPSFix : public Event
     {
     public:
-        GPSFix(EventID id, GPS *gps, bool hasFix) : Event(id), gps(gps), hasFix(hasFix) {}
+        GPSFix(EventID id, GPS *gps, bool firstFix) : Event(id), gps(gps), firstFix(firstFix) {}
         GPS *gps;
-        bool hasFix;
+        bool firstFix;
     };
     class LogData : public Event
     {

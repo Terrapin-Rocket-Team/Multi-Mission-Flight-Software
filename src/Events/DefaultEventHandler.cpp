@@ -27,13 +27,15 @@ void DefaultEventHandler::handleGPSFix(const GPSFix *e)
 {
 
     const GPSFix *fix = static_cast<const GPSFix *>(e);
-    if (fix->hasFix)
+    if (fix->gps->getHasFix())
     {
-        getLogger().modifyFileDates(fix->gps);
-        getLogger().recordLogData(INFO_, 50, "%s acquired fix.", fix->gps->getName());
+        if (fix->firstFix)
+            getLogger().modifyFileDates(fix->gps);
+            
+        getLogger().recordLogData(INFO_, 50, "The %s acquired a satellite fix.", fix->gps->getName());
     }
     else
-        getLogger().recordLogData(WARNING_, 50, "%s lost fix.", fix->gps->getName());
+        getLogger().recordLogData(WARNING_, 50, "The %s lost its fix.", fix->gps->getName());
 }
 
 void DefaultEventHandler::handleLogData(const LogData *e)

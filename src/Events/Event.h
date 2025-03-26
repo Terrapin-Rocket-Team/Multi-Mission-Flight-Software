@@ -40,9 +40,6 @@ namespace mmfs
     public:
         Event(EventID id) : ID(id) {}
         EventID ID;
-
-    private:
-        Event *next = nullptr;
     };
 
     class IEventListener
@@ -54,21 +51,41 @@ namespace mmfs
         virtual ~IEventListener();
 
         virtual void onEvent(const Event *e) = 0;
-
-    private:
-        IEventListener *next = nullptr;
+    };
+    struct Listener
+    {
+        union Lis
+        {
+            void (*func)(const Event *);
+            IEventListener *l;
+        } ptr;
+        bool isClass;
+        Listener *next = nullptr;
+        Listener(IEventListener *lis)
+        {
+            ptr.l = lis;
+            isClass = true;
+        }
+        Listener(void (*func)(const Event *))
+        {
+            ptr.func = func;
+            isClass = false;
+        }
     };
 
     class EventManager
     {
     public:
         void subscribe(IEventListener *l);
+        void subscribe(void (*func)(const Event *));
         void unsubscribe(IEventListener *l);
+        void unsubscribe(void (*func)(const Event *));
         void invoke(const Event &e);
 
     private:
-        IEventListener *firstLis = nullptr, *lastLis = nullptr;
-        Event *firstEvent = nullptr, *lastEvent = nullptr;
+        Listener *firstLis = nullptr, *lastLis = nullptr;
+        bool sub(Listener *l);
+        bool unsub(Listener *l);
     };
 
     EventManager &getEventManager();
@@ -81,50 +98,89 @@ namespace mmfs
     {
         getEventManager().unsubscribe(this);
     }
-
-    inline void EventManager::subscribe(IEventListener *l)
+    inline bool EventManager::sub(Listener *l)
     {
         if (!l)
-            return;
-        if (!firstLis)
+            return false;
+        auto t = firstLis;
+        if (!t)
         {
             firstLis = lastLis = l;
-            return;
+            return true;
         }
-        auto t = firstLis;
         while (t)
         {
-            if (t == l)
-                return;
+            if (t->isClass && l->isClass)
+            {
+                if (t->ptr.l == l->ptr.l)
+                    return false;
+            }
+            else if (!t->isClass && !l->isClass)
+            {
+                if (t->ptr.func == l->ptr.func)
+                    return false;
+            }
             t = t->next;
         }
         lastLis->next = l;
         lastLis = l;
+        return true;
+    }
+    inline void EventManager::subscribe(IEventListener *l)
+    {
+        Listener *lis = new Listener(l);
+        if (!sub(lis))
+            delete lis;
+    }
+    inline void EventManager::subscribe(void (*func)(const Event *))
+    {
+        Listener *lis = new Listener(func);
+        if (!sub(lis))
+            delete lis;
     }
 
-    inline void EventManager::unsubscribe(IEventListener *l)
+    inline bool EventManager::unsub(Listener *l)
     {
         if (!l || !firstLis)
-            return;
-        if (firstLis == l)
+            return false;
+
+        auto t = firstLis;
+        if ((firstLis->isClass && l->isClass && firstLis->ptr.l == l->ptr.l) ||
+            (!firstLis->isClass && !l->isClass && firstLis->ptr.func == l->ptr.func))
         {
             firstLis = firstLis->next;
             if (!firstLis)
                 lastLis = nullptr;
-            return;
+            delete t;
+            return true;
         }
-        auto t = firstLis;
         while (t->next)
         {
-            if (t->next == l)
+            if ((t->next->isClass && l->isClass && t->next->ptr.l == l->ptr.l) ||
+                (!t->next->isClass && !l->isClass && t->next->ptr.func == l->ptr.func))
             {
+                auto t2 = t->next;
                 t->next = t->next->next;
                 if (!t->next)
                     lastLis = t;
-                return;
+                delete t2;
+                return true;
             }
             t = t->next;
         }
+        return false;
+    }
+    inline void EventManager::unsubscribe(IEventListener *l)
+    {
+        Listener *lis = new Listener(l);
+        unsub(lis);
+        delete lis;
+    }
+    inline void EventManager::unsubscribe(void (*func)(const Event *))
+    {
+        Listener *lis = new Listener(func);
+        unsub(lis);
+        delete lis;
     }
 
     inline void EventManager::invoke(const Event &e)
@@ -132,7 +188,10 @@ namespace mmfs
         auto t = firstLis;
         while (t)
         {
-            t->onEvent(&e);
+            if (t->isClass)
+                t->ptr.l->onEvent(&e);
+            else
+                t->ptr.func(&e);
             t = t->next;
         }
     }
