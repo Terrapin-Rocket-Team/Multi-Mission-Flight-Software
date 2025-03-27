@@ -1,6 +1,6 @@
 {
     "name": "TRT-MMFS",
-    "version": "3.0.0",
+    "version": "3.1.0",
     "description": "Terrapin Rocket Team's Multi-Mission Flight Software. Designed to be used with any FC and any sensor suite.",
     "keywords": "MMFS, TRT, Terrapin Rocket Team, Flight Software",
     "repository": 
@@ -89,6 +89,10 @@
         {
             "name": "LittleFS",
 	        "version": "https://github.com/PaulStoffregen/LittleFS.git"
+        },
+        {
+            "name": "RadioMessage",
+            "version": "https://github.com/erodarob/RadioMessage.git"
         }
     ],
     "frameworks": "*",
