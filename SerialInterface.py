@@ -123,6 +123,7 @@ def main():
         if not port:
             print("No serial port found.")
             return
+        global ser
         ser = serial.Serial(port, 9600, timeout=1)
         time.sleep(.5)  # Wait for Arduino to initialize
         print(f"Connected to {port}")
@@ -161,7 +162,7 @@ def main():
             while ser.in_waiting > 0:
                 data = ser.read(ser.in_waiting).decode().strip()
                 if data:
-                    print("Arduino:", data)
+                    print(data)
 
     except serial.SerialException:
         print("Error: Could not open serial port. Check connection.")

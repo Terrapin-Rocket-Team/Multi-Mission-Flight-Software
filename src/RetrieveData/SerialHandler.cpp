@@ -10,7 +10,7 @@ void SerialHandler::handle()
         if (strncmp("cmd/", line, 4) == 0)
         {
             line[i] = '\0';
-            char *cmd = strtok(line, " ");
+            char *cmd = strtok(line+4, " ");
             char *args = strtok(nullptr, "");
             if (strcmp(cmd, "ls") == 0)
             {
