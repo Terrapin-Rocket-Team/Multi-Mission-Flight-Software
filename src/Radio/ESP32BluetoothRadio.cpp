@@ -38,8 +38,8 @@ bool mmfs::ESP32BluetoothRadio::begin() {
 bool mmfs::ESP32BluetoothRadio::tx(const uint8_t *message, int len) {
     port.write(DATA_MESSAGE);
     uint16_t messageSize = len;
-    port.write(reinterpret_cast<uint8_t*>(&messageSize), sizeof(uint16_t));
-    port.write(message, messageSize);
+    port.write(reinterpret_cast<uint8_t*>(&messageSize), sizeof(uint16_t));// prints both bits of the short to serial
+    port.write(message, messageSize);//this is kinda crazy lol. 
     port.flush();
     return true;
 }

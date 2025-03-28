@@ -109,8 +109,8 @@ void Logger::recordFlightData()
     }
     sdReady = true;
 
-    char dest[500];
-    DataFormatter::toCSVRow(dest, 500, dataReporters, numReporters);
+    char dest[1500];
+    DataFormatter::toCSVRow(dest, 1500, dataReporters, numReporters);
     const char *filename = mode == FLIGHT ? flightDataFileName : preFlightFileName;
     preFlightFile = sd.open(filename, FILE_WRITE);
     preFlightFile.println(dest);
