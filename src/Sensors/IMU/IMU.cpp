@@ -42,7 +42,7 @@ namespace mmfs
 
     Vector<3> IMU::getAccelerationGlobal()
     {
-        Quaternion accelInterial = orientation * Quaternion(0, measuredAcc) * orientation.conjugate();
+        Quaternion accelInterial = orientation.conjugate() * Quaternion(0, measuredAcc) * orientation;
         return Vector<3>(accelInterial.x(), accelInterial.y(), accelInterial.z());
     }
     

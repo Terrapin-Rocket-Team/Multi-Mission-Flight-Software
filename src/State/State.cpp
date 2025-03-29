@@ -162,7 +162,7 @@ namespace mmfs
         // imu x y z
         inputs[0] = acceleration.x() = imu->getAccelerationGlobal().x();
         inputs[1] = acceleration.y() = imu->getAccelerationGlobal().y();
-        inputs[2] = acceleration.z() = imu->getAccelerationGlobal().z() - 9.81;
+        inputs[2] = acceleration.z() = imu->getAccelerationGlobal().z();
 
         stateVars[0] = position.x();
         stateVars[1] = position.y();
