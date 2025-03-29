@@ -46,6 +46,9 @@ namespace mmfs {
         // For a server: will return true if everything has been successfully initialized on the ESP32 side
         // For a client: will return true if the client has successfully initialized and established a connection the server
         bool isReady();
+
+        const uint8_t *getReceiveBuffer() const;
+        const uint16_t getReceiveSize() const;
     };
 }
 
