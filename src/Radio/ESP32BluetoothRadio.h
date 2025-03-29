@@ -27,7 +27,7 @@ namespace mmfs {
         // ESP32 module configured in server mode or the name of the
         // server device to connect to when used with an ESP32 module
         // in client mode.
-        ESP32BluetoothRadio(HardwareSerialIMXRT &port, std::string name, bool hangForSerialOnInit = true);
+        ESP32BluetoothRadio(HardwareSerialIMXRT &port, std::string name, bool hangForSerialOnInit = false);
 
         ~ESP32BluetoothRadio() override;
 
