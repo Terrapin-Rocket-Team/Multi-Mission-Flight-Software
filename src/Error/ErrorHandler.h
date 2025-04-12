@@ -3,7 +3,7 @@
 
 #include <stdio.h>
 #include <cstring>
-#include "../RecordData/Logger.h"
+#include "../RecordData/Logging/Logger.h"
 
 namespace mmfs
 {

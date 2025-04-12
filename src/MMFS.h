@@ -1,6 +1,6 @@
 #include "BlinkBuzz/BlinkBuzz.h"
 #include "Actuators/Servo/Servo.h"
-#include "RecordData/Logger.h"
+#include "RecordData/Logging/Logger.h"
 #include "Error/ErrorHandler.h"
 #include "Sensors/LightSensor/LightSensor.h"
 #include "Sensors/Encoder/Encoder_MMFS.h"

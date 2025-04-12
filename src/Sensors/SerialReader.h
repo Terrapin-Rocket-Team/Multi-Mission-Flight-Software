@@ -7,7 +7,7 @@
 
 #ifndef SERIALREADER_H
 #define SERIALREADER_H
-#include "../RecordData/Logger.h"
+#include "../RecordData/Logging/Logger.h"
 #include <Arduino.h>
 #define MAX_NUM_COLS 1024
 

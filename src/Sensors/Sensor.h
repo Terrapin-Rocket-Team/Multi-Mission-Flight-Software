@@ -4,7 +4,7 @@
 #include "../Constants.h"
 #include "../Utils/CircBuffer.h"
 #include "../BlinkBuzz/BlinkBuzz.h"
-#include "../RecordData/Logger.h"
+#include "../RecordData/Logging/Logger.h"
 #include <algorithm>
 #include "../RecordData/DataReporter.h"
 

@@ -1,7 +1,7 @@
 #ifndef _DEFAULT_EVENTS_H
 #define _DEFAULT_EVENTS_H
 #include "Event.h"
-#include "../RecordData/Logger.h"
+#include "../RecordData/Logging/Logger.h"
 namespace mmfs
 {
     class GPS;

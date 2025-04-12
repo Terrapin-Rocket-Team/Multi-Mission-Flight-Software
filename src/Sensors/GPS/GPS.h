@@ -4,7 +4,7 @@
 #include "../Sensor.h"
 #include "../../Constants.h"
 #include "../../Math/Vector.h"
-#include "../../RecordData/Logger.h"
+#include "../../RecordData/Logging/Logger.h"
 #include "../../Events/DefaultEvents.h"
 
 namespace mmfs

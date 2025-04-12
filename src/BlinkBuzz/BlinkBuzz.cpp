@@ -1,6 +1,6 @@
 #include "Error/ErrorHandler.h"
 #include "BlinkBuzz.h"
-#include "../RecordData/Logger.h"
+#include "../RecordData/Logging/Logger.h"
 
 #ifndef ARDUINO
 #include "NativeTestHelper.h"

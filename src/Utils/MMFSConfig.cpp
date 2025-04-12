@@ -1,6 +1,6 @@
 #include "MMFSConfig.h"
 #include "../State/State.h"
-#include "../RecordData/Logger.h"
+#include "../RecordData/Logging/Logger.h"
 #include "../BlinkBuzz/BlinkBuzz.h"
 
 namespace mmfs

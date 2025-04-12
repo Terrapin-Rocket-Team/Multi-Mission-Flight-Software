@@ -1,7 +1,7 @@
 #ifndef TESTING_LOGGER_H
 #define TESTING_LOGGER_H
 
-#include "../../src/RecordData/Logger.h"
+#include "../../src/RecordData/Logging/Logger.h"
 
 using namespace mmfs;
 

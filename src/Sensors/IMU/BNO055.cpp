@@ -1,5 +1,5 @@
 #include "BNO055.h"
-#include "../../RecordData/Logger.h"
+#include "../../RecordData/Logging/Logger.h"
 
 namespace mmfs
 {

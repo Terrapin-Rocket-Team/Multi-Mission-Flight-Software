@@ -3,7 +3,7 @@
 
 #include "../Sensor.h"
 #include "../../Constants.h"
-#include "../../RecordData/Logger.h"
+#include "../../RecordData/Logging/Logger.h"
 
 namespace mmfs
 {

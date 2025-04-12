@@ -28,7 +28,7 @@ To start, there are a few singletons declared in the various RecordData files. Y
 There is also a `PSRAM *` that needs to be initialized. I recommend doing this in the `setup()` function of your main file, as there are other variables that can be changed before setting up the PSRAM object.
 
 ```cpp
-#include "RecordData/Logger.h"
+#include "RecordData/Logging/Logger.h"
 
 // Define the logger singleton
 Logger logger; //using defaults
@@ -122,7 +122,7 @@ getLogger().recordLogData(ERROR_, "Error: Something went wrong", TO_USB); //only
 getLogger().recordLogData(5, INFO_, "Information: Something happened", TO_FILE); //only write to the SD card with timestamp of "5.000"
 ```
 
-As long as you include the `RecordData/Logger.h` file, you can use these logging statements anywhere in your code to note events or errors.
+As long as you include the `RecordData/Logging/Logger.h` file, you can use these logging statements anywhere in your code to note events or errors.
 
 ## Flight Mode
 
