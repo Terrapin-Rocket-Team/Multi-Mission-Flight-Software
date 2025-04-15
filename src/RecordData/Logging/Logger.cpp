@@ -170,6 +170,7 @@ void Logger::recordLogData(double timeStamp, LogType type, Dest dest, int size, 
     char *logPrefix = nullptr;
     if (type == CUSTOM_)
     {
+        
         len = customLogPrefixLen;
         logPrefix = new char[customLogPrefixLen];
         snprintf(logPrefix, customLogPrefixLen, customLogPrefix, timeStamp);

@@ -44,7 +44,7 @@ inline unsigned int UPDATE_INTERVAL = 100; // in ms
 // ------------------ File Constants --------------------
 
 inline unsigned int MAX_FILE_NAME_SIZE = 64; // in characters (including null terminator)
-inline uintptr_t PSRAM_STARTING_ADDRESS = 0x70000000;
+constexpr unsigned int MAX_FILES = 10;
 inline unsigned int ONE_MB = 1048576; // in bytes
 
 // ------------------------------------------------------
