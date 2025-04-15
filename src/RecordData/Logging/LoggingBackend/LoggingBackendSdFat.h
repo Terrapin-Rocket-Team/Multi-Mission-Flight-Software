@@ -8,6 +8,7 @@ namespace mmfs
     class LoggingBackendSdFat : public LoggingBackend
     {
     public:
+        LoggingBackendSdFat::LoggingBackendSdFat();
         virtual bool begin();
         virtual bool open(const char *filename);
         virtual size_t write(int file, const uint8_t *data, size_t len);
