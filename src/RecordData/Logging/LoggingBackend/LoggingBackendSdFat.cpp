@@ -34,7 +34,7 @@ LoggingBackendFile *LoggingBackendSdFat::open(const char *filename)
         char fname[250];
         activeFiles[i]->getName(fname, 250);
         if (!strcmp(fname, filename))
-            return new LoggingBackendFile(i);
+            return new LoggingBackendFile(this, i);
         i++;
     }
     if (i < MAX_FILES)
@@ -43,7 +43,7 @@ LoggingBackendFile *LoggingBackendSdFat::open(const char *filename)
         if (f)
         {
             activeFiles[i] = f;
-            return new LoggingBackendFile(i);
+            return new LoggingBackendFile(this, i);
         }
     }
     return nullptr;
@@ -64,4 +64,44 @@ bool LoggingBackendSdFat::isAvailable()
 bool LoggingBackendSdFat::exists(const char *filename)
 {
     return sdfs->exists(filename);
+}
+
+void LoggingBackendSdFat::close(int file)
+{
+    if (activeFiles[file])
+    {
+        activeFiles[file]->close();
+        activeFiles[file] = nullptr;
+    }
+}
+
+void LoggingBackendSdFat::save(int file)
+{
+    if (activeFiles[file])
+    {
+        activeFiles[file]->flush();
+    }
+}
+
+void LoggingBackendSdFat::ls(int i)
+{
+    // TODO...
+    Serial.println("Not yet implemented. Come back later :P");
+}
+
+void LoggingBackendSdFat::format()
+{
+    sdfs->format();
+}
+
+bool LoggingBackendSdFat::remove(const char *filename)
+{
+    return sdfs->remove(filename);
+}
+
+size_t LoggingBackendSdFat::read(int file, char *dest, size_t len)
+{
+    if (activeFiles[file])
+        return activeFiles[file]->readBytes(dest, len);
+    return 0;
 }

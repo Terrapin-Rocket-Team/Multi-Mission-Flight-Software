@@ -11,9 +11,15 @@ namespace mmfs
         LoggingBackendSdFat();
         virtual bool begin() override;
         virtual LoggingBackendFile *open(const char *filename) override;
+        virtual void close(int file) override;
+        virtual void save(int file) override;
+        virtual size_t read(int file, char *dest, size_t len) override;
         virtual size_t write(int file, const uint8_t *data, size_t len) override;
         virtual bool isAvailable() override;
         virtual bool exists(const char *filename) override;
+        virtual void ls(int i = -1) override;
+        virtual void format() override;
+        virtual bool remove(const char *filename) ;
         virtual ~LoggingBackendSdFat();
 
     private:

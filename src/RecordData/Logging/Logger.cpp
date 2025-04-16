@@ -104,9 +104,10 @@ void Logger::recordFlightData()
 
     char dest[1500];
     DataFormatter::toCSVRow(dest, 1500, dataReporters, numReporters);
-    const char *filename = mode == FLIGHT ? flightDataFileName : preFlightFileName;
-    
-    preFlightFile->println(dest);
+    if(mode == FLIGHT)
+        flightDataFile->println(dest);
+    else
+        preFlightFile->println(dest);
 }
 
 #pragma endregion Flight Data Logging
