@@ -11,7 +11,7 @@
 
 
 #include "../../Constants.h"
-#include "SdFatBoilerplate.h"
+#include "LoggingBackend/LoggingBackend.h"
 #include <stdarg.h>
 #include "../../Events/Event.h"
 
@@ -60,8 +60,6 @@ namespace mmfs
 
         virtual bool init(DataReporter **dataReporters, int numReporters);
 
-        virtual bool isSdCardReady();
-        virtual bool isFlashReady() const;
         virtual bool isReady() const;
 
         int getFlightNum(); // returns # extension of current flight
@@ -97,42 +95,27 @@ namespace mmfs
 
         void writeCsvHeader();
 
-        void setGroundMode(GroundMode mode)
-        {
-            if (!ready)
-                this->groundMode = mode;
-            else
-                recordLogData(WARNING_, "Attempted to set GroundMode value after Logger already initalized!");
-        }
-
-        bool getPackData() const { return packData; }
-        GroundMode getGroundMode() const { return groundMode; }
-
         void modifyFileDates(const GPS *gps);
-        SdFs sd;
+        LoggingBackend *backend;
         void recordCrashReport();
 
     protected:
         void recordLogData(double timeStamp, LogType type, Dest dest, int size, const char *format, va_list args);
         void recordLogData(const char *msg, Dest dest = BOTH, LogType type = NONE_);
-        FsFile logFile;
-        FsFile flightDataFile;
-        FsFile preFlightFile;
+        LoggingBackendFile *logFile;
+        LoggingBackendFile *flightDataFile;
+        LoggingBackendFile *preFlightFile;
 
         //
 
         Mode mode = GROUND;
         DataReporter **dataReporters = nullptr;
         int numReporters = 0;
-        GroundMode groundMode = ALTERNATE_;
-        bool packData = true;
         uint16_t bufferTime;
         int bufferInterval = 0;
         char *logFileName = nullptr;        // Name of the log file
         char *flightDataFileName = nullptr; // Name of the flight data file
         char *preFlightFileName = nullptr;  // Name of the pre-flight file
-        bool sdReady = false;               // Whether the SD card has been initialized
-        bool flashReady = false;            // Whether the flash has been initialized
         bool ready = false;                 // Whether the logger is ready
 
         char *logPrefixFormat = nullptr;

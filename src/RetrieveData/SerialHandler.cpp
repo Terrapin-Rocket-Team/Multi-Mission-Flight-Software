@@ -51,42 +51,42 @@ void SerialHandler::handle()
 
 void SerialHandler::fetchList()
 {
-    getLogger().sd.ls(LS_DATE | LS_SIZE);
+    getLogger().backend->ls(LS_DATE | LS_SIZE);
 }
 
 void SerialHandler::clearFiles()
 {
-    getLogger().sd.format();
+    getLogger().backend->format();
     Serial.println("Removed All Files");
 }
 
 // expects "fileName_##.csv"
 void SerialHandler::copyFile(char *args)
 {
-    SdFs &sd = getLogger().sd;
-    if (!sd.exists(args))
+    LoggingBackend *backend = getLogger().backend;
+    if (!backend->exists(args))
     {
         Serial.print("File not found: ");
         Serial.println(args);
         return;
     }
     Serial.println("Sending...");
-    FsFile f = sd.open(args, FILE_READ);
+    LoggingBackendFile *f = backend->open(args);
     char c;
-    while (f.readBytes(&c, 1))
+    while (f->readBytes(&c, 1))
         Serial.write(c);
 }
 
 void SerialHandler::removeFile(char *args)
 {
 
-    if (!getLogger().sd.exists(args))
+    if (!getLogger().backend->exists(args))
     {
         Serial.print("File not found: ");
         Serial.println(args);
         return;
     }
-    getLogger().sd.remove(args);
+    getLogger().backend->remove(args);
     Serial.print("Removed ");
     Serial.println(args);
 }

@@ -4,7 +4,7 @@
 #include <stdint.h>
 #include <cstdio>
 #include <cstring>
-#include "Logger.h"
+#include "../Logging/Logger.h"
 
 namespace mmfs
 {

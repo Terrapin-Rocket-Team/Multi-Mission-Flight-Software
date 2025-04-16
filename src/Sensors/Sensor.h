@@ -6,7 +6,7 @@
 #include "../BlinkBuzz/BlinkBuzz.h"
 #include "../RecordData/Logging/Logger.h"
 #include <algorithm>
-#include "../RecordData/DataReporter.h"
+#include "../RecordData/DataReporter/DataReporter.h"
 
 namespace mmfs
 {

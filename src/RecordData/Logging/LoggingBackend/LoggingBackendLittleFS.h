@@ -9,15 +9,11 @@ namespace mmfs
     {
     public:
         LoggingBackendLittleFS::LoggingBackendLittleFS();
-        virtual bool begin();
-        virtual bool open(const char *filename);
-        virtual size_t write(int file, const uint8_t *data, size_t len);
-        virtual size_t write(const char *filename, const uint8_t *data, size_t len);
-        virtual void close();
+        virtual bool begin() override;
+        virtual LoggingBackendFile *open(const char *filename) override;
+        virtual size_t write(int file, const uint8_t *data, size_t len) override;
         virtual bool isAvailable();
-        virtual bool exists(const char *filename);
-        virtual void save(const char *filename);
-        virtual void save(int file);
+        virtual bool exists(const char *filename) override;
         virtual ~LoggingBackendLittleFS();
 
     private:

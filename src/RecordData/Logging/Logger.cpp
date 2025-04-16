@@ -1,8 +1,12 @@
 #include "Logger.h"
-#include "../State/State.h"
-#include "DataFormatter.h"
-#include "../Events/DefaultEvents.h"
-#include "../Sensors/GPS/GPS.h"
+#include "../../State/State.h"
+#include "../DataReporter/DataFormatter.h"
+#include "../../Events/DefaultEvents.h"
+#include "../../Sensors/GPS/GPS.h"
+#include <Arduino.h>
+
+#include "LoggingBackend/LoggingBackendSdFat.h"
+#include "LoggingBackend/LoggingBackendLittleFS.h"
 
 #ifdef ARDUINO
 #include "ArrPrint.h"
@@ -20,42 +24,43 @@ Logger::Logger()
 
     setLogPrefixFormatting("$time - [$logType] ");
     setCustomLogPrefix("$time - [CUSTOM] ");
-
-    if (sd.begin(SD_CONFIG) || sd.restart())
+    backend = new LoggingBackendLittleFS();
+    if (!backend->begin())
     {
-        sdReady = true;
-
-        // find a unique file name
-        char fileName[MAX_FILE_NAME_SIZE];
-        int fileNo = 0;
-        bool exists = true;
-        while (exists)
-        {
-            snprintf(fileName, MAX_FILE_NAME_SIZE, "%d_%s", ++fileNo, "FlightData.csv");
-            exists = sd.exists(fileName);
-        }
-        flightNum = fileNo;
-        // create files
-
-        int len = 26; // max file name length
-
-        flightDataFile = sd.open(fileName, FILE_WRITE);
-        flightDataFileName = new char[len];
-        snprintf(flightDataFileName, len, "%s", fileName);
-        flightDataFile.close();
-
-        snprintf(fileName, MAX_FILE_NAME_SIZE, "%d_%s", fileNo, "Log.txt");
-        logFile = sd.open(fileName, FILE_WRITE);
-        logFileName = new char[len];
-        snprintf(logFileName, len, "%s", fileName);
-        logFile.close();
-
-        snprintf(fileName, MAX_FILE_NAME_SIZE, "%d_%s", fileNo, "PreFlightData.csv");
-        preFlightFile = sd.open(fileName, FILE_WRITE);
-        preFlightFileName = new char[len];
-        snprintf(preFlightFileName, len, "%s", fileName);
-        preFlightFile.close();
+        delete backend;
+        backend = new LoggingBackendSdFat();
+        if (!backend->begin())
+            Serial.println("Failed to start any long-term memory device.");
     }
+
+    // find a unique file name
+    char fileName[MAX_FILE_NAME_SIZE];
+    int fileNo = 0;
+    bool exists = true;
+    while (exists)
+    {
+        snprintf(fileName, MAX_FILE_NAME_SIZE, "%d_%s", ++fileNo, "FlightData.csv");
+        exists = backend->exists(fileName);
+    }
+    flightNum = fileNo;
+    // create files
+
+    int len = 26; // max file name length
+
+    flightDataFile = backend->open(fileName);
+    flightDataFileName = new char[len];
+    snprintf(flightDataFileName, len, "%s", fileName);
+
+
+    snprintf(fileName, MAX_FILE_NAME_SIZE, "%d_%s", fileNo, "Log.txt");
+    logFile = backend->open(fileName);
+    logFileName = new char[len];
+    snprintf(logFileName, len, "%s", fileName);
+
+    snprintf(fileName, MAX_FILE_NAME_SIZE, "%d_%s", fileNo, "PreFlightData.csv");
+    preFlightFile = backend->open(fileName);
+    preFlightFileName = new char[len];
+    snprintf(preFlightFileName, len, "%s", fileName);
 
 #ifndef PIO_UNIT_TESTING // This is a workaround because testing this logger is hard when it's writing its own variable data to the log file
     recordLogData(INFO_, 100, "This flight is running MMFS v%s", APP_VERSION);
@@ -72,49 +77,36 @@ Logger::~Logger()
     delete[] customLogPrefix;
 }
 
-// Returns whether the SD card is ready
-bool Logger::isSdCardReady()
-{
-    return sdReady || sd.restart();
-}
-
-bool Logger::isFlashReady() const
-{
-    return flashReady;
-}
-
 // Returns whether the logger is ready
 bool Logger::isReady() const
 {
     return ready;
 }
 
-// Initializes the logger, returning whether SD card is ready
+// Initializes the logger, returning whether backend card is ready
 bool Logger::init(DataReporter **dataReporters, int numReporters)
 {
     this->dataReporters = dataReporters;
     this->numReporters = numReporters;
-    return ready = sdReady;
+    return ready = backend->isAvailable();
 }
 
 #pragma endregion Constructor and Initialization
 
 #pragma region Flight Data Logging
-// Records flight data to the SD card or PSRAM
+// Records flight data to the backend card or PSRAM
 void Logger::recordFlightData()
 {
-    if (!sdReady) // If SD card not available, nothing to do.
+    if (!ready) // If backend card not available, nothing to do.
     {
         return;
     }
-    sdReady = true;
 
     char dest[1500];
     DataFormatter::toCSVRow(dest, 1500, dataReporters, numReporters);
     const char *filename = mode == FLIGHT ? flightDataFileName : preFlightFileName;
-    preFlightFile = sd.open(filename, FILE_WRITE);
-    preFlightFile.println(dest);
-    preFlightFile.close();
+    
+    preFlightFile->println(dest);
 }
 
 #pragma endregion Flight Data Logging
@@ -137,30 +129,29 @@ void Logger::recordLogData(const char *msg, Dest dest, LogType type)
     {
         Serial.println(msg);
     }
-    if ((dest == BOTH || dest == TO_FILE) && sdReady)
+    if ((dest == BOTH || dest == TO_FILE) && ready)
     {
-        logFile = sd.open(logFileName, FILE_WRITE);
         if (const char *i = strstr(msg, "\n")) // find the first newline
         {
             int cursor = 0;
             int lenToWrite = i - msg + 1; // length of the string to write
-            logFile.write(msg + cursor, lenToWrite);
+            logFile->write(msg + cursor, lenToWrite);
             cursor += lenToWrite;
             for (i = msg; (i = strstr(i, "\n")) != nullptr; i++) // loop through the string until we find a newline
             {
                 for (int j = 0; j < prefixLen; j++)
                 {
-                    logFile.write(" ", 1);
+                    logFile->write(" ", 1);
                 }
                 int lenToWrite = i - msg + 1; // length of the string to write
-                logFile.write(msg + cursor, lenToWrite);
+                logFile->write(msg + cursor, lenToWrite);
                 cursor += lenToWrite;
             }
         }
         else
-            logFile.println(msg);
+            logFile->println(msg);
 
-        logFile.close();
+        logFile->save();
     }
     getEventManager().invoke(LogData{"LOG_DATA"_i, dest, type, msg});
 }
@@ -170,7 +161,7 @@ void Logger::recordLogData(double timeStamp, LogType type, Dest dest, int size, 
     char *logPrefix = nullptr;
     if (type == CUSTOM_)
     {
-        
+
         len = customLogPrefixLen;
         logPrefix = new char[customLogPrefixLen];
         snprintf(logPrefix, customLogPrefixLen, customLogPrefix, timeStamp);
@@ -206,14 +197,14 @@ void Logger::recordLogData(LogType type, Dest dest, int size, const char *format
 
     va_list args;
     va_start(args, format);
-    recordLogData(millis()/1000.0, type, dest, size, format);
+    recordLogData(millis() / 1000.0, type, dest, size, format);
     va_end(args);
 }
 void Logger::recordLogData(LogType type, int size, const char *format, ...)
 {
     va_list args;
     va_start(args, format);
-    recordLogData(millis()/1000.0, type, BOTH, size, format, args);
+    recordLogData(millis() / 1000.0, type, BOTH, size, format, args);
     va_end(args);
 }
 void Logger::recordLogData(int size, const char *format, ...)
@@ -228,7 +219,7 @@ void Logger::recordLogData(int size, const char *format, ...)
 }
 void Logger::recordLogData(LogType type, Dest dest, const char *msg)
 {
-    recordLogData(millis()/1000.0, type, dest, strlen(msg), msg);
+    recordLogData(millis() / 1000.0, type, dest, strlen(msg), msg);
 }
 void Logger::recordLogData(double timeStamp, LogType type, Dest dest, const char *msg)
 {
@@ -236,7 +227,7 @@ void Logger::recordLogData(double timeStamp, LogType type, Dest dest, const char
 }
 void Logger::recordLogData(LogType type, const char *msg)
 {
-    recordLogData(millis()/1000.0, type, BOTH, strlen(msg), msg);
+    recordLogData(millis() / 1000.0, type, BOTH, strlen(msg), msg);
 }
 void Logger::recordLogData(double timeStamp, LogType type, const char *msg)
 {
@@ -373,9 +364,9 @@ void Logger::setLogPrefixFormatting(const char *prefix)
 
 void Logger::modifyFileDates(const GPS *gps)
 {
-    flightDataFile.timestamp(T_CREATE | T_WRITE | T_ACCESS, gps->getYear(), gps->getMonth(), gps->getDay(), gps->getHour(), gps->getMinute(), gps->getSecond());
-    preFlightFile.timestamp(T_CREATE | T_WRITE | T_ACCESS, gps->getYear(), gps->getMonth(), gps->getDay(), gps->getHour(), gps->getMinute(), gps->getSecond());
-    logFile.timestamp(T_WRITE | T_WRITE | T_ACCESS, gps->getYear(), gps->getMonth(), gps->getDay(), gps->getHour(), gps->getMinute(), gps->getSecond());
+    // flightDataFile.timestamp(T_CREATE | T_WRITE | T_ACCESS, gps->getYear(), gps->getMonth(), gps->getDay(), gps->getHour(), gps->getMinute(), gps->getSecond());
+    // preFlightFile.timestamp(T_CREATE | T_WRITE | T_ACCESS, gps->getYear(), gps->getMonth(), gps->getDay(), gps->getHour(), gps->getMinute(), gps->getSecond());
+    // logFile.timestamp(T_WRITE | T_WRITE | T_ACCESS, gps->getYear(), gps->getMonth(), gps->getDay(), gps->getHour(), gps->getMinute(), gps->getSecond());
 }
 
 #pragma endregion Event Handling
@@ -387,25 +378,22 @@ void Logger::setRecordMode(Mode m)
     mode = m;
 }
 
-int Logger::getFlightNum(){
+int Logger::getFlightNum()
+{
     return flightNum;
 }
 
 void Logger::writeCsvHeader()
 {
-    if (!sdReady)
+    if (!ready)
     {
-        printf("SD card not found. Cannot write CSV header.");
+        printf("No long-term storage found. Cannot write CSV header.");
         return;
     }
     char header[5000]; // 2000 is arbitrary, but should be enough for basically any header
     DataFormatter::getCSVHeader(header, sizeof(header), dataReporters, numReporters);
-    flightDataFile = sd.open(flightDataFileName, FILE_WRITE);
-    flightDataFile.println(header);
-    flightDataFile.close();
-    preFlightFile = sd.open(preFlightFileName, FILE_WRITE);
-    preFlightFile.println(header);
-    preFlightFile.close();
+    flightDataFile->println(header);
+    preFlightFile->println(header);
 }
 #ifdef PIO_UNIT_TESTING
 static Logger *testLogger = nullptr;

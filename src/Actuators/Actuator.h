@@ -2,7 +2,8 @@
 #define ACTUATOR_H
 
 #include "../RecordData/Logging/Logger.h"
-
+#include <stdio.h>
+#include <string.h>
 namespace mmfs
 {
 

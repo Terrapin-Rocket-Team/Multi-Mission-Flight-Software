@@ -1,5 +1,6 @@
 #include "Barometer.h"
 #include <cmath>
+#include <Arduino.h>
 namespace mmfs
 {
 
