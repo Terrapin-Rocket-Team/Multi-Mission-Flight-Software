@@ -5,10 +5,12 @@
 #include "../../Sensors/GPS/GPS.h"
 #include <Arduino.h>
 
-#ifndef PIO_UNIT_TESTING
+#ifdef NATIVE
+#include "MockLoggingBackend.h"
+#else
 #include "LoggingBackend/LoggingBackendSdFat.h"
 #include "LoggingBackend/LoggingBackendLittleFS.h"
-#endif // PIO_UNIT_TESTING
+#endif // NATIVE
 
 #ifdef ARDUINO
 #include "ArrPrint.h"
@@ -27,8 +29,8 @@ Logger::Logger()
     setLogPrefixFormatting("$time - [$logType] ");
     setCustomLogPrefix("$time - [CUSTOM] ");
 
-#ifdef PIO_UNIT_TESTING //Use a mock backend for unit tests.
-    backend = blorp();
+#ifdef NATIVE // Use a mock backend for unit tests.
+    backend = new MockLoggingBackend();
 #else
     backend = new LoggingBackendLittleFS();
     if (!backend->begin())
@@ -38,7 +40,7 @@ Logger::Logger()
         if (!backend->begin())
             Serial.println("Failed to start any long-term memory device.");
     }
-#endif // PIO_UNIT_TESTING
+#endif // NATIVE
 
     // find a unique file name
     char fileName[MAX_FILE_NAME_SIZE];
