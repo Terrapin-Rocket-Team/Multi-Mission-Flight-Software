@@ -6,7 +6,7 @@
 #include "../../src/State/State.h"
 #include "../../lib/NativeTestMocks/UnitTestSensors.h"
 #include "TestingLogger.h"
-#include "../../src/RecordData/DataFormatter.h"
+#include "../../src/RecordData/DataReporter/DataFormatter.h"
 
 // ---
 
@@ -21,7 +21,7 @@ public:
 
 using namespace mmfs;
 char *fakepsram = nullptr;
-FsFileData *flightFile, *logFile, *preFlightFile;
+MockFileData *flightFile, *logFile, *preFlightFile;
 
 FakeGPS gps;
 FakeBarometer baro;
