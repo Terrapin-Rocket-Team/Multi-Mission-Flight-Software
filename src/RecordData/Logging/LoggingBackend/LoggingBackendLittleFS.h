@@ -29,5 +29,6 @@ namespace mmfs
         LittleFS_QPINAND *lfs;
         File *activeFiles[MAX_FILES];
     };
+
 }
 #endif
