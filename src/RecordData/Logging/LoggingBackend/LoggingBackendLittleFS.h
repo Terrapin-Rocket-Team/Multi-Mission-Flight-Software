@@ -2,9 +2,12 @@
 #define LOGGING_BACKEND_LITTLEFS
 
 #include "LoggingBackend.h"
-#include <LittleFS.h>
+
+class LittleFS_QPINAND;
+class File;
 namespace mmfs
 {
+
     class LoggingBackendLittleFS : public LoggingBackend
     {
     public:

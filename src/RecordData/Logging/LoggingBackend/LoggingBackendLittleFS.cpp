@@ -1,4 +1,5 @@
 #include "LoggingBackendLittleFS.h"
+#include <LittleFS.h>
 
 using namespace mmfs;
 

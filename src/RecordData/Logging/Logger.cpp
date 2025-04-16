@@ -5,8 +5,10 @@
 #include "../../Sensors/GPS/GPS.h"
 #include <Arduino.h>
 
+#ifndef PIO_UNIT_TESTING
 #include "LoggingBackend/LoggingBackendSdFat.h"
 #include "LoggingBackend/LoggingBackendLittleFS.h"
+#endif // PIO_UNIT_TESTING
 
 #ifdef ARDUINO
 #include "ArrPrint.h"
@@ -24,6 +26,10 @@ Logger::Logger()
 
     setLogPrefixFormatting("$time - [$logType] ");
     setCustomLogPrefix("$time - [CUSTOM] ");
+
+#ifdef PIO_UNIT_TESTING //Use a mock backend for unit tests.
+    backend = blorp();
+#else
     backend = new LoggingBackendLittleFS();
     if (!backend->begin())
     {
@@ -32,6 +38,7 @@ Logger::Logger()
         if (!backend->begin())
             Serial.println("Failed to start any long-term memory device.");
     }
+#endif // PIO_UNIT_TESTING
 
     // find a unique file name
     char fileName[MAX_FILE_NAME_SIZE];
@@ -50,7 +57,6 @@ Logger::Logger()
     flightDataFile = backend->open(fileName);
     flightDataFileName = new char[len];
     snprintf(flightDataFileName, len, "%s", fileName);
-
 
     snprintf(fileName, MAX_FILE_NAME_SIZE, "%d_%s", fileNo, "Log.txt");
     logFile = backend->open(fileName);
@@ -104,7 +110,7 @@ void Logger::recordFlightData()
 
     char dest[1500];
     DataFormatter::toCSVRow(dest, 1500, dataReporters, numReporters);
-    if(mode == FLIGHT)
+    if (mode == FLIGHT)
         flightDataFile->println(dest);
     else
         preFlightFile->println(dest);

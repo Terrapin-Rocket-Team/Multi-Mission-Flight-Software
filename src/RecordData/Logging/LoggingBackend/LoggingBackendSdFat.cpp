@@ -1,5 +1,6 @@
 #include "LoggingBackendSdFat.h"
 
+#include "../SdFatBoilerplate.h"
 using namespace mmfs;
 
 LoggingBackendSdFat::LoggingBackendSdFat()

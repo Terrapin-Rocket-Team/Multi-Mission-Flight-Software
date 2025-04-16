@@ -2,9 +2,12 @@
 #define LOGGING_BACKEND_SDFAT
 
 #include "LoggingBackend.h"
-#include "../SdFatBoilerplate.h"
+
+class SdFs;
+class FsFile;
 namespace mmfs
 {
+
     class LoggingBackendSdFat : public LoggingBackend
     {
     public:
