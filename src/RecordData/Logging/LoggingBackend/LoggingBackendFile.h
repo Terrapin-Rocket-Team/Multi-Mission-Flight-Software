@@ -20,7 +20,7 @@ namespace mmfs
         virtual size_t println(const char *data);
         virtual size_t print(const char *data);
 
-    private:
+    protected:
         int fileNum;
         LoggingBackend *b;
     };

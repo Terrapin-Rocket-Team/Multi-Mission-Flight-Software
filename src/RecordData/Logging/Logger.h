@@ -98,13 +98,13 @@ namespace mmfs
         void modifyFileDates(const GPS *gps);
         LoggingBackend *backend;
         void recordCrashReport();
-
-    protected:
-        void recordLogData(double timeStamp, LogType type, Dest dest, int size, const char *format, va_list args);
-        void recordLogData(const char *msg, Dest dest = BOTH, LogType type = NONE_);
+        
         LoggingBackendFile *logFile;
         LoggingBackendFile *flightDataFile;
         LoggingBackendFile *preFlightFile;
+    protected:
+        void recordLogData(double timeStamp, LogType type, Dest dest, int size, const char *format, va_list args);
+        void recordLogData(const char *msg, Dest dest = BOTH, LogType type = NONE_);
 
         //
 
@@ -127,7 +127,7 @@ namespace mmfs
     };
 
     Logger &getLogger();
-    #ifdef PIO_UNIT_TESTING
+    #ifdef NATIVE
     void setLogger(Logger *logger);
     #endif
 } // namespace mmfs

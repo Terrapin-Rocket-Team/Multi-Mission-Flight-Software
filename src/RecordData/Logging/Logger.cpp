@@ -30,7 +30,8 @@ Logger::Logger()
     setCustomLogPrefix("$time - [CUSTOM] ");
 
 #ifdef NATIVE // Use a mock backend for unit tests.
-    backend = new MockLoggingBackend();
+    backend = new LoggingBackendMock();
+    backend->begin();
 #else
     backend = new LoggingBackendLittleFS();
     if (!backend->begin())
@@ -70,7 +71,7 @@ Logger::Logger()
     preFlightFileName = new char[len];
     snprintf(preFlightFileName, len, "%s", fileName);
 
-#ifndef PIO_UNIT_TESTING // This is a workaround because testing this logger is hard when it's writing its own variable data to the log file
+#ifndef NATIVE // This is a workaround because testing this logger is hard when it's writing its own variable data to the log file
     recordLogData(INFO_, 100, "This flight is running MMFS v%s", APP_VERSION);
 #endif
 }
@@ -404,16 +405,18 @@ void Logger::writeCsvHeader()
     flightDataFile->println(header);
     preFlightFile->println(header);
 }
-#ifdef PIO_UNIT_TESTING
+#ifdef NATIVE
 static Logger *testLogger = nullptr;
-void mmfs::setLogger(Logger *logger)
+namespace mmfs {
+void setLogger(Logger *logger)
 {
     testLogger = logger;
+}
 }
 #endif
 Logger &mmfs::getLogger()
 {
-#ifdef PIO_UNIT_TESTING
+#ifdef NATIVE
     if (testLogger)
         return *testLogger;
 #endif
