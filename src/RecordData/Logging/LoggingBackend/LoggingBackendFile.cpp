@@ -20,7 +20,7 @@ size_t LoggingBackendFile::write(const char *data, size_t len)
     {
         len = strlen(data);
     }
-    return write(data, len);
+    return write((uint8_t *)data, len);
 }
 
 size_t LoggingBackendFile::write(const char data)
@@ -52,5 +52,5 @@ size_t LoggingBackendFile::println(const char *data)
 
 size_t LoggingBackendFile::print(const char *data)
 {
-    return write(data, strlen(data));
+    return write(data);
 }

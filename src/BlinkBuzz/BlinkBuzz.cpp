@@ -81,7 +81,7 @@ namespace mmfs
             return false;
         if (isAllowed(pin))
             return pinState[getPinIndex(pin)];
-        errorHandler.addError(mmfs::ErrorType::NONCRITICAL_WARNING, "BlinkBuzz: Attempted to check the state of an unallowed pin", pin);
+        getLogger().recordLogData(WARNING_, 100, "BlinkBuzz: Attempted to check state of an unallowed pin: %d", pin);
         return false;
     }
 
@@ -100,7 +100,7 @@ namespace mmfs
             for (int i = 0; i < numPins; i++)
                 if (allowedPins[i] == pin)
                     return true;
-        errorHandler.addError(mmfs::ErrorType::NONCRITICAL_WARNING, "BlinkBuzz: Attempted to use an unallowed pin", pin);
+        getLogger().recordLogData(WARNING_, 100, "BlinkBuzz: Attempted to use an unallowed pin: %d", pin);
         return false;
     }
     int BlinkBuzz::getPinIndex(int pin)
@@ -207,7 +207,8 @@ namespace mmfs
             return;
         if (!enableAsync)
         {
-            errorHandler.addError(mmfs::ErrorType::NONCRITICAL_WARNING, "BlinkBuzz: Attempted to use an asynchronous function without enabling asynchronous mode.");
+
+            getLogger().recordLogData(ERROR_, "BlinkBuzz: Attempted to use an asynchronous function without enabling asynchronous mode.");
             return;
         }
 
@@ -250,7 +251,7 @@ namespace mmfs
     {
         if (pinQEnd[idx] == maxQueueSize - 1)
         { // if the queue is full, don't add anything
-            errorHandler.addError(mmfs::ErrorType::NONCRITICAL_WARNING, "BlinkBuzz: A pin's queue has overflown.", allowedPins[idx]);
+            getLogger().recordLogData(WARNING_, 100, "BlinkBuzz: pin %d's queue has overflown.", allowedPins[idx]);
             return;
         }
         pinQ[idx][pinQEnd[idx]] = timeStamp;

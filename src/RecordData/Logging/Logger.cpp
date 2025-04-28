@@ -25,7 +25,6 @@ static const char *logTypeStrings[] = {"LOG", "ERROR", "WARNING", "INFO", "CUSTO
 Logger::Logger()
 {
     Serial.begin(115200);
-
     setLogPrefixFormatting("$time - [$logType] ");
     setCustomLogPrefix("$time - [CUSTOM] ");
 
@@ -134,7 +133,6 @@ void Logger::recordLogData(const char *msg, Dest dest, LogType type)
     {
         prefixLen = logPrefixLen;
     }
-
     if (dest == BOTH || dest == TO_USB)
     {
         Serial.println(msg);
@@ -187,7 +185,6 @@ void Logger::recordLogData(double timeStamp, LogType type, Dest dest, int size, 
     }
     char *msg = new char[size + 1];
     int p = vsnprintf(msg, size + 1, format, args);
-
     char *logMsg = new char[len + p + 1];
     snprintf(logMsg, len + p + 1, "%s%s", logPrefix, msg);
     recordLogData(logMsg, dest, type);
@@ -212,6 +209,7 @@ void Logger::recordLogData(LogType type, Dest dest, int size, const char *format
 }
 void Logger::recordLogData(LogType type, int size, const char *format, ...)
 {
+
     va_list args;
     va_start(args, format);
     recordLogData(millis() / 1000.0, type, BOTH, size, format, args);

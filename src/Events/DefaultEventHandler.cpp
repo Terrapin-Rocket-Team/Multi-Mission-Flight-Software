@@ -1,7 +1,7 @@
 #include "DefaultEventHandler.h"
 #include "Sensors/GPS/GPS.h"
 #include "BlinkBuzz/BlinkBuzz.h"
-
+#include <Arduino.h>
 using namespace mmfs;
 
 void DefaultEventHandler::onEvent(const Event *e)
@@ -43,7 +43,7 @@ void DefaultEventHandler::handleLogData(const LogData *e)
 }
 
 void DefaultEventHandler::handleInitEvent(const BoolEvent *e)
-{
+{    
     bb(e->value); // blink buzz on/off based on "ok" or "not ok"
 }
 

@@ -3,13 +3,12 @@
 
 using namespace mmfs;
 
-namespace mmfs::littlefs //declare some helper functions used at the end
+namespace mmfs::littlefs // declare some helper functions used at the end
 {
     void printDirectory(File dir, int numSpaces);
     void printSpaces(int num);
     void printTime(const DateTimeFields tm);
 } // namespace littlefs
-
 
 LoggingBackendLittleFS::LoggingBackendLittleFS()
 {
@@ -32,27 +31,29 @@ LoggingBackendLittleFS::~LoggingBackendLittleFS()
 
 bool LoggingBackendLittleFS::begin()
 {
-    return rdy = lfs != nullptr && lfs->begin();
+    rdy = lfs != nullptr && lfs->begin();
+    return rdy;
 }
 
 LoggingBackendFile *LoggingBackendLittleFS::open(const char *filename)
 {
+
     unsigned int i = 0;
-    while (i < MAX_FILES)
+    while (i < MAX_FILES) // if exists
     {
-        if (!strcmp(activeFiles[i++]->name(), filename))
+        if (activeFiles[i] && !strcmp(activeFiles[i]->name(), filename))
             return new LoggingBackendFile(this, i);
+        i++;
     }
-    if (i < MAX_FILES)
+
+    //if doesnt exist
+    File *f = new File(lfs->open(filename, FILE_READ | FILE_WRITE));
+    if (f)
     {
-        File *f = new File(lfs->open(filename, FILE_READ | FILE_WRITE));
-        if (f)
-        {
-            activeFiles[i] = f;
-            return new LoggingBackendFile(this, i);
-        }
+        activeFiles[i] = f;
+        return new LoggingBackendFile(this, i);
     }
-    return nullptr;
+    return nullptr; // if can't create
 }
 
 size_t LoggingBackendLittleFS::write(int file, const uint8_t *data, size_t len)
@@ -82,27 +83,33 @@ void LoggingBackendLittleFS::close(int file)
     }
 }
 
-void LoggingBackendLittleFS::save(int file){
-    if(activeFiles[file]){
+void LoggingBackendLittleFS::save(int file)
+{
+    if (activeFiles[file])
+    {
         activeFiles[file]->flush();
     }
 }
 
-void LoggingBackendLittleFS::ls(int i){
+void LoggingBackendLittleFS::ls(int i)
+{
     littlefs::printDirectory(lfs->open("/"), 0);
     Serial.println();
 }
 
-void LoggingBackendLittleFS::format(){
+void LoggingBackendLittleFS::format()
+{
     lfs->format();
 }
 
-bool LoggingBackendLittleFS::remove(const char *filename){
+bool LoggingBackendLittleFS::remove(const char *filename)
+{
     return lfs->remove(filename);
 }
 
-size_t LoggingBackendLittleFS::read(int file, char *dest, size_t len){
-    if(activeFiles[file])
+size_t LoggingBackendLittleFS::read(int file, char *dest, size_t len)
+{
+    if (activeFiles[file])
         return activeFiles[file]->readBytes(dest, len);
     return 0;
 }
