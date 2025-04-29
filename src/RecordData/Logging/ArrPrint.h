@@ -4,6 +4,8 @@
 #include <Print.h>
 #include <Utils/CircBuffer.h>
 
+
+//This class exists to provide a "printable" place to put the CrashReport (if there is one) so that we can log it.
 class ArrPrint : public Print
 {
 public:

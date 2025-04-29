@@ -21,7 +21,7 @@ bool SerialReader::readColumnHeaders(int &numCols, String colNames[]) {
 
         numCols = 0;
         int startIdx = 0;
-        for (int i = 0; i < line.length(); ++i) {
+        for (unsigned int i = 0; i < line.length(); ++i) {
             if (line[i] == ',') {
                 colNames[numCols++] = line.substring(startIdx, i);
                 startIdx = i + 1;

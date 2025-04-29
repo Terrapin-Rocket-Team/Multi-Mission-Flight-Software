@@ -1,5 +1,5 @@
 #include "State.h"
-
+#include <Arduino.h>
 #pragma region Constructor and Destructor
 
 namespace mmfs

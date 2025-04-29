@@ -1,6 +1,6 @@
 #include "NativeTestHelper.h"
-
-extern "C" {
-    uint8_t external_psram_size = 1;
+#include "MockLoggingBackend.h"
+namespace mmfs
+{
+    MockFileData *files[10] = {nullptr};
 }
-FsFileData *files[10] = {nullptr};
