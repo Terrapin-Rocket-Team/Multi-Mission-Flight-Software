@@ -1,61 +1,68 @@
-//
-// Created by ramykaddouri on 10/22/24.
-// Modified by michael mallamaci on 2/26/25 for reading from SD card
-// Modified by michael mallamaci on 3/7/25 for reading from serial
-//
-
 #include "SerialReader.h"
-
 namespace mmfs
 {
-SerialReader::SerialReader(const char* dataPointer) {
-    initialized = true;
-    this->dataPointer = dataPointer;
-    //getLogger().recordLogData(INFO_, "SerialReader: Initialized");
-}
+    SerialReader::SerialReader(const char *dataPointer)
+    {
+        initialized = true;
+        this->dataPointer = dataPointer;
+        // getLogger().recordLogData(INFO_, "SerialReader: Initialized");
+    }
 
-bool SerialReader::readColumnHeaders(int &numCols, String colNames[]) {
-    if (lineIdx == 0) {
-        String line(dataPointer);
-        if (line.charAt(line.length() - 1) != ',') line += ",";
+    bool SerialReader::readColumnHeaders(int &numCols, std::string colNames[])
+    {
+        if (lineIdx == 0)
+        {
+            std::string line(dataPointer);
+            if (line.at(line.length() - 1) != ',')
+                line += ",";
 
-        numCols = 0;
-        int startIdx = 0;
-        for (unsigned int i = 0; i < line.length(); ++i) {
-            if (line[i] == ',') {
-                colNames[numCols++] = line.substring(startIdx, i);
-                startIdx = i + 1;
+            numCols = 0;
+            int startIdx = 0;
+            for (unsigned int i = 0; i < line.length(); ++i)
+            {
+                if (line[i] == ',')
+                {
+                    colNames[numCols++] = line.substr(startIdx, i - startIdx);
+                    startIdx = i + 1;
+                }
             }
+
+            lineIdx++;
+            return true;
+        }
+        else
+        {
+            getLogger().recordLogData(WARNING_, "SerialReader: Headers already read!");
+            return false;
+        }
+    }
+
+    bool SerialReader::readLine(float *data)
+    {
+        std::string line(dataPointer);
+        if (line.length() == 0)
+            return false;
+        if (line.at(line.length() - 1) != ',')
+            line += ",";
+
+        int startIdx = 0;
+        size_t i = 0;
+        while (i < MAX_NUM_COLS)
+        {
+            int commaIdx = line.find(',', startIdx);
+            if (commaIdx == -1)
+                break;
+                std::string col = line.substr(startIdx, commaIdx - startIdx);
+            data[i++] = static_cast<float>(strtod(col.c_str(), nullptr));
+            startIdx = commaIdx + 1;
         }
 
         lineIdx++;
-        return true;
-    } else {
-        getLogger().recordLogData(WARNING_, "SerialReader: Headers already read!");
-        return false;
-    }
-}
-
-bool SerialReader::readLine(float *data) {
-    String line(dataPointer);
-    if (line.length() == 0) return false;
-    if (line.charAt(line.length() - 1) != ',') line += ",";
-
-    int startIdx = 0;
-    size_t i = 0;
-    while (i < MAX_NUM_COLS) {
-        int commaIdx = line.indexOf(',', startIdx);
-        if (commaIdx == -1) break;
-        String col = line.substring(startIdx, commaIdx);
-        data[i++] = static_cast<float>(strtod(col.c_str(), nullptr));
-        startIdx = commaIdx + 1;
+        return i > 0;
     }
 
-    lineIdx++;
-    return i > 0;
-}
-
-bool SerialReader::isInit() const {
-    return initialized;
-}
+    bool SerialReader::isInit() const
+    {
+        return initialized;
+    }
 }

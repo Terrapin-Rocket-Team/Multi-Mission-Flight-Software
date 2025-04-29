@@ -1,8 +1,3 @@
-//
-// Created by ramykaddouri on 11/1/24.
-// Modified by michael mallamaci on 3/1/25 for reading from SD card
-//
-
 #ifndef MOCKGPS_H
 #define MOCKGPS_H
 
@@ -21,20 +16,20 @@ private:
     int headingColIdx = -1;
     int fixQualityColIdx = -1;
 
-    String posXColName;
-    String posYColName;
-    String posZColName;
-    String headingColName;
-    String fixQualityColName;
+    std::string posXColName;
+    std::string posYColName;
+    std::string posZColName;
+    std::string headingColName;
+    std::string fixQualityColName;
 
     float sdData[MAX_NUM_COLS]{0.0f};
 public:
     MockGPS(const char* dataPath,
-            const String& posXColName,
-            const String& posYColName,
-            const String& posZColName,
-            const String& headingColName,
-            const String& fixQualityColName);
+            const std::string& posXColName,
+            const std::string& posYColName,
+            const std::string& posZColName,
+            const std::string& headingColName,
+            const std::string& fixQualityColName);
 
     bool init() override;
     void read() override;
