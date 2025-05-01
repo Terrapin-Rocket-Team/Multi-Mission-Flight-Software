@@ -102,7 +102,7 @@ namespace mmfs
     {
         GPS *gps = reinterpret_cast<GPS *>(getSensor(GPS_));
         IMU *imu = reinterpret_cast<IMU *>(getSensor(IMU_));
-        Barometer *baro = reinterpret_cast<Barometer *>(getSensor(BAROMETER_));
+        // Barometer *baro = reinterpret_cast<Barometer *>(getSensor(BAROMETER_));
 
         if (filter)
             updateKF();
