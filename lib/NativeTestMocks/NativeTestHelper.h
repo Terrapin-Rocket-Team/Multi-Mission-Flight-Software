@@ -5,7 +5,6 @@
 #include "../../src/Constants.h"
 #include "../../src/BlinkBuzz/BlinkBuzz.h"
 #include "../../src/RecordData/Logging/Logger.h"
-#include "../../src/Error/ErrorHandler.h"
 #include <string>
 #ifdef PIO_UNIT_TESTING
 #define UNITY_INCLUDE_DOUBLE

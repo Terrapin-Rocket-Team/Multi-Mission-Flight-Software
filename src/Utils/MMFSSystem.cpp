@@ -1,5 +1,4 @@
 #include "MMFSSystem.h"
-#include "Error/ErrorHandler.h"
 #include "BlinkBuzz/BlinkBuzz.h"
 #include "State/State.h"
 #include "Wire.h"
@@ -7,7 +6,6 @@
 
 using namespace mmfs;
 BlinkBuzz bb;
-ErrorHandler errorHandler;
 MMFSSystem::MMFSSystem(MMFSConfig *config) : config(config)
 {
 }

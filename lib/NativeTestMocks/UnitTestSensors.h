@@ -110,7 +110,7 @@ public:
 
     bool init() override
     {
-        measuredAcc = Vector<3>{0, 0, 0};
+        measuredAcc = Vector<3>{0, 0, -9.8};
         measuredGyro = Vector<3>{0, 0, 0};
         measuredMag = Vector<3>{0, 0, 0};
         orientation = Quaternion{1, 0, 0, 0};
