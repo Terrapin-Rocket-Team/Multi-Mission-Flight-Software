@@ -24,36 +24,41 @@ LoggingBackendSdFat::~LoggingBackendSdFat()
 
 bool LoggingBackendSdFat::begin()
 {
-    return rdy = sdfs != nullptr && (sdfs->begin() || sdfs->restart());
+    return rdy = sdfs != nullptr && (sdfs->begin(SD_CONFIG) || sdfs->restart());
 }
 
 LoggingBackendFile *LoggingBackendSdFat::open(const char *filename)
 {
     unsigned int i = 0;
-    while (activeFiles[i] && i < MAX_FILES)
+    while (activeFiles[i] && i < MAX_FILES) // if exists
     {
-        char fname[250];
-        activeFiles[i]->getName(fname, 250);
-        if (!strcmp(fname, filename))
-            return new LoggingBackendFile(this, i);
+            char fname[250];
+            activeFiles[i]->getName(fname, 250);
+            if (!strcmp(fname, filename))
+                return new LoggingBackendFile(this, i);
         i++;
     }
+    // if doesnt exist
     if (i < MAX_FILES)
     {
-        FsFile *f = new FsFile(sdfs->open(filename, O_RDWR));
+        FsFile *f = new FsFile(sdfs->open(filename, FILE_WRITE));
         if (f)
         {
             activeFiles[i] = f;
             return new LoggingBackendFile(this, i);
         }
     }
+     // if can't create
     return nullptr;
 }
 
 size_t LoggingBackendSdFat::write(int file, const uint8_t *data, size_t len)
 {
-    if (!activeFiles[file])
+    if (!activeFiles[file]){
+        Serial.println("file not found to print to");
         return 0;
+    }
+    Serial.write(data, len);
     return activeFiles[file]->write(data, len);
 }
 

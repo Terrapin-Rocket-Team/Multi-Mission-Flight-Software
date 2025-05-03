@@ -39,19 +39,22 @@ LoggingBackendFile *LoggingBackendLittleFS::open(const char *filename)
 {
 
     unsigned int i = 0;
-    while (i < MAX_FILES) // if exists
+    while (activeFiles[i] && i < MAX_FILES) // if exists
     {
-        if (activeFiles[i] && !strcmp(activeFiles[i]->name(), filename))
+        if (!strcmp(activeFiles[i]->name(), filename))
             return new LoggingBackendFile(this, i);
         i++;
     }
 
-    //if doesnt exist
-    File *f = new File(lfs->open(filename, FILE_READ | FILE_WRITE));
-    if (f)
+    // if doesnt exist
+    if (i < MAX_FILES)
     {
-        activeFiles[i] = f;
-        return new LoggingBackendFile(this, i);
+        File *f = new File(lfs->open(filename, FILE_READ | FILE_WRITE));
+        if (f)
+        {
+            activeFiles[i] = f;
+            return new LoggingBackendFile(this, i);
+        }
     }
     return nullptr; // if can't create
 }

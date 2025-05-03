@@ -113,9 +113,15 @@ void Logger::recordFlightData()
     char dest[1500];
     DataFormatter::toCSVRow(dest, 1500, dataReporters, numReporters);
     if (mode == FLIGHT)
+    {
         flightDataFile->println(dest);
+        flightDataFile->save();
+    }
     else
+    {
         preFlightFile->println(dest);
+        preFlightFile->save();
+    }
 }
 
 #pragma endregion Flight Data Logging
@@ -405,11 +411,12 @@ void Logger::writeCsvHeader()
 }
 #ifdef NATIVE
 static Logger *testLogger = nullptr;
-namespace mmfs {
-void setLogger(Logger *logger)
+namespace mmfs
 {
-    testLogger = logger;
-}
+    void setLogger(Logger *logger)
+    {
+        testLogger = logger;
+    }
 }
 #endif
 Logger &mmfs::getLogger()
