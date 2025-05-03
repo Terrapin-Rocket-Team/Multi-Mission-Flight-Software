@@ -75,6 +75,7 @@ void SerialHandler::copyFile(char *args)
     char c;
     while (f->readBytes(&c, 1))
         Serial.write(c);
+    delete f;
 }
 
 void SerialHandler::removeFile(char *args)
