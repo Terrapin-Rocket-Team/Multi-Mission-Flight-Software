@@ -21,7 +21,7 @@ def copyFile(ser: serial.Serial, src, dest=""):
         dest = src
     writeSer(f"cp {src}")
     with open(dest, "wb") as file:
-        time.sleep(0.1)
+        time.sleep(1)
         if not ser.readline().decode().startswith("ok"):
             print("Arduino did not recognize \"cp\" command")
             return
