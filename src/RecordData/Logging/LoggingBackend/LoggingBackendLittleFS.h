@@ -23,6 +23,7 @@ namespace mmfs
         virtual void ls(int i = -1) override;
         virtual void format() override;
         virtual bool remove(const char *filename) override;
+        virtual void seek(int file, long pos) override;
         virtual ~LoggingBackendLittleFS();
 
     private:

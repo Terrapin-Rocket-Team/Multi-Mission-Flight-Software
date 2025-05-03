@@ -54,3 +54,6 @@ size_t LoggingBackendFile::print(const char *data)
 {
     return write(data);
 }
+void LoggingBackendFile::seek(long pos){
+    b->seek(fileNum, pos);
+}

@@ -72,6 +72,7 @@ void SerialHandler::copyFile(char *args)
     }
     Serial.println("Sending...");
     LoggingBackendFile *f = backend->open(args);
+    f->seek(0);
     char c;
     while (f->readBytes(&c, 1))
         Serial.write(c);

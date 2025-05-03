@@ -34,14 +34,15 @@ LoggingBackendFile *LoggingBackendSdFat::open(const char *filename)
     {
             char fname[250];
             activeFiles[i]->getName(fname, 250);
-            if (!strcmp(fname, filename))
+            if (!strcmp(fname, filename)){
                 return new LoggingBackendFile(this, i);
+            }
         i++;
     }
     // if doesnt exist
     if (i < MAX_FILES)
     {
-        FsFile *f = new FsFile(sdfs->open(filename, FILE_WRITE));
+        FsFile *f = new FsFile(sdfs->open(filename, FILE_WRITE | FILE_READ));
         if (f)
         {
             activeFiles[i] = f;
@@ -110,4 +111,8 @@ size_t LoggingBackendSdFat::read(int file, char *dest, size_t len)
     if (activeFiles[file])
         return activeFiles[file]->readBytes(dest, len);
     return 0;
+}
+
+void LoggingBackendSdFat::seek(int file, long pos){
+    if(activeFiles[file]) activeFiles[file]->seek(pos);
 }

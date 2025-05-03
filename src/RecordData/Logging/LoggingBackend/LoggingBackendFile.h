@@ -19,6 +19,7 @@ namespace mmfs
         virtual int readBytes(char *dest, size_t len);
         virtual size_t println(const char *data);
         virtual size_t print(const char *data);
+        virtual void seek(long pos);
 
     protected:
         int fileNum;

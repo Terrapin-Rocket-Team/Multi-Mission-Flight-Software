@@ -23,6 +23,7 @@ namespace mmfs
         virtual void format() = 0;
         virtual bool remove(const char *filename) = 0;
         virtual ~LoggingBackend() {}
+        virtual void seek(int file, long pos);
 
     protected:
         bool rdy = false;

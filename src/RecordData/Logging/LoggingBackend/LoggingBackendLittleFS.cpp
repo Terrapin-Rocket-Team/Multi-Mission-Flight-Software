@@ -113,7 +113,10 @@ bool LoggingBackendLittleFS::remove(const char *filename)
 size_t LoggingBackendLittleFS::read(int file, char *dest, size_t len)
 {
     if (activeFiles[file])
-        return activeFiles[file]->readBytes(dest, len);
+    {
+        int i = activeFiles[file]->readBytes(dest, len);
+        return i;
+    }
     return 0;
 }
 
@@ -180,4 +183,8 @@ void littlefs::printTime(const DateTimeFields tm)
     Serial.print(tm.mday);
     Serial.print(", ");
     Serial.print(tm.year + 1900);
+}
+
+void LoggingBackendLittleFS::seek(int file, long pos){
+    if(activeFiles[file]) activeFiles[file]->seek(pos);
 }

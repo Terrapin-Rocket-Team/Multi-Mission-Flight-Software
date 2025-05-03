@@ -24,6 +24,7 @@ namespace mmfs
         virtual void format() override;
         virtual bool remove(const char *filename) ;
         virtual ~LoggingBackendSdFat();
+        virtual void seek(int file, long pos) override;
 
     private:
         SdFs *sdfs;
