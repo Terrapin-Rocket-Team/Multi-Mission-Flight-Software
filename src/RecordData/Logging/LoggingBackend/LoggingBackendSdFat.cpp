@@ -59,7 +59,6 @@ size_t LoggingBackendSdFat::write(int file, const uint8_t *data, size_t len)
         Serial.println("file not found to print to");
         return 0;
     }
-    Serial.write(data, len);
     return activeFiles[file]->write(data, len);
 }
 
