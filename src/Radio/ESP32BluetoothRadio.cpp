@@ -116,7 +116,10 @@ bool mmfs::ESP32BluetoothRadio::rx()
             ready = false;
         }
     }
-
+    else
+    {
+        Serial.println(port.readStringUntil('\n'));
+    }
     receiveBufferSize = 0;
     return false;
 }
