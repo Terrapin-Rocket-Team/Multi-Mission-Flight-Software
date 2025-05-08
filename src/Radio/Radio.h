@@ -7,7 +7,7 @@
 class Radio
 {
 public:
-    virtual ~Radio() {}; // Virtual descructor. Very important
+    virtual ~Radio() {}; // Virtual destructor. Very important
     virtual bool begin() = 0;
     virtual bool tx(const uint8_t *message, int len = -1) = 0;
     virtual bool rx() = 0;

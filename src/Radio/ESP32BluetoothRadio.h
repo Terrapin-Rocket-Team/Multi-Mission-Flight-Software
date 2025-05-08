@@ -1,7 +1,3 @@
-//
-// Created by ramykaddouri on 2/3/25.
-//
-
 #ifndef BLUETOOTHRADIO_H
 #define BLUETOOTHRADIO_H
 #include "Radio.h"
@@ -12,8 +8,10 @@
 #define STATUS_MESSAGE 3
 #define RECEIVE_BUFFER_SIZE 512
 
-namespace mmfs {
-    class ESP32BluetoothRadio : public Radio {
+namespace mmfs
+{
+    class ESP32BluetoothRadio : public Radio
+    {
     private:
         HardwareSerialIMXRT &port;
         std::string name;
@@ -52,5 +50,4 @@ namespace mmfs {
     };
 }
 
-
-#endif //BLUETOOTHRADIO_H
+#endif // BLUETOOTHRADIO_H

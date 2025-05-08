@@ -91,7 +91,7 @@ bool Logger::isReady() const
     return ready;
 }
 
-// Initializes the logger, returning whether backend card is ready
+// Initializes the logger, returning whether the backend is ready
 bool Logger::init(DataReporter **dataReporters, int numReporters)
 {
     this->dataReporters = dataReporters;
@@ -102,10 +102,10 @@ bool Logger::init(DataReporter **dataReporters, int numReporters)
 #pragma endregion Constructor and Initialization
 
 #pragma region Flight Data Logging
-// Records flight data to the backend card or PSRAM
+// Records flight data to the backend
 void Logger::recordFlightData()
 {
-    if (!ready) // If backend card not available, nothing to do.
+    if (!ready) // If backend not available, nothing to do.
     {
         return;
     }
@@ -401,7 +401,7 @@ void Logger::writeCsvHeader()
 {
     if (!ready)
     {
-        printf("No long-term storage found. Cannot write CSV header.");
+        Serial.println("No long-term storage found. Cannot write CSV header.");
         return;
     }
     char header[5000]; // 2000 is arbitrary, but should be enough for basically any header

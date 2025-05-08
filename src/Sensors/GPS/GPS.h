@@ -36,12 +36,12 @@ namespace mmfs
 
     protected:
         GPS();
-        Vector<3> position;     // latitude, longitude, alt
+        Vector<3> position;     // latitude, longitude, alt(m)
         Vector<3> displacement; // displacement from starting location
         Vector<3> origin;       // lat(deg), long(deg), alt(m) of the original location
-        int fixQual = 0;            // number of satellite connections
-        bool hasFix;       // whether or not GPS has reached at least 3 satellites since restart
-        bool hasFirstFix;
+        int fixQual = 0;        // number of satellite connections
+        bool hasFix;            // whether or not GPS is currently connected to >= 4 satellites
+        bool hasFirstFix;       // the first time it gets a fix
         double heading = 0;
 
         // Distance-related calculations

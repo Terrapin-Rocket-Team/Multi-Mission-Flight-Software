@@ -1,8 +1,3 @@
-//
-// Created by ramykaddouri on 9/24/24.
-// Modified to combine with LIS3MDL magnetometer
-//
-
 #include "BMI088andLIS3MDL.h"
 using namespace mmfs;
 bool BMI088andLIS3MDL::init()

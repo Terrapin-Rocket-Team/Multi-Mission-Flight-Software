@@ -66,7 +66,7 @@ bool MMFSSystem::update(double ms)
         if (config->state)
             config->state->updateState();
         else
-            getLogger().recordLogData(WARNING_, "MMFS Attempted to udpate State without a reference to it! (use MMFSConfig.withState(&stateVar))");
+            getLogger().recordLogData(WARNING_, "MMFS Attempted to update State without a reference to it! (use MMFSConfig.withState(&stateVar))");
         getLogger().recordFlightData();
         return true;
     }

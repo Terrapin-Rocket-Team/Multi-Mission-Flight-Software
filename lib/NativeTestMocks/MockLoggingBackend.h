@@ -199,6 +199,11 @@ namespace mmfs
             }
             return false;
         }
+
+        void seek(int file, long pos) override
+        {
+            printf("file seek not implemented");
+        }
     };
 
 }
