@@ -1,6 +1,5 @@
 import serial
 import time
-
 from serial.tools import list_ports
 
 def find_serial_port():
@@ -10,166 +9,157 @@ def find_serial_port():
         str: The name of the serial port if found, otherwise None.
     """
     ports = list(list_ports.comports())
-    if ports:
-        return ports[0].device
-    return None
+    return ports[0].device if ports else None
 
 ser = None
 
 def writeSer(text):
-    ser.write(("cmd/" + text + "\n").encode())
+    ser.write(f"cmd/{text}\n".encode())
 
-def copyFile(ser: serial.Serial, src, dest = ""):
-    
-    if(dest == ""):
+def copyFile(ser: serial.Serial, src, dest=""):
+    if dest == "":
         dest = src
-    writeSer("cp " + src)
-    file = open(dest,"wb")
-    time.sleep(0.1)
-    if(not ser.readline().decode().startswith("ok")):
-        print("Arduino did not recognize \"cp\" command")
-        return
-    
-    if((resp := ser.readline().decode().strip()) != "Sending..."):
-        print(resp)
-        return
-    time.sleep(0.1)
-    while(data := ser.read(ser.in_waiting)):
-        file.write(data)
+    writeSer(f"cp {src}")
+    with open(dest, "wb") as file:
         time.sleep(0.1)
+        if not ser.readline().decode().startswith("ok"):
+            print("Arduino did not recognize \"cp\" command")
+            return
+
+        resp = ser.readline().decode().strip()
+        if resp != "Sending...":
+            print(resp)
+            return
+
+        timeout = 2  # Timeout in seconds after last received data
+        start_time = time.time()
+        while True:
+            bytes_waiting = ser.in_waiting
+            if bytes_waiting:
+                data = ser.read(bytes_waiting)
+                file.write(data)
+                start_time = time.time()  # Reset timeout on data received
+            else:
+                # Check if timeout period has elapsed since last data
+                if time.time() - start_time > timeout:
+                    break
+            time.sleep(0.1)  # Short sleep to prevent high CPU usage
+
     print(f"Copied \"{src}\" to \"{dest}\".")
 
 def getlatestFiles(ser: serial.Serial):
     writeSer("latest")
-    while(ser.in_waiting == 0):
+    while ser.in_waiting == 0:
         time.sleep(0.1)
-    if(not ser.readline().decode().startswith("ok")):
+    if not ser.readline().decode().startswith("ok"):
         print("Arduino did not recognize \"latest\" command")
         return
-    
-    num = int(ser.read(ser.in_waiting).decode().strip())
-    if(num < 1):
+
+    num = int(ser.readline().decode().strip())
+    if num < 1:
         print("No files found.")
         return
-    
+
     copyFile(ser, f"{num}_FlightData.csv")
-    time.sleep(0.1)
     copyFile(ser, f"{num}_Log.txt")
-    time.sleep(0.1)
     copyFile(ser, f"{num}_PreFlightData.csv")
 
 def removeFile(ser: serial.Serial, path):
-    if(path is None or path == ""):
+    if not path:
         print("No filepath provided.")
         return
-    confirm = input(f"Are you sure you want to remove \"{path}\"? [y/n]: ")
-    if(confirm[0].lower() != "y"):
+    confirm = input(f"Remove \"{path}\"? [y/n]: ").lower()
+    if confirm != 'y':
         print("Canceled.")
         return
-    
-    writeSer("rm " + path)
-    if(not ser.readline().decode().startswith("ok")):
+
+    writeSer(f"rm {path}")
+    if not ser.readline().decode().startswith("ok"):
         print("Arduino did not recognize \"rm\" command")
         return
-    time.sleep(0.1)
-    if("Removed" not in (resp := ser.readline().decode().strip())):
+    resp = ser.readline().decode().strip()
+    if "Removed" not in resp:
         print(resp)
-        return
-    print(f"Removed : \"{path}\"")
+    else:
+        print(f"Removed: \"{path}\"")
 
 def clearFiles(ser: serial.Serial):
-    confirm = input("This will clear all files. Are you sure? [y/n]: ")
-    if(confirm[0].lower() != "y"):
+    confirm = input("Clear all files? [y/n]: ").lower()
+    if confirm != 'y':
         print("Canceled.")
         return
+
     writeSer("clr")
-    if(not ser.readline().decode().startswith("ok")):
+    if not ser.readline().decode().startswith("ok"):
         print("Arduino did not recognize \"clr\" command")
         return
-    time.sleep(0.1)
-    if(not ser.readline().decode().startswith("Removed")):
-        print("Error")
+    resp = ser.readline().decode().strip()
+    print(resp if "Removed" in resp else "Error")
 
 def help():
-    """
+    print("""
     Serial File Management Commands (Arduino-side):
     ----------------------------------------------
     Commands must be sent over an active serial connection.
     
-    1. ls  
-       - Lists all files stored on the Arduino.  
+    1. ls         - List all files on Arduino
+    2. cp <file>  - Download a file (auto-saves to current directory)
+    3. rm <file>  - Delete a file (confirmation required)
+    4. latest     - Retrieve latest flight data files
+    5. clr        - Wipe all files (confirmation required)
+    6. help       - Show this help
+    7. exit/quit  - Exit the program
+    """)
 
-    2. cp <filename> or cp <source> <dest>
-       - Downloads a file from the Arduino to the connected computer.  
- 
-    3. rm <filename>  
-       - Deletes a file on the Arduino (confirmation required in Python). 
-
-    4. latest  
-       - Retrieves the most latest file from latest power cycle.
-
-    5. clr  
-       - Wipes ALL files on the Arduino (confirmation required in Python).  
-       
-    Note: 
-    - The Python wrappers handle serial communication and user prompts.  
-    - Use find_serial_port() to auto-detect the Arduino's serial port.  
-    """
-    print(help.__doc__)
-    
 def main():
-    try: 
-        port = find_serial_port()
+    global ser
+    try:
+        port = "COM6"
         if not port:
             print("No serial port found.")
             return
-        global ser
+
         ser = serial.Serial(port, 9600, timeout=1)
-        time.sleep(.5)  # Wait for Arduino to initialize
+        time.sleep(2)  # Allow Arduino to reset after connection
         print(f"Connected to {port}")
 
         while True:
-            # Send user input to Arduino
-            cmd = input("Enter command: ")
-            if(not cmd):
-               continue
-            parts = cmd.strip().split()
-            cmd = parts[0]
+            cmd = input("Enter command: ").strip()
+            if not cmd:
+                continue
+
+            parts = cmd.split()
+            action = parts[0].lower()
             args = parts[1:]
-            if cmd.lower() in ["exit", "quit"]:
-                print("Exiting...")
+
+            if action in ("exit", "quit"):
                 break
-            if(cmd.lower() == "latest"):
-                getlatestFiles(ser)
-            elif(cmd.lower() == "help"):
+            elif action == "help":
                 help()
-            elif(cmd.lower() == "cp" and args[0].isdigit()):
-                    copyFile(ser, f"{args[0]}_FlightData.csv")
-                    time.sleep(0.1)
-                    copyFile(ser, f"{args[0]}_Log.txt")
-                    time.sleep(0.1)
-                    copyFile(ser, f"{args[0]}_PreFlightData.csv")
-            elif(cmd.lower() == "rm"):
+            elif action == "latest":
+                getlatestFiles(ser)
+            elif action == "cp" and args:
+                num = args[0]
+                copyFile(ser, f"{num}_FlightData.csv")
+                copyFile(ser, f"{num}_Log.txt")
+                copyFile(ser, f"{num}_PreFlightData.csv")
+            elif action == "rm" and args:
                 removeFile(ser, args[0])
-            elif(cmd.lower() == "clr"):
+            elif action == "clr":
                 clearFiles(ser)
             else:
-                print("Sending Command: " + cmd)
                 writeSer(cmd)
+                time.sleep(0.1)
+                while ser.in_waiting > 0:
+                    print(ser.read(ser.in_waiting).decode())
+                    time.sleep(0.1); # try and wait to make sure the arduino isnt going to send more.
 
-            # Read and print all incoming data
-            time.sleep(.1)  # Give Arduino time to respond
-            while ser.in_waiting > 0:
-                data = ser.read(ser.in_waiting).decode().strip()
-                if data:
-                    print(data)
-
-    except serial.SerialException:
-        print("Error: Could not open serial port. Check connection.")
+    except serial.SerialException as e:
+        print(f"Serial error: {e}")
     except KeyboardInterrupt:
         print("\nExiting...")
     finally:
-        if 'ser' in locals() and ser.is_open:
+        if ser and ser.is_open:
             ser.close()
 
 if __name__ == "__main__":
