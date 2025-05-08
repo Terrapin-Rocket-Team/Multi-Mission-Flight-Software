@@ -88,10 +88,10 @@ bool mmfs::ESP32BluetoothRadio::rx()
             port.readBytes(receiveBuffer, size);
 
             Serial.println("Received message: ");
-            // Serial.println("received size: " + String(receiveBufferSize));
+            Serial.println("received size: " + String(receiveBufferSize));
             for (uint8_t i = 0; i < receiveBufferSize; i++)
             {
-                Serial.print(receiveBuffer[i]);
+                Serial.print((char)receiveBuffer[i]);
             }
             Serial.println("");
 
@@ -118,7 +118,8 @@ bool mmfs::ESP32BluetoothRadio::rx()
     }
     else
     {
-        Serial.println(port.readStringUntil('\n'));
+        // Serial.println(port.readStringUntil('\n'));
+        port.readStringUntil('\n');
     }
     receiveBufferSize = 0;
     return false;
