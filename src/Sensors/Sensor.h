@@ -16,8 +16,6 @@ namespace mmfs
         GPS_,
         IMU_,
         LIGHT_SENSOR_,
-        RADIO_,
-        RTC_,
         ENCODER_,
         OTHER_
     };
