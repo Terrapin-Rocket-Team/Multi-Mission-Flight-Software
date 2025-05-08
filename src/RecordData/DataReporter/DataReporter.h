@@ -15,7 +15,7 @@ namespace mmfs
         BYTE,
         SHORT,
         FLOAT,
-        DOUBLE, // Displays with 3 decimal places
+        DOUBLE,    // Displays with 3 decimal places
         DOUBLE_HP, // Displays with 7 decimal places
         STRING,
         BOOL,
@@ -25,9 +25,9 @@ namespace mmfs
 
     struct DataPoint
     {
-        DataType type = UNKNOWN;   // Type of the data
+        DataType type = UNKNOWN;     // Type of the data
         const char *label = nullptr; // Label for the data
-        DataPoint *next = nullptr;  // Next data point in the list
+        DataPoint *next = nullptr;   // Next data point in the list
         void *data = nullptr;        // Pointer to the data the user gave
     };
 
@@ -46,8 +46,7 @@ namespace mmfs
         DataPoint *getDataPoints();
 
     protected:
-
-        uint8_t numColumns = 0;        // Number of fields in packedData
+        uint8_t numColumns = 0;
 
         DataPoint *first = nullptr, *last = nullptr;
 

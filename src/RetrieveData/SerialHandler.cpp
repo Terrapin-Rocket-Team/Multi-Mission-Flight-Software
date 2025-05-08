@@ -60,7 +60,7 @@ void SerialHandler::clearFiles()
     Serial.println("Removed All Files");
 }
 
-// expects "fileName_##.csv"
+// expects "fileName_##.csv" i.e. the full name/path of the file.
 void SerialHandler::copyFile(char *args)
 {
     LoggingBackend *backend = getLogger().backend;

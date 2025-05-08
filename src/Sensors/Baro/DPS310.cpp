@@ -31,7 +31,7 @@ namespace mmfs
     {
         sensors_event_t temp_event, pressure_event;
 
-        /* getEvents returns true or false depending on whether the sensors were succesfully read or not */
+        /* getEvents returns true or false depending on whether the sensors were successfully read or not */
         if (dps.getEvents(&temp_event, &pressure_event))
         {
             this->temp = temp_event.temperature;

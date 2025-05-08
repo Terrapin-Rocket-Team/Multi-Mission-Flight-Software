@@ -55,7 +55,7 @@ namespace mmfs
     {
 
     public:
-        Logger(); // store 30 seconds, print to SD every 30 seconds
+        Logger();
         virtual ~Logger();
 
         virtual bool init(DataReporter **dataReporters, int numReporters);
@@ -64,7 +64,7 @@ namespace mmfs
 
         int getFlightNum(); // returns # extension of current flight
 
-        void recordFlightData(); // records  flight data
+        void recordFlightData(); // records flight data
 
         // recordLogData with format string
         void recordLogData(LogType type, Dest dest, int size, const char *format, ...);
@@ -116,7 +116,7 @@ namespace mmfs
         char *logFileName = nullptr;        // Name of the log file
         char *flightDataFileName = nullptr; // Name of the flight data file
         char *preFlightFileName = nullptr;  // Name of the pre-flight file
-        bool ready = false;                 // Whether the logger is ready
+        bool ready = false;                 // Whether the logger has a long-term storage option available
 
         char *logPrefixFormat = nullptr;
         int logPrefixLen = 0;
