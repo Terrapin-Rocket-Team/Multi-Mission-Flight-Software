@@ -12,15 +12,16 @@ mmfs::ESP32BluetoothRadio btRadio(BTSERIAL, "AVIONICS");
 
 void setup() {
     Serial.begin(9600);
-    Serial.println("Hello World!");
     btRadio.begin();
+    delay(1000);
 
-    while (!btRadio.isReady()) {
-        delay(500);
-        btRadio.rx();
-        Serial.print(".");
-    }
-    Serial.println("");
+    // while (!btRadio.isReady()) {
+    //     delay(500);
+    //     // btRadio.rx();
+    //     Serial.print(".");
+    // }
+    // Serial.println("");
+    btRadio.rx();
 
     Serial.println("Sending message...");
     const uint8_t msg[] = "Hello World!";
