@@ -1,16 +1,16 @@
 #ifndef _DEFAULT_EVENTS_H
 #define _DEFAULT_EVENTS_H
 #include "Event.h"
-#include "../RecordData/Logger.h"
+#include "../RecordData/Logging/Logger.h"
 namespace mmfs
 {
     class GPS;
     class GPSFix : public Event
     {
     public:
-        GPSFix(EventID id, GPS *gps, bool hasFix) : Event(id), gps(gps), hasFix(hasFix) {}
+        GPSFix(EventID id, GPS *gps, bool firstFix) : Event(id), gps(gps), firstFix(firstFix) {}
         GPS *gps;
-        bool hasFix;
+        bool firstFix;
     };
     class LogData : public Event
     {

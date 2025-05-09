@@ -33,7 +33,7 @@
 
 #include "Vector.h"
 #include "Matrix.h"
-#include "../RecordData/Logger.h"
+#include "../RecordData/Logging/Logger.h"
 #include <cstdio>
 
 namespace mmfs {
@@ -147,15 +147,13 @@ public:
   // returned in rotation order and right-handed about the specified
   // axes:
   //
-  //   v[0] is applied 1st about z (ie, roll)
+  //   v[0] is applied 1st about z (ie, yaw)
   //   v[1] is applied 2nd about y (ie, pitch)
-  //   v[2] is applied 3rd about x (ie, yaw)
+  //   v[2] is applied 3rd about x (ie, roll)
   //
   // Note that this means result.x() is not a rotation about x;
   // similarly for result.z().
-  //
-  Vector<3> toEuler() const {
-    // TODO what Euler is this? See comment above, I think it is 1-2-3
+  Vector<3> toEuler321() const {
     Vector<3> ret;
     double sqw = _w * _w;
     double sqx = _x * _x;

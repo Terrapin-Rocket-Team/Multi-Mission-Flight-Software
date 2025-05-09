@@ -1,5 +1,6 @@
 #include "Barometer.h"
 #include <cmath>
+#include <Arduino.h>
 namespace mmfs
 {
 
@@ -110,10 +111,4 @@ namespace mmfs
         }
         return false;
     }
-
-    // const char *Barometer::getStaticDataString() const
-    // {
-    //     sprintf(staticData, "Ground Pressure (hPa): %.2f\n", groundPressure);
-    //     return staticData;
-    // }
 }

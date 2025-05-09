@@ -45,7 +45,7 @@ void test_imu_begin()
 
     TEST_ASSERT_EQUAL_FLOAT(0, imu.getAcceleration().x());
     TEST_ASSERT_EQUAL_FLOAT(0, imu.getAcceleration().y());
-    TEST_ASSERT_EQUAL_FLOAT(0, imu.getAcceleration().z());
+    TEST_ASSERT_EQUAL_FLOAT(-9.8, imu.getAcceleration().z());
     TEST_ASSERT_EQUAL_FLOAT(0, imu.getAngularVelocity().x());
     TEST_ASSERT_EQUAL_FLOAT(0, imu.getAngularVelocity().y());
     TEST_ASSERT_EQUAL_FLOAT(0, imu.getAngularVelocity().z());
@@ -117,7 +117,7 @@ void test_quaternion_based_complimentary_filter()
     imu.set(Vector<3>{2.0, 2.0, 5.0}, Vector<3>{1.0, 1.0, 1.0}, Vector<3>{0.5, 0.5, 0.5}); // Random non-gravity forces
     imu.quaternionBasedComplimentaryFilter((double)UPDATE_INTERVAL/1000); // Run filter
 
-    TEST_IGNORE_MESSAGE("Quaternion based complimentary filter test case 3 not working.");
+    TEST_IGNORE_MESSAGE("Magnetometer code doesn't work");
     // The result should deviate significantly from the identity quaternion
     expected_orientation = Quaternion{0.9517171, 0.06399739, 0.02944679, -0.29878383};
     TEST_ASSERT_EQUAL_FLOAT(expected_orientation.w(), imu.getOrientation().w());

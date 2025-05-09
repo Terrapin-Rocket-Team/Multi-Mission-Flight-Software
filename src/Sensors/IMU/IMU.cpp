@@ -1,5 +1,4 @@
 #include "IMU.h"
-#include "../../Error/ErrorHandler.h"
 
 namespace mmfs
 {
@@ -42,7 +41,7 @@ namespace mmfs
 
     Vector<3> IMU::getAccelerationGlobal()
     {
-        Quaternion accelInterial = orientation * Quaternion(0, measuredAcc) * orientation.conjugate();
+        Quaternion accelInterial = orientation.conjugate() * Quaternion(0, measuredAcc) * orientation;
         return Vector<3>(accelInterial.x(), accelInterial.y(), accelInterial.z());
     }
     
@@ -60,12 +59,11 @@ namespace mmfs
     void IMU::quaternionBasedComplimentaryFilterSetup()
     {
         // Find initial absolute orientation which is just q = q_acc * q_mag
-
         // Get Accelerometer Orientation
         Quaternion a_b = Quaternion{0, measuredAcc};
         if (!(a_b.magnitude() > 0))
         {
-            errorHandler.addError(GENERIC_ERROR, "Acceleration magnitude 0 while running quaternionBasedComplimentaryFilterSetup(). Need to record acceleration vector on setup before running this function.");
+            getLogger().recordLogData(ERROR_, "Acceleration magnitude 0 while running quaternionBasedComplimentaryFilterSetup(). Need to record acceleration vector on setup before running this function.");
             return;
         }
         a_b.normalize();
@@ -84,7 +82,7 @@ namespace mmfs
         Quaternion m_b = Quaternion{0, measuredMag};
         if (!(m_b.magnitude() > 0))
         {
-            errorHandler.addError(GENERIC_ERROR, "Magnetic magnitude 0 while running quaternionBasedComplimentaryFilterSetup(). Need to record magnetometer vector on setup before running this function.");
+            getLogger().recordLogData(ERROR_, "Magnetic magnitude 0 while running quaternionBasedComplimentaryFilterSetup(). Need to record magnetometer vector on setup before running this function.");
             return;
         }
         m_b.normalize();

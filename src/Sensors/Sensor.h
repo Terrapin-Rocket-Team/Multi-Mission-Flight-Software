@@ -4,9 +4,9 @@
 #include "../Constants.h"
 #include "../Utils/CircBuffer.h"
 #include "../BlinkBuzz/BlinkBuzz.h"
-#include "../RecordData/Logger.h"
+#include "../RecordData/Logging/Logger.h"
 #include <algorithm>
-#include "../RecordData/DataReporter.h"
+#include "../RecordData/DataReporter/DataReporter.h"
 
 namespace mmfs
 {
@@ -16,8 +16,6 @@ namespace mmfs
         GPS_,
         IMU_,
         LIGHT_SENSOR_,
-        RADIO_,
-        RTC_,
         ENCODER_,
         OTHER_
     };
@@ -25,9 +23,9 @@ namespace mmfs
     class Sensor : public DataReporter
     {
     public:
-        virtual ~Sensor(){};
+        virtual ~Sensor() {};
 
-        // ------------------------------- SENSOR TYPE IMPLEMMENTATION ---------------------------------------------
+        // ------------------------------- SENSOR TYPE IMPLEMENTATION ---------------------------------------------
 
         // Updates the sensor's fields by querying the sensor for new data (calls read() internally)
         virtual void update() = 0;
@@ -39,8 +37,6 @@ namespace mmfs
 
         // ------------------------------- BASE SENSOR CLASS IMPLEMENTATION ----------------------------------------
     public:
-
-
         virtual bool isInitialized() const { return initialized; } // Returns whether the sensor has been initialized or not
 
         virtual explicit operator bool() const { return initialized; } // Returns whether the sensor has been initialized or not
@@ -67,8 +63,6 @@ namespace mmfs
         const int CIRC_BUFFER_IGNORE = UPDATE_RATE * SENSOR_BIAS_CORRECTION_DATA_IGNORE; // number of entries to ignore for SBCD
 
         // ----------------------------------------------------------------------------------------------------------
-
-        
     };
 }; // namespace mmfs
 

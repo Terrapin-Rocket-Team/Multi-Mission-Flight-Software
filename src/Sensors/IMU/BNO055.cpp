@@ -1,5 +1,5 @@
 #include "BNO055.h"
-#include "../../RecordData/Logger.h"
+#include "../../RecordData/Logging/Logger.h"
 
 namespace mmfs
 {
@@ -45,7 +45,7 @@ namespace mmfs
         }
     }
 
-    void BNO055::calibrateBno() // not used in flight, used with a separate main file to calibrate the BNO055. BNO does not store these valeus between power cycles.
+    void BNO055::calibrateBno() // not used in flight, used with a separate main file to calibrate the BNO055. BNO does not store these values between power cycles.
     {
         uint8_t system, gyro, accel, mag, i = 0;
         while ((system != 3) || (gyro != 3) || (accel != 3) || (mag != 3))

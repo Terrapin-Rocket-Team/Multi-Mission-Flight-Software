@@ -1,4 +1,4 @@
-#include "../../src/RecordData/DataReporter.h"
+#include "../../src/RecordData/DataReporter/DataReporter.h"
 
 namespace mmfs
 {

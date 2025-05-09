@@ -1,17 +1,17 @@
 #include "MMFSSystem.h"
-#include "Error/ErrorHandler.h"
 #include "BlinkBuzz/BlinkBuzz.h"
 #include "State/State.h"
 #include "Wire.h"
+#include "RetrieveData/SerialHandler.h"
 
 using namespace mmfs;
 BlinkBuzz bb;
-ErrorHandler errorHandler;
 MMFSSystem::MMFSSystem(MMFSConfig *config) : config(config)
 {
 }
 void MMFSSystem::init()
 {
+    getLogger().recordCrashReport();
     getLogger().recordLogData(INFO_, "Initializing MMFS.");
     Wire.begin();
     // BlinkBuzz first
@@ -55,6 +55,7 @@ bool MMFSSystem::update(double ms)
         getLogger().recordLogData(WARNING_, "Attempted to update MMFSSystem before it was initialized. Initializing it now...");
         init();
     }
+    getSerialHandler().handle();
     // loop based on time and interval and update bb.
     bb.update();
     if (ms == -1)
@@ -65,7 +66,7 @@ bool MMFSSystem::update(double ms)
         if (config->state)
             config->state->updateState();
         else
-            getLogger().recordLogData(WARNING_, "MMFS Attempted to udpate State without a reference to it! (use MMFSConfig.withState(&stateVar))");
+            getLogger().recordLogData(WARNING_, "MMFS Attempted to update State without a reference to it! (use MMFSConfig.withState(&stateVar))");
         getLogger().recordFlightData();
         return true;
     }

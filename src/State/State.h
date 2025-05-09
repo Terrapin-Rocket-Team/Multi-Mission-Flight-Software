@@ -7,7 +7,7 @@
 #include "../Sensors/Baro/Barometer.h"
 #include "../Sensors/GPS/GPS.h"
 #include "../Sensors/IMU/IMU.h"
-#include "../RecordData/Logger.h"
+#include "../RecordData/Logging/Logger.h"
 #include "../Constants.h"
 #include "../Math/Vector.h"
 #include "../Math/Quaternion.h"
@@ -31,7 +31,7 @@ namespace mmfs
         virtual Sensor *getSensor(SensorType type, int sensorNum = 1) const; // get a sensor of a certain type. 1 indexed. i.e. getSensor(GPS, 1) gets the first GPS sensor.
 
         // State Getters
-        virtual Vector<3> getPosition() const { return position; }
+        virtual Vector<3> getPosition() const { return position; } // in m away from point of launch
         virtual Vector<3> getVelocity() const { return velocity; }
         virtual Vector<3> getAcceleration() const { return acceleration; }
         virtual Quaternion getOrientation() const { return orientation; }
@@ -43,8 +43,6 @@ namespace mmfs
 
         bool sensorOK(const Sensor *sensor) const;
 
-
-
     protected:
         double currentTime; // in s since uC turned on
         double lastTime;
@@ -55,8 +53,9 @@ namespace mmfs
 
         // ----
 
-        // Update functions:
-        /* update(){
+        // Update function layout in the CPP:
+        /*
+        update(){
             updateSensors();
             updateVariables(){
                 if (filter)
@@ -77,17 +76,15 @@ namespace mmfs
 
         // ----
 
-        // Helper functions
-
         // State variables
-        Vector<3> position;     // in m from start position
+        Vector<3> position;     // in m from launch position
         Vector<3> velocity;     // in m/s
         Vector<3> acceleration; // in m/s^2
         Quaternion orientation; // in quaternion
         Vector<2> coordinates;  // in lat, lon
         double heading;         // in degrees
 
-        // These two only exist because of bugs in the KF. They will be removed when the KF is fixed.
+        // These two only exist because of bugs in the KF. They will be removed when™ the KF is fixed.
         double baroVelocity;    // in m/s
         double baroOldAltitude; // in m
 
@@ -97,6 +94,8 @@ namespace mmfs
         bool initialized = false;
 
         int stage = 0;
+
+        double *stateVars = nullptr;
     };
 }
 #endif // STATE_H

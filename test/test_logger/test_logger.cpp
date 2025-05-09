@@ -5,8 +5,8 @@
 
 #include "../../src/State/State.h"
 #include "../../lib/NativeTestMocks/UnitTestSensors.h"
-#include "TestingLogger.h"
-#include "../../src/RecordData/DataFormatter.h"
+#include "../../lib/NativeTestMocks/MockLoggingBackend.h"
+#include "../../src/RecordData/DataReporter/DataFormatter.h"
 
 // ---
 
@@ -21,14 +21,14 @@ public:
 
 using namespace mmfs;
 char *fakepsram = nullptr;
-FsFileData *flightFile, *logFile, *preFlightFile;
+MockFileData *flightFile, *logFile, *preFlightFile;
 
 FakeGPS gps;
 FakeBarometer baro;
 Sensor *sensors[2] = {&gps, &baro};
 TestState state(sensors, 2, nullptr);
 DataReporter *arr[] = {&state, &gps, &baro};
-TestingLogger *testLogger;
+Logger *testLogger;
 
 // ---
 
@@ -53,31 +53,26 @@ void tearDown(void)
 
 void test_SdFs_mock()
 {
-    SdFs *sd = testLogger->getSdFs();
-    TEST_ASSERT_TRUE(sd->begin(0));
-    TEST_ASSERT_TRUE(sd->restart());
-    TEST_ASSERT_FALSE(sd->exists("file"));
-    FsFile file = sd->open("file", 0);
-    TEST_ASSERT_TRUE(sd->exists("file"));
-    TEST_ASSERT_TRUE(file.close());
-    TEST_ASSERT_TRUE(file.write("data", 1));
-    TEST_ASSERT_TRUE(file.print("data"));
-    TEST_ASSERT_TRUE(file.println("data"));
-    TEST_ASSERT_EQUAL_CHAR_ARRAY("ddatadata\n", file.data->arr, 10);
-    TEST_ASSERT_EQUAL(10, file.data->size);
+    LoggingBackendFileMock *file = static_cast<LoggingBackendFileMock *>(testLogger->backend->open("file"));
+    TEST_ASSERT_TRUE(testLogger->backend->exists("file"));
+    TEST_ASSERT_TRUE(file->write("data", 1));
+    TEST_ASSERT_TRUE(file->print("data"));
+    TEST_ASSERT_TRUE(file->println("data"));
+    TEST_ASSERT_EQUAL_CHAR_ARRAY("ddatadata\n", file->data->arr, 10);
+    TEST_ASSERT_EQUAL(10, file->data->size);
 }
 
 void test_testLogger_init()
 {
+    LoggingBackendMock *m = (LoggingBackendMock *)testLogger->backend;
     testLogger->init(arr, 3);
-    TEST_ASSERT_TRUE(testLogger->isSdCardReady());
     TEST_ASSERT_TRUE(testLogger->isReady());
-    TEST_ASSERT_TRUE(testLogger->getSdFs()->exists("1_FlightData.csv"));
-    TEST_ASSERT_TRUE(testLogger->getSdFs()->exists("1_Log.txt"));
-    TEST_ASSERT_TRUE(testLogger->getSdFs()->exists("1_PreFlightData.csv"));
-    flightFile = testLogger->getFlightDataFile()->data;
-    logFile = testLogger->getLogFile()->data;
-    preFlightFile = testLogger->getPreFlightFile()->data;
+    TEST_ASSERT_TRUE(testLogger->backend->exists("1_FlightData.csv"));
+    TEST_ASSERT_TRUE(testLogger->backend->exists("1_Log.txt"));
+    TEST_ASSERT_TRUE(testLogger->backend->exists("1_PreFlightData.csv"));
+    flightFile = ((LoggingBackendFileMock *)(testLogger->flightDataFile))->data;
+    logFile = ((LoggingBackendFileMock *)(testLogger->logFile))->data;
+    preFlightFile = ((LoggingBackendFileMock *)(testLogger->preFlightFile))->data;
 }
 
 void test_recordLogData_on_ground()
@@ -110,8 +105,8 @@ void test_recordFlightData_on_ground()
     TEST_ASSERT_EQUAL(0, flightFile->size); // no data should be written to the flight data file
     TEST_ASSERT_EQUAL(145, preFlightFile->size);
     TEST_ASSERT_EQUAL_CHAR_ARRAY("1.000,0,0.000,0.000,0.000,0.000,0.000,0.000,0.000,0.000,0.000," // state
-                                 "0.0000000,0.0000000,0.000,0.000,0.000,0.000,0,00:00:00,"      // gps
-                                 "0.000,0.000,44307.690,0.000\n",                               // baro
+                                 "0.0000000,0.0000000,0.000,0.000,0.000,0.000,0,00:00:00,"        // gps
+                                 "0.000,0.000,44307.690,0.000\n",                                 // baro
                                  preFlightFile->arr, 143);
 
     gps.set(180, 180, 1000);
@@ -168,7 +163,7 @@ int main(int argc, char **argv)
 
     gps.setFixQual(3);
 
-    testLogger = new TestingLogger();
+    testLogger = &getLogger();
     // Add your tests here
     // RUN_TEST(test_function_name); // no parentheses after function name
     RUN_TEST(test_SdFs_mock);

@@ -3,7 +3,7 @@
 
 // include other headers you need to test here
 
-#include "../../src/RecordData/DataFormatter.h"
+#include "../../src/RecordData/DataReporter/DataFormatter.h"
 #include "../../lib/NativeTestMocks/UnitTestSensors.h"
 #include "../../src/State/State.h"
 

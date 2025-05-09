@@ -1,6 +1,5 @@
 #include "Arduino.h"
 
-
 const uint64_t start = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
 WireClass Wire;
 uint64_t millis()
@@ -76,6 +75,14 @@ void SerialClass::clearBuffer()
     cursor = 0;
     fakeBuffer[0] = '\0';
 }
+
+int SerialClass::readBytesUntil(char c, char *i, size_t len) {return 0;}
+
+bool SerialClass::available() { return true; }
+
+void SerialClass::write(char &c) { write(&c, 1); }
+
+void SerialClass::println(int i) {}
 
 SerialClass Serial;
 CrashReportClass CrashReport;

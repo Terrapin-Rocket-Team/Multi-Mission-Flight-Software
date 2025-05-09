@@ -1,8 +1,3 @@
-//
-// To encapsulate a full IMU's functionality, this class combines the sensors of BMI088 and LIS3MDL
-// Originally created by ramykaddouri on 9/24/24.
-//
-
 #ifndef BMI088andLIS3MDL_H
 #define BMI088andLIS3MDL_H
 #include <BMI088.h>

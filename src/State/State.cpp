@@ -1,5 +1,5 @@
 #include "State.h"
-
+#include <Arduino.h>
 #pragma region Constructor and Destructor
 
 namespace mmfs
@@ -30,7 +30,7 @@ namespace mmfs
 
     State::~State()
     {
-    
+        delete[] stateVars;
     }
 
 #pragma endregion
@@ -58,8 +58,10 @@ namespace mmfs
                 getLogger().recordLogData(ERROR_, "A sensor in the array was null!");
             }
         }
-        if (filter)
+        if (filter){
             filter->initialize();
+            stateVars = new double[filter->getStateSize()];
+        }
 
         numSensors = good;
 
@@ -100,7 +102,7 @@ namespace mmfs
     {
         GPS *gps = reinterpret_cast<GPS *>(getSensor(GPS_));
         IMU *imu = reinterpret_cast<IMU *>(getSensor(IMU_));
-        Barometer *baro = reinterpret_cast<Barometer *>(getSensor(BAROMETER_));
+        // Barometer *baro = reinterpret_cast<Barometer *>(getSensor(BAROMETER_));
 
         if (filter)
             updateKF();
@@ -151,7 +153,6 @@ namespace mmfs
 
         double *measurements = new double[filter->getMeasurementSize()];
         double *inputs = new double[filter->getInputSize()];
-        double *stateVars = new double[filter->getStateSize()];
 
         // gps x y barometer z
         measurements[0] = sensorOK(gps) ? gps->getDisplacement().x() : 0;
@@ -161,7 +162,7 @@ namespace mmfs
         // imu x y z
         inputs[0] = acceleration.x() = imu->getAccelerationGlobal().x();
         inputs[1] = acceleration.y() = imu->getAccelerationGlobal().y();
-        inputs[2] = acceleration.z() = imu->getAccelerationGlobal().z() - 9.81;
+        inputs[2] = acceleration.z() = imu->getAccelerationGlobal().z();
 
         stateVars[0] = position.x();
         stateVars[1] = position.y();
@@ -184,8 +185,6 @@ namespace mmfs
             baroVelocity = (baro->getAGLAltM() - baroOldAltitude) / (currentTime - lastTime);
             baroOldAltitude = baro->getAGLAltM();
         }
-
-        delete[] stateVars;
     }
 
 #pragma endregion Update Functions

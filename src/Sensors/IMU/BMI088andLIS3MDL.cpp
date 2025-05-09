@@ -1,8 +1,3 @@
-//
-// Created by ramykaddouri on 9/24/24.
-// Modified to combine with LIS3MDL magnetometer
-//
-
 #include "BMI088andLIS3MDL.h"
 using namespace mmfs;
 bool BMI088andLIS3MDL::init()
@@ -17,6 +12,15 @@ bool BMI088andLIS3MDL::init()
     }
 
     initialized = (accelStatus > 0 && gyroStatus > 0);
+
+    //read all data once to setup complementary filter
+    accel.readSensor();
+    gyro.readSensor();
+    mag.read();
+    measuredMag = mmfs::Vector<3>(mag.m.x, mag.m.y, mag.m.z);
+    measuredAcc = mmfs::Vector<3>(accel.getAccelX_mss(), accel.getAccelY_mss(), accel.getAccelZ_mss());
+    measuredGyro = mmfs::Vector<3>(gyro.getGyroX_rads(), gyro.getGyroY_rads(), gyro.getGyroZ_rads());
+
     quaternionBasedComplimentaryFilterSetup();
     setAccelBestFilteringAtStatic(.5);
     setMagBestFilteringAtStatic(.5);

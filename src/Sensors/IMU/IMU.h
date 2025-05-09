@@ -14,7 +14,7 @@ namespace mmfs
     public:
         virtual ~IMU(){};
 
-        //local represents the orientation off of the intial angle. Global represents the orientation with repesct to gravity
+        //local represents the orientation off of the initial angle. Global represents the orientation with respect to gravity
         virtual Quaternion getOrientation();
         virtual Vector<3> getAngularVelocity();
         virtual Vector<3> getMagField();
@@ -42,8 +42,8 @@ namespace mmfs
         Vector<3> measuredGyro = Vector<3>(0, 0, 0); // Rad/s
         Vector<3> measuredMag = Vector<3>(0, 0, 0); // Body frame mag field in uT
         Vector<3> initialMagField = Vector<3>(0, 0, 0);
-        double accel_best_filtering_at_static = 0.9; // [0, 1] Higher this number, the more you trust the accelerameter
-        double mag_best_filtering_at_static = 0.9; // [0, 1] Higher this number, the more you trust the magnatometer
+        double accel_best_filtering_at_static = 0.9; // [0, 1] Higher this number, the more you trust the accelerometer
+        double mag_best_filtering_at_static = 0.9; // [0, 1] Higher this number, the more you trust the magnetometer
     };
 }
 #endif
