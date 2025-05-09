@@ -8,7 +8,7 @@
 
 
 #define BTSERIAL Serial1
-mmfs::ESP32BluetoothRadio btRadio(BTSERIAL, "TRT_BT");
+mmfs::ESP32BluetoothRadio btRadio(BTSERIAL, "AVIONICS");
 
 void setup() {
     Serial.begin(9600);
@@ -25,8 +25,19 @@ void setup() {
     Serial.println("Sending message...");
     const uint8_t msg[] = "Hello World!";
     btRadio.tx(msg, sizeof(msg));
+    Serial.println("Sent");
 }
+
+uint32_t lastSend = 0;
 
 void loop() {
     btRadio.rx();
+
+    if (millis() - lastSend >= 1000) {
+        const uint8_t msg[] = "Hello from the server!";
+        Serial.println("Sending...");
+        btRadio.tx(msg, sizeof(msg));
+        Serial.println("Sent!");
+        lastSend = millis();
+    }
 }

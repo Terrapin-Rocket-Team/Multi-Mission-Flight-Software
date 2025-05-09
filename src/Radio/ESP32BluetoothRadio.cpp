@@ -53,7 +53,7 @@ void waitForSerial(uint32_t ms, Stream &s) {
 }
 
 bool mmfs::ESP32BluetoothRadio::rx() {
-
+    if (!port.available()) return false;
     Serial.println("Received data from ESP32:");
 
     uint8_t messageType = port.read();
