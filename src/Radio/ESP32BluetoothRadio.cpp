@@ -94,8 +94,6 @@ bool mmfs::ESP32BluetoothRadio::rx() {
             ready = false;
         }
     }
-
-    receiveBufferSize = 0;
     return false;
 }
 

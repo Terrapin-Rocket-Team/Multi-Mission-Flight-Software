@@ -40,5 +40,12 @@ void loop() {
         btRadio.tx(msg, sizeof(msg));
         Serial.println("Sent!");
         lastSend = millis();
+
+        Serial.println("Receive buffer size: " + String(btRadio.getReceiveBufferSize()));
+        Serial.print("\tRecieve buffer: ");
+        for (int i = 0; i < btRadio.getReceiveBufferSize(); i++) {
+            Serial.print((char) btRadio.getReceiveBuffer()[i]);
+        }
+        Serial.println();
     }
 }
