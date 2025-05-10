@@ -39,7 +39,7 @@ namespace mmfs
 
     const char *Encoder_MMFS::getTypeString() const { return "Encoder"; }
 
-    const SensorType Encoder_MMFS::getType() const { return ENCODER_; }
+    const SensorType Encoder_MMFS::getType() const { return "Encoder"_i; }
 
 #pragma endregion // Data Reporting
 

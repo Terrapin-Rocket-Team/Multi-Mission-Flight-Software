@@ -17,7 +17,7 @@ namespace mmfs
 
 #pragma region Sensor Virtual Function Implementations
 
-    const SensorType LightSensor::getType() const { return LIGHT_SENSOR_; }
+    const SensorType LightSensor::getType() const { return "Light Sensor"_i; }
 
     const char *LightSensor::getTypeString() const { return "Light Sensor"; }
 

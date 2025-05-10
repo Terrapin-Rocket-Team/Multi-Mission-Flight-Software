@@ -7,18 +7,11 @@
 #include "../RecordData/Logging/Logger.h"
 #include <algorithm>
 #include "../RecordData/DataReporter/DataReporter.h"
+#include "Utils/Hash.h"
 
 namespace mmfs
 {
-    enum SensorType // These have trailing underscores to avoid conflicts with the same names in other libraries *cough* IMU *cough*
-    {
-        BAROMETER_,
-        GPS_,
-        IMU_,
-        LIGHT_SENSOR_,
-        ENCODER_,
-        OTHER_
-    };
+    using SensorType = uint32_t;
 
     class Sensor : public DataReporter
     {

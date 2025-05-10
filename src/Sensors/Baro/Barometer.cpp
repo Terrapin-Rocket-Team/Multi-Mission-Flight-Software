@@ -43,7 +43,7 @@ namespace mmfs
 
     const char *Barometer::getTypeString() const { return "Barometer"; }
 
-    const SensorType Barometer::getType() const { return BAROMETER_; }
+    const SensorType Barometer::getType() const { return "Barometer"_i; }
 
     void Barometer::update()
     {

@@ -143,7 +143,7 @@ void GPS::findTimeZone()
 
 const char *GPS::getTypeString() const { return "GPS"; }
 
-const SensorType GPS::getType() const { return GPS_; }
+const SensorType GPS::getType() const { return "GPS"_i; }
 
 void GPS::update()
 {

@@ -36,7 +36,7 @@ namespace mmfs
         double groundAltitude = 0;
 
         CircBuffer<double> pressureBuffer = CircBuffer<double>(CIRC_BUFFER_LENGTH);
-
+        
         double calcAltitude(double pressure);
     };
 }

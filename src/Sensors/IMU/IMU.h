@@ -24,7 +24,7 @@ namespace mmfs
         virtual void setAccelBestFilteringAtStatic(double a) {accel_best_filtering_at_static = a;};
         virtual double getMagBestFilteringAtStatic() {return mag_best_filtering_at_static;};
         virtual void setMagBestFilteringAtStatic(double m) {mag_best_filtering_at_static = m;};
-        virtual const SensorType getType() const override { return IMU_; }
+        virtual const SensorType getType() const override { return "IMU"_i; }
         virtual const char *getTypeString() const override { return "IMU"; }
         virtual void update() override;
         virtual bool begin(bool useBiasCorrection = true) override;
