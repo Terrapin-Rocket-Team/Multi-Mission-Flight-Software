@@ -27,10 +27,19 @@ namespace mmfs
 
         // ------------------------------- SENSOR TYPE IMPLEMENTATION ---------------------------------------------
 
+        // Child classes can override these classes with specifics for that type of sensor.
+        // For instance, a barometer might read pressure but use the rest of update() to convert that to altitude.
+
         // Updates the sensor's fields by querying the sensor for new data (calls read() internally)
-        virtual void update() = 0;
-        // Initializes the sensor and sets up any necessary parameters
-        virtual bool begin(bool useBiasCorrection = true) = 0;
+        virtual void update()
+        {
+            read();
+        }
+        // Initializes the sensor and sets up any necessary parameters (calls init() internally)
+        virtual bool begin(bool useBiasCorrection = true)
+        {
+            return init();
+        }
 
         virtual const SensorType getType() const = 0;  // Returns the type of the sensor
         virtual const char *getTypeString() const = 0; // Returns the type of the sensor as a string
