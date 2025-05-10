@@ -1,0 +1,9 @@
+nav:
+  - Intro: intro.md
+  - Installation: installation.md 
+  - Basic Usage: basic-use.md
+  - Advanced Usage: adv-use.md
+  - Troubleshooting: troubleshooting.md
+  - FAQ: faq.md
+  - Utilities: utils
+  - Interfaces: ifaces
