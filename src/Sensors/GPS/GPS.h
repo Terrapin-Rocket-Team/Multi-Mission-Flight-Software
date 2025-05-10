@@ -22,9 +22,6 @@ namespace mmfs
         virtual void update() override;
         virtual bool begin(bool useBiasCorrection = true) override;
 
-        virtual const char *getTypeString() const override;
-        virtual const SensorType getType() const override;
-
         virtual const char *getTimeOfDay() const;
 
         virtual int8_t getHour() const;

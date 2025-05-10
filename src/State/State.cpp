@@ -100,8 +100,8 @@ namespace mmfs
 
     void State::updateVariables()
     {
-        GPS *gps = reinterpret_cast<GPS *>(getSensor(GPS_));
-        IMU *imu = reinterpret_cast<IMU *>(getSensor(IMU_));
+        GPS *gps = reinterpret_cast<GPS *>(getSensor("GPS"_i));
+        IMU *imu = reinterpret_cast<IMU *>(getSensor("IMU"_i));
         // Barometer *baro = reinterpret_cast<Barometer *>(getSensor(BAROMETER_));
 
         if (filter)
@@ -126,9 +126,9 @@ namespace mmfs
     void State::updateWithoutKF()
     {
 
-        GPS *gps = reinterpret_cast<GPS *>(getSensor(GPS_));
-        IMU *imu = reinterpret_cast<IMU *>(getSensor(IMU_));
-        Barometer *baro = reinterpret_cast<Barometer *>(getSensor(BAROMETER_));
+        GPS *gps = reinterpret_cast<GPS *>(getSensor("GPS"_i));
+        IMU *imu = reinterpret_cast<IMU *>(getSensor("IMU"_i));
+        Barometer *baro = reinterpret_cast<Barometer *>(getSensor("Barometer"_i));
 
         if (sensorOK(gps))
             position = gps->getDisplacement();
@@ -146,10 +146,9 @@ namespace mmfs
 
     void State::updateKF()
     {
-
-        GPS *gps = reinterpret_cast<GPS *>(getSensor(GPS_));
-        IMU *imu = reinterpret_cast<IMU *>(getSensor(IMU_));
-        Barometer *baro = reinterpret_cast<Barometer *>(getSensor(BAROMETER_));
+        GPS *gps = reinterpret_cast<GPS *>(getSensor("GPS"_i));
+        IMU *imu = reinterpret_cast<IMU *>(getSensor("IMU"_i));
+        Barometer *baro = reinterpret_cast<Barometer *>(getSensor("Barometer"_i));
 
         double *measurements = new double[filter->getMeasurementSize()];
         double *inputs = new double[filter->getInputSize()];

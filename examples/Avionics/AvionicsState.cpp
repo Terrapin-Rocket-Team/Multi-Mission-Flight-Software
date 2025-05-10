@@ -20,9 +20,9 @@ void AvionicsState::updateState(double newTime)
 void AvionicsState::determineStage()
 {
     int timeSinceLaunch = currentTime - timeOfLaunch;
-    IMU *imu = reinterpret_cast<IMU *>(getSensor(IMU_));
-    Barometer *baro = reinterpret_cast<Barometer *>(getSensor(BAROMETER_));
-    //GPS *gps = reinterpret_cast<GPS *>(getSensor(GPS_));
+    // GPS *gps = reinterpret_cast<GPS *>(getSensor("GPS"_i));
+    IMU *imu = reinterpret_cast<IMU *>(getSensor("IMU"_i));
+    Barometer *baro = reinterpret_cast<Barometer *>(getSensor("Barometer"_i));
     if (stage == 0 &&
         (sensorOK(imu) || sensorOK(baro)) &&
         (sensorOK(imu) ? abs(imu->getAccelerationGlobal().z()) > 25 : true) &&

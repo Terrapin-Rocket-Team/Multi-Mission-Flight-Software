@@ -12,8 +12,6 @@ namespace mmfs
         virtual const double getLux() const;
 
         // Sensor virtual functions
-        virtual const SensorType getType() const override;
-        virtual const char *getTypeString() const override;
         virtual void update() override;
         virtual bool begin(bool useBiasCorrection = true) override;
 

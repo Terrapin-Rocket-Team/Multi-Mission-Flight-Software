@@ -7,18 +7,11 @@
 #include "../RecordData/Logging/Logger.h"
 #include <algorithm>
 #include "../RecordData/DataReporter/DataReporter.h"
+#include "Utils/Hash.h"
 
 namespace mmfs
 {
-    enum SensorType // These have trailing underscores to avoid conflicts with the same names in other libraries *cough* IMU *cough*
-    {
-        BAROMETER_,
-        GPS_,
-        IMU_,
-        LIGHT_SENSOR_,
-        ENCODER_,
-        OTHER_
-    };
+    using SensorType = uint32_t;
 
     class Sensor : public DataReporter
     {
@@ -32,8 +25,8 @@ namespace mmfs
         // Initializes the sensor and sets up any necessary parameters
         virtual bool begin(bool useBiasCorrection = true) = 0;
 
-        virtual const SensorType getType() const = 0;  // Returns the type of the sensor
-        virtual const char *getTypeString() const = 0; // Returns the type of the sensor as a string
+        virtual const SensorType getType() const { return type; }        // Returns the type of the sensor
+        virtual const char *getTypeString() const { return typeString; } // Returns the type of the sensor as a string
 
         // ------------------------------- BASE SENSOR CLASS IMPLEMENTATION ----------------------------------------
     public:
@@ -49,7 +42,11 @@ namespace mmfs
 
     protected:
         // --------------------------------- HARDWARE IMPLEMENTATION -----------------------------------------------
-
+        Sensor(const char *type)
+        {
+            this->type = fnv1a_32(type, strlen(type));
+            typeString = type;
+        }
         // Sets up the sensor and stores any critical parameters. Needs to reset the sensor if it is already initialized. Called by begin()
         virtual bool init() = 0;
         // Physically reads the outputs from the sensor hardware. Called by update()
@@ -58,6 +55,9 @@ namespace mmfs
         // ----------------------------------------------------------------------------------------------------------
         bool initialized = false;
         bool biasCorrectionMode = true;
+
+        SensorType type;
+        const char *typeString;
 
         const int CIRC_BUFFER_LENGTH = UPDATE_RATE * SENSOR_BIAS_CORRECTION_DATA_LENGTH; // number of entries to give SBCDL length average
         const int CIRC_BUFFER_IGNORE = UPDATE_RATE * SENSOR_BIAS_CORRECTION_DATA_IGNORE; // number of entries to ignore for SBCD
