@@ -4,7 +4,7 @@ using namespace mmfs;
 
 #pragma region GPS Specific Functions
 
-GPS::GPS()
+GPS::GPS() : Sensor("GPS")
 {
     hr = 0;
     min = 0;
@@ -140,10 +140,6 @@ void GPS::findTimeZone()
 #pragma endregion // GPS Specific Functions
 
 #pragma region Sensor Virtual Function Implementations
-
-const char *GPS::getTypeString() const { return "GPS"; }
-
-const SensorType GPS::getType() const { return "GPS"_i; }
 
 void GPS::update()
 {

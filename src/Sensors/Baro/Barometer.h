@@ -19,8 +19,6 @@ namespace mmfs
         virtual double getAGLAltFt() const;
 
         // Sensor virtual functions
-        virtual const char *getTypeString() const override;
-        virtual const SensorType getType() const override;
         virtual void update() override;
         virtual bool begin(bool useBiasCorrection = true) override;
 
@@ -36,7 +34,7 @@ namespace mmfs
         double groundAltitude = 0;
 
         CircBuffer<double> pressureBuffer = CircBuffer<double>(CIRC_BUFFER_LENGTH);
-        
+
         double calcAltitude(double pressure);
     };
 }
