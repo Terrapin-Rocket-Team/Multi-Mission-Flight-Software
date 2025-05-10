@@ -9,7 +9,7 @@ const int BUZZER_PIN = 33;
 
 MAX_M10S gps;
 BMI088andLIS3MDL mmfsimu;
-DPS310 baro;
+DPS368 baro;
 Sensor *sensors[3] = {&gps, &mmfsimu, &baro};
 AvionicsKF kfilter;
 AvionicsState avionicsState(sensors, 3, &kfilter);
