@@ -10,7 +10,8 @@ namespace mmfs
     class DPS310 : public Barometer
     {
     public:
-        DPS310(const char *name = "DPS310", TwoWire *bus = &Wire, uint8_t addr = 119U);
+        DPS310(const char *name = "DPS310", uint8_t addr = 0x77, TwoWire *bus = &Wire);
+        DPS310(uint8_t addr, TwoWire *bus = &Wire);
         virtual bool init() override;
         virtual void read() override;
 
@@ -19,6 +20,6 @@ namespace mmfs
         uint8_t addr;
         Adafruit_DPS310 dps;
     };
-}; // namespace mmfs
+} // namespace mmfs
 
 #endif // DPS310_H

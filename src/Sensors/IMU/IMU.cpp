@@ -3,7 +3,7 @@
 namespace mmfs
 {
 
-    IMU::IMU()
+    IMU::IMU(const char *name) : Sensor(name)
     {
         addColumn(DOUBLE, &measuredAcc.x(), "AccX (m/s^2)");
         addColumn(DOUBLE, &measuredAcc.y(), "AccY (m/s^2)");

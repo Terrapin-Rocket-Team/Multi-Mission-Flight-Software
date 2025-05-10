@@ -4,7 +4,7 @@ using namespace mmfs;
 
 #pragma region GPS Specific Functions
 
-GPS::GPS()
+GPS::GPS(const char *name) : Sensor(name)
 {
     hr = 0;
     min = 0;

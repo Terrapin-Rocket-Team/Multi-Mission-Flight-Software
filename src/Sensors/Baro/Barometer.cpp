@@ -5,7 +5,7 @@ namespace mmfs
 {
 
 #pragma region Barometer Specific Functions
-    Barometer::Barometer()
+    Barometer::Barometer(const char *name) : Sensor(name)
     {
         addColumn(DOUBLE, &pressure, "Pres (hPa)");
         addColumn(DOUBLE, &temp, "Temp (C)");

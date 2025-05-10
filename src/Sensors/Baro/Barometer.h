@@ -25,7 +25,7 @@ namespace mmfs
         virtual bool begin(bool useBiasCorrection = true) override;
 
     protected:
-        Barometer();
+        Barometer(const char *name = "Barometer");
         double pressure = 0;
         double temp = 0;
 
