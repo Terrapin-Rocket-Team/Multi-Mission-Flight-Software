@@ -2,7 +2,7 @@
 #define LOGGING_BACKEND_MOCK_H
 
 #include "../../src/RecordData/Logging/LoggingBackend/LoggingBackend.h"
-
+#include <algorithm>
 namespace mmfs
 {
 #ifndef MOCK_FILE_DATA_H
@@ -16,50 +16,55 @@ namespace mmfs
     struct MockFileData
     {
         char arr[MOCK_FILE_SIZE];
-        size_t size;
+        size_t size, cur;
 
-        MockFileData() : size(0)
+        MockFileData() : size(0), cur(0)
         {
             memset(arr, 0, sizeof(arr));
         }
 
         void write(const char *data, size_t len)
         {
-            if (size + len > MOCK_FILE_SIZE)
-                len = MOCK_FILE_SIZE - size;
-            memcpy(arr + size, data, len);
-            size += len;
+            if (cur + len > MOCK_FILE_SIZE)
+                len = MOCK_FILE_SIZE - cur;
+            size = ::std::max(cur + len, size);
+            memcpy(arr + cur, data, len);
+            cur += len;
         }
         int readBytes(char *dest, size_t len)
         {
-            if (len > size)
-                len = size;
-            memcpy(dest, arr, len);
+            if (len > size - cur)
+                len = size - cur;
+            memcpy(dest, arr + cur, len);
+            cur += len;
             return len;
         }
         void clear()
         {
-            size = 0;
+            size = cur = 0;
             memset(arr, 0, sizeof(arr));
+        }
+        void seek(size_t pos)
+        {
+            cur = ::std::min(size, ::std::max((size_t) 0, pos));
         }
     };
 
 #endif
 
-    class LoggingBackendFileMock : public LoggingBackendFile
+    class LoggingBackendFileMock
     {
     public:
         MockFileData *data;
+        LoggingBackendFileMock(MockFileData *data) : data(data) {}
 
-        LoggingBackendFileMock(MockFileData *data) : LoggingBackendFile(nullptr, 0), data(data) {}
-
-        size_t write(const uint8_t *d, size_t len) override
+        size_t write(const uint8_t *d, size_t len)
         {
             data->write(reinterpret_cast<const char *>(d), len);
             return len;
         }
 
-        size_t write(const char *d, size_t len = -1) override
+        size_t write(const char *d, size_t len = -1)
         {
             if (len == static_cast<size_t>(-1))
                 len = strlen(d);
@@ -67,15 +72,15 @@ namespace mmfs
             return len;
         }
 
-        size_t write(const char d) override
+        size_t write(const char d)
         {
             data->write(&d, 1);
             return 1;
         }
 
-        void close() override {}
-        void save() override {}
-        int readBytes(char *dest, size_t len) override
+        void close() {}
+        void save() {}
+        int readBytes(char *dest, size_t len)
         {
             if (len > data->size)
                 len = data->size;
@@ -83,17 +88,18 @@ namespace mmfs
             return len;
         }
 
-        size_t println(const char *d) override
+        size_t println(const char *d)
         {
             size_t written = write(d);
             written += write('\n');
             return written;
         }
 
-        size_t print(const char *d) override
+        size_t print(const char *d)
         {
             return write(d);
         }
+
     };
 
     class LoggingBackendMock : public LoggingBackend
@@ -124,7 +130,8 @@ namespace mmfs
             {
                 if (fileExists[i] && strcmp(filename, filenames[i]) == 0)
                 {
-                    return new LoggingBackendFileMock(&files[i]);
+                    files[i].seek(0);
+                    return new LoggingBackendFile(this, i);
                 }
             }
             for (int i = 0; i < MAX_FILES; ++i)
@@ -134,10 +141,9 @@ namespace mmfs
                     strcpy(filenames[i], filename);
                     fileExists[i] = true;
                     files[i].clear();
-                    return new LoggingBackendFileMock(&files[i]);
+                    return new LoggingBackendFile(this, i);
                 }
             }
-            delay(500);
             return nullptr;
         }
 
@@ -202,7 +208,19 @@ namespace mmfs
 
         void seek(int file, long pos) override
         {
-            printf("file seek not implemented");
+            if(fileExists[file])
+                files[file].seek(pos);
+        }
+
+        MockFileData *getMockFileData(const char *name){
+            for (int i = 0; i < MAX_FILES; ++i)
+            {
+                if (fileExists[i] && strcmp(filenames[i], name) == 0)
+                {
+                    return &files[i];
+                }
+            }
+            return nullptr;
         }
     };
 
