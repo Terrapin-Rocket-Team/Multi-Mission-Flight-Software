@@ -20,7 +20,6 @@ public:
 };
 
 using namespace mmfs;
-char *fakepsram = nullptr;
 MockFileData *flightFile, *logFile, *preFlightFile;
 
 FakeGPS gps;
@@ -46,22 +45,6 @@ void tearDown(void)
 
 // Test functions must be void and take no arguments, put them here
 
-// void test_function_name() {
-//     TEST_ASSERT_EQUAL(expected, actual);
-//     TEST_ASSERT_EQUAL_FLOAT(expected, actual);
-// }
-
-void test_SdFs_mock()
-{
-    LoggingBackendFileMock *file = static_cast<LoggingBackendFileMock *>(testLogger->backend->open("file"));
-    TEST_ASSERT_TRUE(testLogger->backend->exists("file"));
-    TEST_ASSERT_TRUE(file->write("data", 1));
-    TEST_ASSERT_TRUE(file->print("data"));
-    TEST_ASSERT_TRUE(file->println("data"));
-    TEST_ASSERT_EQUAL_CHAR_ARRAY("ddatadata\n", file->data->arr, 10);
-    TEST_ASSERT_EQUAL(10, file->data->size);
-}
-
 void test_testLogger_init()
 {
     LoggingBackendMock *m = (LoggingBackendMock *)testLogger->backend;
@@ -70,9 +53,9 @@ void test_testLogger_init()
     TEST_ASSERT_TRUE(testLogger->backend->exists("1_FlightData.csv"));
     TEST_ASSERT_TRUE(testLogger->backend->exists("1_Log.txt"));
     TEST_ASSERT_TRUE(testLogger->backend->exists("1_PreFlightData.csv"));
-    flightFile = ((LoggingBackendFileMock *)(testLogger->flightDataFile))->data;
-    logFile = ((LoggingBackendFileMock *)(testLogger->logFile))->data;
-    preFlightFile = ((LoggingBackendFileMock *)(testLogger->preFlightFile))->data;
+    flightFile = ((LoggingBackendMock *)(testLogger->backend))->getMockFileData("1_FlightData.csv");
+    logFile = ((LoggingBackendMock *)(testLogger->backend))->getMockFileData("1_Log.txt");
+    preFlightFile = ((LoggingBackendMock *)(testLogger->backend))->getMockFileData("1_PreFlightData.csv");
 }
 
 void test_recordLogData_on_ground()
@@ -166,7 +149,6 @@ int main(int argc, char **argv)
     testLogger = &getLogger();
     // Add your tests here
     // RUN_TEST(test_function_name); // no parentheses after function name
-    RUN_TEST(test_SdFs_mock);
     RUN_TEST(test_testLogger_init);
     RUN_TEST(test_recordLogData_on_ground);
     RUN_TEST(test_recordFlightData_on_ground);
