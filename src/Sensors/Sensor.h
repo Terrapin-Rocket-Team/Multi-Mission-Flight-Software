@@ -24,7 +24,7 @@ namespace mmfs
     {
     public:
         virtual ~Sensor() {};
-
+        Sensor(const char *name = nullptr) : DataReporter(name) {}
         // ------------------------------- SENSOR TYPE IMPLEMENTATION ---------------------------------------------
 
         // Updates the sensor's fields by querying the sensor for new data (calls read() internally)

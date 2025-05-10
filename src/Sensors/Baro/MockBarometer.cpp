@@ -2,9 +2,12 @@
 
 namespace mmfs
 {
-    MockBarometer::MockBarometer(const char *dataPath, const std::string &pressureColName, const std::string &temperatureColName) : dataReader(dataPath), pressureColName(pressureColName), temperatureColName(temperatureColName)
+    MockBarometer::MockBarometer(const char *dataPath, const std::string &pressureColName, const std::string &temperatureColName)
+        : dataReader(dataPath),
+          pressureColName(pressureColName),
+          temperatureColName(temperatureColName),
+          Barometer("MockBarometer")
     {
-        Sensor::setName("MockBarometer");
     }
 
     bool MockBarometer::init()

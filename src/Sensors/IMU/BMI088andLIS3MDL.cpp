@@ -1,5 +1,7 @@
 #include "BMI088andLIS3MDL.h"
+
 using namespace mmfs;
+
 bool BMI088andLIS3MDL::init()
 {
     int accelStatus = accel.begin();

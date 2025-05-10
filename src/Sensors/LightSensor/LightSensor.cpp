@@ -4,7 +4,7 @@ namespace mmfs
 {
 #pragma region LightSensor Specific Functions
 
-    LightSensor::LightSensor() : lux(0), initialLux(0)
+    LightSensor::LightSensor(const char *name) : lux(0), initialLux(0), Sensor(name)
     {
         addColumn(DOUBLE, &lux, "Lux (Lux)");
     }
