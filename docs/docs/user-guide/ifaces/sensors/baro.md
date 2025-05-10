@@ -1,4 +1,4 @@
-# Barometer Interface
+# Barometer
 
 The `Barometer` class in MMFS provides an abstract base for all barometric pressure sensors, extending the functionality of the core [`Sensor`](sensor.md) interface. It not only standardizes access to pressure data, but also computes altitude from that data, enabling derived classes to easily support telemetry and flight logic.
 
@@ -56,26 +56,6 @@ Where `basePressure_hPa` is the pressure reading at ground level. This is automa
 
 ## **Usage Flow**
 
-/// tab | Using a Barometer Sensor
-
-Typical usage of a barometer sensor looks like:
-
-```cpp
-MyBMP390 bmp;
-bmp.begin();
-
-loop() {
-    bmp.update();
-    float alt = bmp.getAltitude();
-    float temp = bmp.getTemperature();
-}
-```
-
-You do **not** need to call `read()` manually—`update()` does that for you and stores the results internally.
-
-///
-
-/// tab | Implementing a New Hardware Sensor
 
 To implement a new barometer driver, follow these steps:
 
@@ -102,12 +82,7 @@ public:
 };
 ```
 
-3. **Call `init()` and `update()` as needed**
-
-   * `init()` should initialize your internal hardware and call `Barometer::begin()`
-   * `update()` is already defined by `Barometer`, which will call your `read()` implementation
-
-///
+3. If you're using **MMFSSystem**, then that's it. Pass an instance of your new barometer to State, and the software will take care of the rest. If you're not using MMFSSystem, you should call `myBaro.begin()` in `setup()` and `myBaro.update()` in `loop()`, at whatever frequency you find works best.
 
 ---
 
@@ -115,36 +90,55 @@ public:
 
 The following sensors are currently supported in MMFS:
 
-* [BMP280](bmp280.md)
-* [BMP390](bmp390.md)
-* [DPS310](dps310.md)
-* [MS5611](ms5611.md)
+* [BMP280](https://github.com/Terrapin-Rocket-Team/Multi-Mission-Flight-Software/blob/main/src/Sensors/Baro/BMP280.h) - [Datasheet](https://www.bosch-sensortec.com/media/boschsensortec/downloads/datasheets/bst-bmp280-ds001.pdf) (**NRND**)
+* [BMP390](https://github.com/Terrapin-Rocket-Team/Multi-Mission-Flight-Software/blob/main/src/Sensors/Baro/BMP390.h) - [Datasheet](https://www.bosch-sensortec.com/media/boschsensortec/downloads/datasheets/bst-bmp390-ds002.pdf)
+* [DPS310/DPS368](https://github.com/Terrapin-Rocket-Team/Multi-Mission-Flight-Software/blob/main/src/Sensors/Baro/DPS310.h) - [Datasheet](https://www.infineon.com/dgdl/Infineon-DPS310-DataSheet-v01_02-EN.pdf?fileId=5546d462576f34750157750826c42242) (DPS310 is **NRND**) and [Datasheet](https://www.infineon.com/dgdl/Infineon-DPS368-DataSheet-v01_01-EN.pdf?fileId=5546d46269e1c019016a0c45105d4b40)
+* [MS5611](https://github.com/Terrapin-Rocket-Team/Multi-Mission-Flight-Software/blob/main/src/Sensors/Baro/MS5611F.h) - [Datasheet](https://www.te.com/commerce/DocumentDelivery/DDEController?Action=showdoc&DocId=Data+Sheet%7FMS5611-01BA03%7FB3%7Fpdf%7FEnglish%7FENG_DS_MS5611-01BA03_B3.pdf%7FCAT-BLPS0036)
 
-Each of these classes derives from `Barometer` and implements the required `read()` method.
+Each of these classes derives from `Barometer` and implements the required `read()` and `init()` methods.
 
 ---
 
 ## **Advanced Options**
 
-### **Base Pressure Override**
+### **Using Bias Correction Mode**
 
-If needed, you can override the zero-altitude baseline pressure after initialization:
+Bias correction mode helps compensate for slow pressure drift and sensor noise by continuously recalibrating the zero-altitude baseline — essentially adjusting what the barometer considers "ground level." This is especially useful when the vehicle stays on the pad for a long time before launch, or when ambient pressure changes slightly.
+
+However, it’s off by default because blindly recalibrating can be dangerous — especially if the rocket has already left the ground. See the MMFSSystem docs for more on the risks and defaults.
+
+When enabled, the barometer periodically computes a new baseline using the second-to-last second of recent pressure data — not the most recent second. Why? Because launch detection systems typically rely on altitude changes to identify liftoff. Including very recent data (which may already show movement) would confuse this logic and result in a bad zero point. Using the "2nd-to-last" second instead gives you a quieter, more accurate reference without interfering with launch detection.
+
+You can enable or disable this feature at any time using:
 
 ```cpp
-myBarometer.setBasePressure(1013.25);  // hPa
+myBaro.setBiasCorrectionMode(true); // or false
 ```
 
-This is useful for resetting altitude calculations mid-flight or when dealing with unusual launch conditions.
+And you should lock in the baseline permanently at liftoff by calling:
+
+```cpp
+myBaro.markLiftoff();
+```
+
+This disables further corrections and locks the AGL altitude reference point in place.
 
 ### **Accessing Raw Data**
 
 The following methods are available for reading the latest values:
 
 ```cpp
-float getAltitude() const;
-float getPressure() const;
-float getTemperature() const;
+virtual double getPressure() const; // hPa
+virtual double getTemp() const; // Deg C
+virtual double getTempF() const; //Deg F
+virtual double getPressureAtm() const; // atm
+virtual double getASLAltFt() const; // Above Sea Level - Ft
+virtual double getASLAltM() const;  // Above Sea Level - M
+virtual double getAGLAltM() const;  // Above Ground Level - M
+virtual double getAGLAltFt() const; // Above Ground Level - Ft
 ```
+
+**Above Ground Level** is either denoted as alt difference since boot up, or, if you are using bias Correction, difference since bias correction was disabled.
 
 ---
 
