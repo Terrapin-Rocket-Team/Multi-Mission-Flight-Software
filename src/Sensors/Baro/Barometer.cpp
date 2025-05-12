@@ -5,7 +5,7 @@ namespace mmfs
 {
 
 #pragma region Barometer Specific Functions
-    Barometer::Barometer(const char *name) : Sensor(name)
+    Barometer::Barometer(const char *name) : Sensor("Barometer", name)
     {
         addColumn(DOUBLE, &pressure, "Pres (hPa)");
         addColumn(DOUBLE, &temp, "Temp (C)");
@@ -40,10 +40,6 @@ namespace mmfs
 #pragma endregion // Barometer Specific Functions
 
 #pragma region Sensor Virtual Function Implementations
-
-    const char *Barometer::getTypeString() const { return "Barometer"; }
-
-    const SensorType Barometer::getType() const { return BAROMETER_; }
 
     void Barometer::update()
     {

@@ -2,14 +2,12 @@
 
 using namespace mmfs;
 
-BMP280::BMP280(const char *name, uint8_t addr, TwoWire *wire) : bmp(wire), Barometer(name)
+BMP280::BMP280(const char *name, uint8_t addr, TwoWire *wire) : Barometer(name), addr(addr), bmp(wire)
 {
-    this->addr = addr;
 }
 
-BMP280::BMP280(uint8_t addr, TwoWire *wire) : bmp(wire), addr(addr), Barometer("BMP280")
+BMP280::BMP280(uint8_t addr, TwoWire *wire) : Barometer("BMP280"), addr(addr), bmp(wire)
 {
-    this->addr = addr;
 }
 
 bool BMP280::init()

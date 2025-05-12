@@ -9,9 +9,9 @@ namespace mmfs
     class BMP390 : public Barometer
     {
     private:
-        Adafruit_BMP3XX bmp;
         TwoWire *wire;
         uint8_t addr;
+        Adafruit_BMP3XX bmp;
 
     public:
         BMP390(const char *name = "BMP390", uint8_t address = BMP3XX_DEFAULT_ADDRESS, TwoWire *theWire = &Wire);

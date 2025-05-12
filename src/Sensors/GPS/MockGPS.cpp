@@ -8,11 +8,11 @@ namespace mmfs
                      const std::string &posZColName,
                      const std::string &headingColName,
                      const std::string &fixQualityColName)
-        : dataReader(dataPath), posXColName(posXColName), posYColName(posYColName),
-          posZColName(posZColName), headingColName(headingColName), fixQualityColName(fixQualityColName),
-          GPS("MockGPS")
+        : GPS("MockGPS"),
+          dataReader(dataPath), posXColName(posXColName), posYColName(posYColName),
+          posZColName(posZColName), headingColName(headingColName), fixQualityColName(fixQualityColName)
+
     {
-        
     }
 
     bool MockGPS::init()

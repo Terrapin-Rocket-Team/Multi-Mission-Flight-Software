@@ -3,10 +3,11 @@
 namespace mmfs
 {
     MockBarometer::MockBarometer(const char *dataPath, const std::string &pressureColName, const std::string &temperatureColName)
-        : dataReader(dataPath),
+        : Barometer("MockBarometer"),
+          dataReader(dataPath),
           pressureColName(pressureColName),
-          temperatureColName(temperatureColName),
-          Barometer("MockBarometer")
+          temperatureColName(temperatureColName)
+
     {
     }
 

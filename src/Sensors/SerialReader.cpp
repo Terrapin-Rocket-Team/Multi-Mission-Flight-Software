@@ -52,7 +52,7 @@ namespace mmfs
             int commaIdx = line.find(',', startIdx);
             if (commaIdx == -1)
                 break;
-                std::string col = line.substr(startIdx, commaIdx - startIdx);
+            std::string col = line.substr(startIdx, commaIdx - startIdx);
             data[i++] = static_cast<float>(strtod(col.c_str(), nullptr));
             startIdx = commaIdx + 1;
         }

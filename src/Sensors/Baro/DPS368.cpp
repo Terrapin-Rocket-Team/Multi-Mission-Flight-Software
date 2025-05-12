@@ -1,24 +1,22 @@
-#include <Adafruit_DPS310.h>
-
-#include "DPS310.h"
+#include "DPS368.h"
 
 using namespace mmfs;
 
-DPS310::DPS310(const char *name, uint8_t addr, TwoWire *bus) : bus(bus), addr(addr), Barometer(name) { }
+DPS368::DPS368(const char *name, uint8_t addr, TwoWire *bus) : Barometer(name), addr(addr), bus(bus) {}
 
-DPS310::DPS310(uint8_t addr, TwoWire *bus) : bus(bus), addr(addr) { }
+DPS368::DPS368(uint8_t addr, TwoWire *bus) : addr(addr), bus(bus) {}
 
-bool DPS310::init()
+bool DPS368::init()
 {
     if (!dps.begin_I2C(addr, bus))
     {
-        printf("Failed to initialize DPS310 sensor\n");
+        printf("Failed to initialize DPS368 sensor\n");
         return initialized = false;
     }
 
     // Set up sampling rate and oversampling
     dps.configurePressure(DPS310_64HZ, DPS310_32SAMPLES);
-    dps.configureTemperature(DPS310_64HZ, DPS310_8SAMPLES);
+    dps.configureTemperature(DPS310_32HZ, DPS310_8SAMPLES);
 
     // Operation mode of the sensor. See section 8.5 of the datasheet.
     dps.setMode(DPS310_CONT_PRESTEMP);
@@ -26,7 +24,7 @@ bool DPS310::init()
     return initialized = true;
 }
 
-void DPS310::read()
+void DPS368::read()
 {
     sensors_event_t temp_event, pressure_event;
 
@@ -38,6 +36,6 @@ void DPS310::read()
     }
     else
     {
-        getLogger().recordLogData(ERROR_, "Failed to read data from DPS310 sensor", BOTH);
+        getLogger().recordLogData(ERROR_, "Failed to read data from DPS368 sensor", BOTH);
     }
 }

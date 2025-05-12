@@ -2,16 +2,12 @@
 
 using namespace mmfs;
 
-BMP390::BMP390(const char *name, uint8_t address, TwoWire *theWire) : bmp(), Barometer(name)
+BMP390::BMP390(const char *name, uint8_t address, TwoWire *theWire) : Barometer(name), wire(theWire), addr(address), bmp()
 {
-    wire = theWire;
-    addr = address;
 }
 
-BMP390::BMP390(uint8_t address, TwoWire *theWire) : bmp(), Barometer("BMP390")
+BMP390::BMP390(uint8_t address, TwoWire *theWire) : Barometer("BMP390"), wire(theWire), addr(address), bmp()
 {
-    wire = theWire;
-    addr = address;
 }
 
 bool BMP390::init()

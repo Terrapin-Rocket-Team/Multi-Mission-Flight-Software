@@ -4,12 +4,12 @@
 namespace mmfs
 {
 
-    MAX_M10S::MAX_M10S(const char *name, TwoWire *wire, uint8_t address) : m10s(), GPS(name), wire(wire), address(address)
+    MAX_M10S::MAX_M10S(const char *name, TwoWire *wire, uint8_t address) : GPS(name), m10s(), wire(wire), address(address)
     {
 
     }
 
-    MAX_M10S::MAX_M10S(TwoWire *wire, uint8_t address) : m10s(), GPS("MAX-M10S"), wire(wire), address(address)
+    MAX_M10S::MAX_M10S(TwoWire *wire, uint8_t address) : GPS("MAX-M10S"), m10s(), wire(wire), address(address)
     {
 
     }

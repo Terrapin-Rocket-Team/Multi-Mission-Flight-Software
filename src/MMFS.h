@@ -12,7 +12,7 @@
 // Barometers
 #include "Sensors/Baro/BMP280.h"
 #include "Sensors/Baro/BMP390.h"
-#include "Sensors/Baro/DPS310.h"
+#include "Sensors/Baro/DPS368.h"
 #include "Sensors/Baro/MS5611F.h"
 #include "Sensors/Baro/MockBarometer.h"
 

@@ -4,7 +4,7 @@ namespace mmfs
 {
 #pragma region LightSensor Specific Functions
 
-    LightSensor::LightSensor(const char *name) : lux(0), initialLux(0), Sensor(name)
+    LightSensor::LightSensor(const char *name) : Sensor("Light Sensor", name), lux(0), initialLux(0)
     {
         addColumn(DOUBLE, &lux, "Lux (Lux)");
     }
@@ -16,10 +16,6 @@ namespace mmfs
 #pragma endregion // LightSensor Specific Functions
 
 #pragma region Sensor Virtual Function Implementations
-
-    const SensorType LightSensor::getType() const { return LIGHT_SENSOR_; }
-
-    const char *LightSensor::getTypeString() const { return "Light Sensor"; }
 
     void LightSensor::update()
     {
