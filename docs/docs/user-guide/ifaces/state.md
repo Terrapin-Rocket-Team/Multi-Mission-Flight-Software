@@ -146,8 +146,11 @@ This shows a basic launch detection using either IMU acceleration or barometric 
 Once your `State` is initialized, pass it to MMFSSystem like so:
 
 ```cpp
-State *state = new MyAvionicsState(sensors, numSensors, new MyKalmanFilter());
-MMFSSystem config().withState(state);
+MyAvionicsState state(sensors, numSensors, new MyKalmanFilter());
+MMFSConfig config = MMFSConfig()
+                .withState(&state)
+                // any other config options
+                ;
 
 ```
 

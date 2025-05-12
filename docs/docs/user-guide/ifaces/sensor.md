@@ -72,7 +72,7 @@ The `DataReporter` base handles linked list management of these columns, automat
 void setBiasCorrectionMode(bool mode);
 ```
 
-Determines whether the sensor should continuously zero itself using incoming data (useful for IMUs).
+Determines whether the sensor should continuously zero itself using incoming data (Used before liftoff to prevent long-term drift).
 
 ### **Liftoff Lock-in**
 
@@ -80,7 +80,7 @@ Determines whether the sensor should continuously zero itself using incoming dat
 void markLiftoff();
 ```
 
-Disables ongoing bias correction. Typically called once the rocket leaves the pad.
+Disables any ongoing bias correction. Typically called once the rocket leaves the pad.
 
 ---
 

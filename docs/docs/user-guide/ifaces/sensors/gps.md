@@ -56,7 +56,7 @@ The GPS class tracks three core positional vectors:
 This makes it easy to track launch site-relative movement without needing external references.
 
 !!! note
-    Displacement is calculated in meters using a simple projection, not great-circle distance. It's optimized for local use, not global navigation.
+    The distance calculation is taken from [this](https://blog.mapbox.com/fast-geodesic-approximations-with-cheap-ruler-106f229ad016) article and [this](https://github.com/mapbox/cheap-ruler/blob/main/index.js#L475) repo. As I (Drew) understand it, it's an accurate approximation of the Vincenty formulae to find the distance between two points on the earth.
 
 ---
 
