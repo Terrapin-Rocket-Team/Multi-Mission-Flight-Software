@@ -1,8 +1,7 @@
 #ifndef EVENT_H
 #define EVENT_H
 
-#include <stdint.h>
-#include <stddef.h>
+#include "../Utils/Hash.h"
 
 /*
  * The hash method at the top of this file is a way to change string literals to integers at compile time,
@@ -14,21 +13,6 @@
 namespace mmfs
 {
     using EventID = uint32_t;
-
-    constexpr uint32_t fnv1a_32(const char *s, size_t count)
-    {
-        uint32_t hash = 2166136261u;
-        for (size_t i = 0; i < count; i++)
-        {
-            hash ^= static_cast<unsigned char>(s[i]);
-            hash *= 16777619u;
-        }
-        return hash;
-    }
-    constexpr EventID operator"" _i(const char *str, size_t len)
-    {
-        return fnv1a_32(str, len);
-    }
 
     // Forward-declare EventManager
     class EventManager;
