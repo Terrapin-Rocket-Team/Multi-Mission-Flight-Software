@@ -1,20 +1,19 @@
 #include "MockIMU.h"
 
 using namespace mmfs;
-    MockIMU::MockIMU(const char *dataPath, const std::string accColNames[3], const std::string gyroColNames[3], const std::string magColNames[3]) : dataReader(dataPath)
+MockIMU::MockIMU(const char *dataPath, const std::string accColNames[3], const std::string gyroColNames[3], const std::string magColNames[3]) : IMU("MockIMU"), dataReader(dataPath)
+{
+
+    for (int i = 0; i < 3; i++)
     {
-        Sensor::setName("MockIMU");
+        this->accColNames[i] = accColNames[i];
+        this->gyroColNames[i] = gyroColNames[i];
+        this->magColNames[i] = magColNames[i];
 
-        for (int i = 0; i < 3; i++)
-        {
-            this->accColNames[i] = accColNames[i];
-            this->gyroColNames[i] = gyroColNames[i];
-            this->magColNames[i] = magColNames[i];
-
-            this->accIndices[i] = -1;
-            this->gyroIndices[i] = -1;
-            this->magIndices[i] = -1;
-        }
+        this->accIndices[i] = -1;
+        this->gyroIndices[i] = -1;
+        this->magIndices[i] = -1;
+    }
     }
 
     bool MockIMU::init()

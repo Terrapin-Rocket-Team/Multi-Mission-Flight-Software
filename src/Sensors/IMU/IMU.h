@@ -32,7 +32,7 @@ namespace mmfs
         virtual void quaternionBasedComplimentaryFilter(double dt);
 
     protected:
-        IMU();
+        IMU(const char *name = "IMU");
 
         Vector<3> measuredAcc = Vector<3>(0, 0, 0); // Body frame acceleration in m/s/s
         Vector<3> orientationEuler = Vector<3>(0, 0, 0);

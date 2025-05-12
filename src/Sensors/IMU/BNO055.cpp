@@ -4,16 +4,18 @@
 namespace mmfs
 {
 
-    BNO055::BNO055(const char *name, uint8_t address, TwoWire *theWire) : bno(-1, address, theWire) //-1 is the default sensor ID
+    BNO055::BNO055(const char *name, uint8_t address, TwoWire *theWire)
+        : IMU(name),
+          bno(-1, address, theWire), //-1 is the default sensor ID
+          address(address)
     {
-        setName(name);
-        this->address = address;
     }
 
-    BNO055::BNO055(uint8_t address, TwoWire *theWire) : bno(-1, address, theWire) //-1 is the default sensor ID
+    BNO055::BNO055(uint8_t address, TwoWire *theWire)
+        : IMU("BNO055"),
+          bno(-1, address, theWire), //-1 is the default sensor ID
+          address(address)
     {
-        setName("BNO055");
-        this->address = address;
     }
 
     bool BNO055::init()

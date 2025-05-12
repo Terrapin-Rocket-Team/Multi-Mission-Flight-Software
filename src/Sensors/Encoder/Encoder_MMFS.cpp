@@ -7,7 +7,7 @@ namespace mmfs
 
     Encoder_MMFS::~Encoder_MMFS() {}
 
-    Encoder_MMFS::Encoder_MMFS() : Sensor("Encoder")
+    Encoder_MMFS::Encoder_MMFS(const char *name) : Sensor("Encoder", name)
     {
         addColumn(INT, &currentRelativeSteps, "Rel Steps");
     }

@@ -17,7 +17,7 @@ namespace mmfs
         virtual void setInitialSteps(int step);
 
     protected:
-        Encoder_MMFS();
+        Encoder_MMFS(const char *name = "Encoder");
         int currentRelativeSteps;
         int initialSteps;
     };

@@ -16,7 +16,7 @@ namespace mmfs
         virtual bool begin(bool useBiasCorrection = true) override;
 
     protected:
-        LightSensor();
+        LightSensor(const char *name = "LightSensor");
         double lux;
         double initialLux;
     };

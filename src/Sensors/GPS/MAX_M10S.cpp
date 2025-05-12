@@ -4,23 +4,18 @@
 namespace mmfs
 {
 
-    MAX_M10S::MAX_M10S(const char *name, TwoWire *wire, uint8_t address) : m10s()
+    MAX_M10S::MAX_M10S(const char *name, TwoWire *wire, uint8_t address) : GPS(name), m10s(), wire(wire), address(address)
     {
-        setName(name);
-        this->wire = wire;
-        this->address = address;
+
     }
 
-    MAX_M10S::MAX_M10S(TwoWire *wire, uint8_t address) : m10s()
+    MAX_M10S::MAX_M10S(TwoWire *wire, uint8_t address) : GPS("MAX-M10S"), m10s(), wire(wire), address(address)
     {
-        setName("MAX-M10S");
-        this->wire = wire;
-        this->address = address;
+
     }
 
     bool MAX_M10S::init()
     {
-
         // m10s.enableDebugging(); // Uncomment this line to enable helpful debug messages on Serial
 
         int count = 0;

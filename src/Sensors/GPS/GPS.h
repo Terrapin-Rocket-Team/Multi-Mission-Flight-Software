@@ -32,7 +32,7 @@ namespace mmfs
         virtual uint16_t getYear() const;
 
     protected:
-        GPS();
+        GPS(const char *name = "GPS");
         Vector<3> position;     // latitude, longitude, alt(m)
         Vector<3> displacement; // displacement from starting location
         Vector<3> origin;       // lat(deg), long(deg), alt(m) of the original location

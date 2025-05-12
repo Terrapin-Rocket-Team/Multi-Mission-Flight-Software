@@ -17,7 +17,6 @@ namespace mmfs
     {
     public:
         virtual ~Sensor() {};
-
         // ------------------------------- SENSOR TYPE IMPLEMENTATION ---------------------------------------------
 
         // Child classes can override these classes with specifics for that type of sensor.
@@ -51,7 +50,8 @@ namespace mmfs
 
     protected:
         // --------------------------------- HARDWARE IMPLEMENTATION -----------------------------------------------
-        Sensor(const char *type)
+
+        Sensor(const char *type, const char *name = nullptr) : DataReporter(name)
         {
             this->type = fnv1a_32(type, strlen(type));
             typeString = type;

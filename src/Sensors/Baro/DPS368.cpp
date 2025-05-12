@@ -2,10 +2,9 @@
 
 using namespace mmfs;
 
-DPS368::DPS368(const char *name, TwoWire *bus, uint8_t addr) : bus(bus), addr(addr)
-{
-    setName(name);
-}
+DPS368::DPS368(const char *name, uint8_t addr, TwoWire *bus) : Barometer(name), addr(addr), bus(bus) {}
+
+DPS368::DPS368(uint8_t addr, TwoWire *bus) : addr(addr), bus(bus) {}
 
 bool DPS368::init()
 {
