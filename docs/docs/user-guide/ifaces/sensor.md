@@ -1,57 +1,142 @@
-# Sensor
+# Sensor Interface
 
-The Sensor interface is the core purpose of MMFS. It allows us to reuse code across subteams without reinventing the wheel. In the past, Avionics developed a sensor board with a GPS, Barometer, and 9DoF IMU that all three SRAD electronics teams on the competition rocket used.
-
-The Sensor interface extends DataReporter, and further  breaks down into multiple different types of sensors, each with their own functionality.
+The `Sensor` interface in MMFS defines a standard structure for hardware sensor modules such as barometers, GPS units, IMUs, and more. It provides a unified API for initialization, updates, and data reporting. All sensors inherit from the `Sensor` base class, which itself inherits from `DataReporter`, enabling each sensor to automatically expose its data in a standardized way for logging or telemetry.
 
 ---
 
-## Main Points
+## **Purpose**
 
-1. `update()` and `begin()`
-    
-    These two methods allow all sensors to be initialized or updated from one large loop. ~~They internally call `init()` and `read()`.~~ You can specify whether the sensor should use BiasCorrection or not in the `begin(bool useBiasCorrection)` method.
-2. `init()` and `read()`
-    These are designed to be hte methods that users implement to read the physical hardware sensors. In our implementation of each sensor, these two functions retrieve data from the hardware and store them  in internal variables, and the `update()` and `begin()` functions do any kind of transformations on that data that need to be done before they can be passed to the State for processing.
+This interface ensures that all sensor types in MMFS can be:
+
+* Queried consistently (via `update()`)
+* Initialized uniformly (via `begin()`)
+* Identified programmatically by type
+* Hooked into telemetry/logging systems via inherited `DataReporter`
 
 ---
 
-## Implementation
+## **Core Methods**
 
-There are currently 6 types of sensors:
+### **Initialization**
 
-```
-BAROMETER_,
-GPS_,
-IMU_,
-LIGHT_SENSOR_,
-ENCODER_,
-OTHER_
+```cpp
+virtual bool begin(bool useBiasCorrection = true) = 0;
 ```
 
-MMFS provides basic implementations of each of these, with the exception of `OTHER_`. If you have your own sensor to implement, determine first if it can fit under the umbrella of one of these types. If so, you may save yourself a lot of work. If not, you can utilize the `OTHER_` category and create your own implementation.
+Prepares the sensor for use. May involve hardware initialization, I2C/SPI setup, and calibration. Some sensors support optional bias correction at startup.
 
-/// tab | Implementing an Existing Type
+### **Update**
 
-First, find the source file and the related docs file for the type you with to implement.
+```cpp
+virtual void update() = 0;
+```
 
-- [Barometer](baro.md)
-- [Encoder](enc.md)
-- [GPS](gps.md)
-- [IMU](imu.md)
-- [LightSensor](light.md)
+Fetches new data from the sensor. This function is called periodically (e.g., once per loop) and internally handles reading from the sensor and updating internal data buffers.
 
-Next, find a library online that interfaces with your sensor of choice. We use Adafruit's and SparkFun's libraries mostly, but there are many of them out there. This makes it much easier to interface with the hardware, allowing you to focus on functionality without worrying about writing to individual registers. When you find one, great!
+### **Type Identification**
 
-Go into the docs for the type of sensor your using and see how we set them up. Essentially, you should only have to override the init() and read() methods, allowing you to quickly get up and running with your new sensor.
+```cpp
+virtual const SensorType getType() const = 0;
+virtual const char *getTypeString() const = 0;
+```
 
-!!! note
+Returns the enum or string identifier for the sensor type. Useful for dynamic system configuration, debug messages, or logging.
 
-    As an aside, almost every sensor we use has I2C capabilities that we leverage. You may see specific code related to that, but if yours uses SPI or some other communication interface, don't worry. You can still use these pre-built interfaces.
+---
 
-///
+## **DataReporter Integration**
 
+Because `Sensor` inherits from `DataReporter`, it can expose internal sensor values to the logging and telemetry system.
 
-/// tab | Creating Your Own Type
+To expose a new value:
 
-///
+```cpp
+addColumn(FLOAT, &temperature, "Temp");
+```
+
+To remove a value:
+
+```cpp
+removeColumn("Temp");
+```
+
+The `DataReporter` base handles linked list management of these columns, automatic formatting of values, and integration with the Logger.
+
+---
+
+## **Bias Correction Controls**
+
+### **Bias Mode Toggle**
+
+```cpp
+void setBiasCorrectionMode(bool mode);
+```
+
+Determines whether the sensor should continuously zero itself using incoming data (Used before liftoff to prevent long-term drift).
+
+### **Liftoff Lock-in**
+
+```cpp
+void markLiftoff();
+```
+
+Disables any ongoing bias correction. Typically called once the rocket leaves the pad.
+
+---
+
+## **Implementing Your Own Sensor**
+
+To implement your own sensor, inherit from `Sensor` and define the following:
+
+```cpp
+class MySensor : public Sensor {
+public:
+    bool begin(bool useBiasCorrection = true) override;
+    void update() override;
+    SensorType getType() const override { return OTHER_; }
+    const char* getTypeString() const override { return "MY_SENSOR"; }
+};
+```
+
+In the constructor, register your output values using the inherited `addColumn()` methods.
+
+### **Example Constructor**
+
+```cpp
+MySensor::MySensor() {
+    addColumn(FLOAT, &someValue, "Some Value");
+    addColumn(BOOL, &statusFlag, "Status");
+}
+```
+
+---
+
+## **SensorType Enum**
+
+```cpp
+enum SensorType {
+    BAROMETER_,
+    GPS_,
+    IMU_,
+    LIGHT_SENSOR_,
+    RADIO_,
+    RTC_,
+    ENCODER_,
+    OTHER_
+};
+```
+
+Use these types to categorize your sensor. If none fit, use `OTHER_`.
+
+---
+
+## **Summary**
+
+* All sensors inherit from `Sensor`, which requires `begin()`, `update()`, and type reporting methods.
+* Sensors automatically plug into the telemetry/logging system via `DataReporter`.
+* Bias correction and liftoff control allow for zeroing and stabilization of certain sensors.
+* Extending the system with new sensors is easy—just inherit and override.
+
+---
+
+Written by ChatGPT. May not be fully accurate; verify before flight.
