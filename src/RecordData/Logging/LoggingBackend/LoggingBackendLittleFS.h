@@ -25,6 +25,7 @@ namespace mmfs
         virtual bool remove(const char *filename) override;
         virtual void seek(int file, long pos) override;
         virtual ~LoggingBackendLittleFS();
+        virtual void timestamp(int file, const char *dateTime) override;
 
     private:
         LittleFS_QPINAND *lfs;
