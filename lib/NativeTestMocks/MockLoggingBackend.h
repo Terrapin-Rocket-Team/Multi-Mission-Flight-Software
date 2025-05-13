@@ -46,7 +46,7 @@ namespace mmfs
         }
         void seek(size_t pos)
         {
-            cur = ::std::min(size, ::std::max((size_t) 0, pos));
+            cur = ::std::min(size, ::std::max((size_t)0, pos));
         }
     };
 
@@ -99,7 +99,6 @@ namespace mmfs
         {
             return write(d);
         }
-
     };
 
     class LoggingBackendMock : public LoggingBackend
@@ -124,13 +123,16 @@ namespace mmfs
             return true;
         }
 
-        LoggingBackendFile *open(const char *filename) override
+        LoggingBackendFile *open(const char *filename, uint8_t flags) override
         {
             for (int i = 0; i < MAX_FILES; ++i)
             {
                 if (fileExists[i] && strcmp(filename, filenames[i]) == 0)
                 {
-                    files[i].seek(0);
+                    if (flags == FI_WRITE_BEGINNING || flags == FI_READ)
+                        files[i].seek(0);
+                    else
+                        files[i].seek(files[i].size);
                     return new LoggingBackendFile(this, i);
                 }
             }
@@ -208,11 +210,12 @@ namespace mmfs
 
         void seek(int file, long pos) override
         {
-            if(fileExists[file])
+            if (fileExists[file])
                 files[file].seek(pos);
         }
 
-        MockFileData *getMockFileData(const char *name){
+        MockFileData *getMockFileData(const char *name)
+        {
             for (int i = 0; i < MAX_FILES; ++i)
             {
                 if (fileExists[i] && strcmp(filenames[i], name) == 0)
