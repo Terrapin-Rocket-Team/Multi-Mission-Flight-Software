@@ -7,7 +7,6 @@ using namespace mmfs;
 namespace mmfs::littlefs // declare some helper functions used at the end
 {
     void printDirectory(Stream &s, FsFile dir, int numSpaces);
-    void printTime(Stream &s, const DateTimeFields tm);
 } // namespace littlefs
 
 LoggingBackendSdFat::LoggingBackendSdFat()
@@ -138,7 +137,9 @@ void littlefs::printDirectory(Stream &s, FsFile dir, int numSpaces)
             s.println();
             break;
         }
-        s.print(entry.name());
+        char name[256];
+        int l = entry.getName(name, 256);
+        s.write(name, l);
         if (entry.isDirectory())
         {
             s.println('/');
@@ -150,7 +151,6 @@ void littlefs::printDirectory(Stream &s, FsFile dir, int numSpaces)
             s.print(',');
             s.print(entry.size(), DEC);
             s.print(',');
-            DateTimeFields datetime;
             uint16_t d = 0, t = 0;
             if (entry.getModifyDateTime(&d, &t))
             {

@@ -5,9 +5,8 @@ using namespace mmfs;
 
 namespace mmfs::littlefs // declare some helper functions used at the end
 {
-    void printDirectory(File dir, int numSpaces);
-    void printSpaces(int num);
-    void printTime(const DateTimeFields tm);
+    void printDirectory(Stream &s, File dir, int numSpaces);
+    void printTime(Stream &s, const DateTimeFields tm);
 } // namespace littlefs
 
 LoggingBackendLittleFS::LoggingBackendLittleFS()
@@ -127,7 +126,7 @@ void LoggingBackendLittleFS::seek(int file, long pos)
 }
 
 // From https://github.com/PaulStoffregen/LittleFS/blob/main/examples/ListFiles/ListFiles.ino
-void littlefs::printDirectory(Stream &s, File dir, int numSpaces)
+void mmfs::littlefs::printDirectory(Stream &s, File dir, int numSpaces)
 {
     while (true)
     {
@@ -161,7 +160,7 @@ void littlefs::printDirectory(Stream &s, File dir, int numSpaces)
 }
 
 // From https://github.com/PaulStoffregen/LittleFS/blob/main/examples/ListFiles/ListFiles.ino
-void littlefs::printTime(Stream &s, const DateTimeFields tm)
+void mmfs::littlefs::printTime(Stream &s, const DateTimeFields tm)
 {
     // YYYY-MM-DD hh:mm
     if (tm.year + 1900 < 2025) // Did not get a valid date or time from GPS or RTC
@@ -181,7 +180,7 @@ void littlefs::printTime(Stream &s, const DateTimeFields tm)
     s.print(tm.mday);
 
     s.print(' ');
-    
+
     if (tm.hour < 10)
         s.print('0');
     s.print(tm.hour);
