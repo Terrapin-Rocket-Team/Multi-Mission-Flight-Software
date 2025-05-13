@@ -56,17 +56,17 @@ Logger::Logger()
 
     int len = 26; // max file name length
 
-    flightDataFile = backend->open(fileName);
+    flightDataFile = backend->open(fileName, FI_WRITE);
     flightDataFileName = new char[len];
     snprintf(flightDataFileName, len, "%s", fileName);
 
     snprintf(fileName, MAX_FILE_NAME_SIZE, "%d_%s", fileNo, "Log.txt");
-    logFile = backend->open(fileName);
+    logFile = backend->open(fileName, FI_WRITE);
     logFileName = new char[len];
     snprintf(logFileName, len, "%s", fileName);
 
     snprintf(fileName, MAX_FILE_NAME_SIZE, "%d_%s", fileNo, "PreFlightData.csv");
-    preFlightFile = backend->open(fileName);
+    preFlightFile = backend->open(fileName, FI_WRITE);
     preFlightFileName = new char[len];
     snprintf(preFlightFileName, len, "%s", fileName);
 
