@@ -20,7 +20,7 @@ namespace mmfs
         virtual size_t write(int file, const uint8_t *data, size_t len) override;
         virtual bool isAvailable();
         virtual bool exists(const char *filename) override;
-        virtual void ls(int i = -1) override;
+        virtual void ls(Stream &s) override;
         virtual void format() override;
         virtual bool remove(const char *filename) override;
         virtual void seek(int file, long pos) override;

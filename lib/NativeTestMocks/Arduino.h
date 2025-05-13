@@ -27,7 +27,7 @@ void delay(int ms);
 
 void digitalWrite(int pin, int value);
 
-class SerialClass
+class Stream
 {
 public:
     void write(const char *data, int i);
@@ -43,6 +43,11 @@ public:
 
     char fakeBuffer[1000];
     int cursor = 0;
+};
+
+class SerialClass : public Stream
+{
+    
 };
 
 extern SerialClass Serial;

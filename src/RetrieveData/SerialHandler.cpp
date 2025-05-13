@@ -51,7 +51,7 @@ void SerialHandler::handle()
 
 void SerialHandler::fetchList()
 {
-    getLogger().backend->ls(LS_DATE | LS_SIZE);
+    getLogger().backend->ls(Serial);
 }
 
 void SerialHandler::clearFiles()
