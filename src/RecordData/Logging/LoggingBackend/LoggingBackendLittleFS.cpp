@@ -119,6 +119,19 @@ size_t LoggingBackendLittleFS::read(int file, char *dest, size_t len)
     }
     return 0;
 }
+void LoggingBackendLittleFS::timestamp(int file, const char *dateTime)
+{
+    if (activeFiles[file])
+    {
+        // Because DateTimeFields only stores year as uint8, we need to shrink it outside of the sscanf
+        DateTimeFields dt;
+        dt.year = (uint8_t)(atoi(dateTime) - 1900);
+
+        sscanf(dateTime + 4, "-%hhd-%hhd %hhd:%hhd:%hhd", &dt.mon, &dt.mday, &dt.hour, &dt.min, &dt.sec);
+        activeFiles[file]->setCreateTime(dt);
+        activeFiles[file]->setModifyTime(dt);
+    }
+}
 
 // From https://github.com/PaulStoffregen/LittleFS/blob/main/examples/ListFiles/ListFiles.ino
 void littlefs::printDirectory(File dir, int numSpaces)
@@ -185,6 +198,8 @@ void littlefs::printTime(const DateTimeFields tm)
     Serial.print(tm.year + 1900);
 }
 
-void LoggingBackendLittleFS::seek(int file, long pos){
-    if(activeFiles[file]) activeFiles[file]->seek(pos);
+void LoggingBackendLittleFS::seek(int file, long pos)
+{
+    if (activeFiles[file])
+        activeFiles[file]->seek(pos);
 }

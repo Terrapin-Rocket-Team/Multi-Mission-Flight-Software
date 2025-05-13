@@ -32,11 +32,12 @@ LoggingBackendFile *LoggingBackendSdFat::open(const char *filename)
     unsigned int i = 0;
     while (activeFiles[i] && i < MAX_FILES) // if exists
     {
-            char fname[250];
-            activeFiles[i]->getName(fname, 250);
-            if (!strcmp(fname, filename)){
-                return new LoggingBackendFile(this, i);
-            }
+        char fname[250];
+        activeFiles[i]->getName(fname, 250);
+        if (!strcmp(fname, filename))
+        {
+            return new LoggingBackendFile(this, i);
+        }
         i++;
     }
     // if doesnt exist
@@ -49,13 +50,14 @@ LoggingBackendFile *LoggingBackendSdFat::open(const char *filename)
             return new LoggingBackendFile(this, i);
         }
     }
-     // if can't create
+    // if can't create
     return nullptr;
 }
 
 size_t LoggingBackendSdFat::write(int file, const uint8_t *data, size_t len)
 {
-    if (!activeFiles[file]){
+    if (!activeFiles[file])
+    {
         Serial.println("file not found to print to");
         return 0;
     }
@@ -112,6 +114,19 @@ size_t LoggingBackendSdFat::read(int file, char *dest, size_t len)
     return 0;
 }
 
-void LoggingBackendSdFat::seek(int file, long pos){
-    if(activeFiles[file]) activeFiles[file]->seek(pos);
+void LoggingBackendSdFat::seek(int file, long pos)
+{
+    if (activeFiles[file])
+        activeFiles[file]->seek(pos);
+}
+
+void LoggingBackendSdFat::timestamp(int file, const char *dateTime)
+{
+    if (activeFiles[file])
+    {
+        uint16_t y;
+        uint8_t m, d, h, mm, s;
+        sscanf(dateTime, "%hd-%hhd-%hhd %hhd:%hhd:%hhd", &y, &m, &d, &h, &mm, &s);
+        activeFiles[file]->timestamp(T_CREATE | T_WRITE | T_ACCESS, y, m, d, h, mm, s);
+    }
 }

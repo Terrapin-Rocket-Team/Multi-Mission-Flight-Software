@@ -20,6 +20,7 @@ namespace mmfs
         virtual size_t println(const char *data);
         virtual size_t print(const char *data);
         virtual void seek(long pos);
+        virtual void timestamp(const char *dateTime);
 
     protected:
         int fileNum;

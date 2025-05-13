@@ -7,6 +7,7 @@
 #include "../../lib/NativeTestMocks/UnitTestSensors.h"
 #include "../../lib/NativeTestMocks/MockLoggingBackend.h"
 #include "../../src/RecordData/DataReporter/DataFormatter.h"
+#include "../src/Events/DefaultEventHandler.h"
 
 // ---
 
@@ -137,6 +138,29 @@ void test_dumpData()
         flightFile->arr, 1520);
 }
 
+void test_gps_file_time()
+{
+    Logger l;
+    setLogger(&l);
+    TEST_ASSERT_TRUE(l.backend->exists("1_FlightData.csv"));
+    DefaultEventHandler d;
+    FakeGPS gps;
+    gps.setHasFirstFix(true);
+    gps.setDateTime(2025, 1, 15, 23, 15, 50);
+
+    getEventManager().invoke(GPSFix{"GPS_FIX"_i, &gps, true});
+
+    MockFileData *f = ((LoggingBackendMock *)(l.backend))->getMockFileData("1_FlightData.csv");
+
+    TEST_ASSERT_EQUAL_INT8(2025 - 1900, f->modify.yr2);
+    TEST_ASSERT_EQUAL_INT16(2025, f->modify.yr1);
+    TEST_ASSERT_EQUAL_INT8(1, f->modify.m);
+    TEST_ASSERT_EQUAL_INT8(15, f->modify.d);
+    TEST_ASSERT_EQUAL_INT8(23, f->modify.h);
+    TEST_ASSERT_EQUAL_INT8(15, f->modify.mm);
+    TEST_ASSERT_EQUAL_INT8(50, f->modify.s);
+}
+
 // ---
 
 // This is the main function that runs all the tests. It should be the last thing in the file.
@@ -154,6 +178,7 @@ int main(int argc, char **argv)
     RUN_TEST(test_recordFlightData_on_ground);
     RUN_TEST(test_recordFlightData_in_flight);
     RUN_TEST(test_dumpData);
+    RUN_TEST(test_gps_file_time);
 
     UNITY_END();
 

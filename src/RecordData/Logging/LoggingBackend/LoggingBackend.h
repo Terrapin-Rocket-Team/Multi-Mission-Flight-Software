@@ -24,6 +24,7 @@ namespace mmfs
         virtual bool remove(const char *filename) = 0;
         virtual ~LoggingBackend() {}
         virtual void seek(int file, long pos) = 0;
+        virtual void timestamp(int file, const char *dateTime) = 0;
 
     protected:
         bool rdy = false;

@@ -59,6 +59,16 @@ public:
         position.y() = lon;
         position.z() = alt;
     }
+    void setDateTime(int y, int m, int d, int h, int mm, int s)
+    {
+        year = y;
+        month = m;
+        day = d;
+        hr = h;
+        min = mm;
+        sec = s;
+        snprintf(tod, 12, "%02d:%02d:%02d", hr, min, sec); // size is really 9 but 12 ignores warnings about truncation. IRL it will never truncate
+    }
 
     bool init() override
     {

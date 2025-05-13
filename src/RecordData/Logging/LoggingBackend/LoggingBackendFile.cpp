@@ -57,3 +57,8 @@ size_t LoggingBackendFile::print(const char *data)
 void LoggingBackendFile::seek(long pos){
     b->seek(fileNum, pos);
 }
+
+void LoggingBackendFile::timestamp(const char *dateTime)
+{
+    b->timestamp(fileNum, dateTime);
+}
