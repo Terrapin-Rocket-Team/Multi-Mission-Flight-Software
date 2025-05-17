@@ -182,6 +182,6 @@ void LoggingBackendSdFat::timestamp(int file, const char *dateTime)
         uint16_t y;
         uint8_t m, d, h, mm, s;
         sscanf(dateTime, "%hd-%hhd-%hhd %hhd:%hhd:%hhd", &y, &m, &d, &h, &mm, &s);
-        activeFiles[file]->timestamp(T_CREATE | T_WRITE | T_ACCESS, y, m, d, h, mm, s);
+        activeFiles[file].timestamp(T_CREATE | T_WRITE | T_ACCESS, y, m, d, h, mm, s);
     }
 }
