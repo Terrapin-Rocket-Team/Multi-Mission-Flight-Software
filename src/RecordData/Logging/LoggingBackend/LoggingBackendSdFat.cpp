@@ -130,8 +130,10 @@ size_t LoggingBackendSdFat::read(int file, char *dest, size_t len)
 
 void LoggingBackendSdFat::seek(int file, long pos)
 
+
 {
-    if  (activeFiles[file])
+    if   (activeFiles[file])
+       
        
         activeFiles[file].seek(pos);
 }
@@ -170,5 +172,16 @@ void littlefs::printDirectory(Stream &s, FsFile dir, int numSpaces)
             s.println();
         }
         entry.close();
+    }
+}
+
+void LoggingBackendSdFat::timestamp(int file, const char *dateTime)
+{
+    if (activeFiles[file])
+    {
+        uint16_t y;
+        uint8_t m, d, h, mm, s;
+        sscanf(dateTime, "%hd-%hhd-%hhd %hhd:%hhd:%hhd", &y, &m, &d, &h, &mm, &s);
+        activeFiles[file]->timestamp(T_CREATE | T_WRITE | T_ACCESS, y, m, d, h, mm, s);
     }
 }

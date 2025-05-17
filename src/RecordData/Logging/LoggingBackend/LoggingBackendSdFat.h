@@ -23,6 +23,7 @@ namespace mmfs
         virtual bool remove(const char *filename) ;
         virtual ~LoggingBackendSdFat();
         virtual void seek(int file, long pos) override;
+        virtual void timestamp(int file, const char *dateTime) override;
 
     private:
         SdFs *sdfs;

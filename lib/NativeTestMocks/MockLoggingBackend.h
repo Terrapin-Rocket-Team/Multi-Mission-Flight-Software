@@ -13,10 +13,17 @@ namespace mmfs
 
 #define MOCK_FILE_SIZE 4096 // Adjust as needed
 
+    struct DateTime
+    {
+        uint16_t yr1 = 0;
+        uint8_t yr2 = 0, m = 0, d = 0, h = 0, mm = 0, s = 0;
+    };
+
     struct MockFileData
     {
         char arr[MOCK_FILE_SIZE];
         size_t size, cur;
+        DateTime modify;
 
         MockFileData() : size(0), cur(0)
         {
@@ -116,6 +123,7 @@ namespace mmfs
                 filenames[i] = new char[64];
             }
         }
+        virtual ~LoggingBackendMock() {}
 
         bool begin() override
         {
@@ -225,8 +233,22 @@ namespace mmfs
             }
             return nullptr;
         }
-    };
 
+        void timestamp(int file, const char *dateTime) override
+        {
+            if (fileExists[file])
+            {
+                DateTime dt;
+                dt.yr2 = (uint8_t)(atoi(dateTime) - 1900);
+
+                sscanf(dateTime + 4, "-%hhd-%hhd %hhd:%hhd:%hhd", &dt.m, &dt.d, &dt.h, &dt.mm, &dt.s);
+
+                sscanf(dateTime, "%hd", &dt.yr1);
+
+                files[file].modify = dt;
+            }
+        }
+    };
 }
 
 #endif
