@@ -1,14 +1,12 @@
 #include "LoggingBackendSdFat.h"
 
-#include "../SdFatBoilerplate.h"
 using namespace mmfs;
 
 LoggingBackendSdFat::LoggingBackendSdFat()
 {
-    for (unsigned int i = 0; i < MAX_FILES; i++)
-        activeFiles[i] = nullptr;
     sdfs = new SdFs();
 }
+
 LoggingBackendSdFat::~LoggingBackendSdFat()
 {
 
@@ -16,7 +14,7 @@ LoggingBackendSdFat::~LoggingBackendSdFat()
     {
         if (activeFiles[i])
         {
-            activeFiles[i]->close();
+            activeFiles[i].close();
         }
     }
     delete sdfs;
@@ -27,39 +25,53 @@ bool LoggingBackendSdFat::begin()
     return rdy = sdfs != nullptr && (sdfs->begin(SD_CONFIG) || sdfs->restart());
 }
 
-LoggingBackendFile *LoggingBackendSdFat::open(const char *filename)
+LoggingBackendFile *LoggingBackendSdFat::open(const char *filename, uint8_t flags)
 {
+
+    int sdfsFlags = 0;
+    if (flags == FI_READ)
+        sdfsFlags = FILE_READ;
+    else if (flags == FI_WRITE_BEGINNING)
+        sdfsFlags = O_RDWR | O_CREAT;
+    else if (flags == FI_WRITE)
+        sdfsFlags = FILE_WRITE;
+    else
+        return nullptr;
+
     unsigned int i = 0;
-    while (activeFiles[i] && i < MAX_FILES) // if exists
+    while (i < MAX_FILES && activeFiles[i]) // if exists
     {
-            char fname[250];
-            activeFiles[i]->getName(fname, 250);
-            if (!strcmp(fname, filename)){
+        char fname[250];
+        activeFiles[i].getName(fname, 250);
+        if (!strcmp(fname, filename))
+        {
+            activeFiles[i].open(filename, sdfsFlags);
+            if (activeFiles[i].isOpen())
                 return new LoggingBackendFile(this, i);
-            }
+            activeFiles[i].close();
+        }
         i++;
     }
     // if doesnt exist
     if (i < MAX_FILES)
     {
-        FsFile *f = new FsFile(sdfs->open(filename, FILE_WRITE | FILE_READ));
-        if (f)
-        {
-            activeFiles[i] = f;
+        activeFiles[i].open(filename, sdfsFlags);
+        if (activeFiles[i].isOpen())
             return new LoggingBackendFile(this, i);
-        }
+        activeFiles[i].close();
     }
-     // if can't create
+    // if can't create
     return nullptr;
 }
 
 size_t LoggingBackendSdFat::write(int file, const uint8_t *data, size_t len)
 {
-    if (!activeFiles[file]){
+    if (!activeFiles[file])
+    {
         Serial.println("file not found to print to");
         return 0;
     }
-    return activeFiles[file]->write(data, len);
+    return activeFiles[file].write(data, len);
 }
 
 bool LoggingBackendSdFat::isAvailable()
@@ -76,8 +88,7 @@ void LoggingBackendSdFat::close(int file)
 {
     if (activeFiles[file])
     {
-        activeFiles[file]->close();
-        activeFiles[file] = nullptr;
+        activeFiles[file].close();
     }
 }
 
@@ -85,7 +96,7 @@ void LoggingBackendSdFat::save(int file)
 {
     if (activeFiles[file])
     {
-        activeFiles[file]->flush();
+        activeFiles[file].flush();
     }
 }
 
@@ -108,10 +119,12 @@ bool LoggingBackendSdFat::remove(const char *filename)
 size_t LoggingBackendSdFat::read(int file, char *dest, size_t len)
 {
     if (activeFiles[file])
-        return activeFiles[file]->readBytes(dest, len);
+        return activeFiles[file].readBytes(dest, len);
     return 0;
 }
 
-void LoggingBackendSdFat::seek(int file, long pos){
-    if(activeFiles[file]) activeFiles[file]->seek(pos);
+void LoggingBackendSdFat::seek(int file, long pos)
+{
+    if (activeFiles[file])
+        activeFiles[file].seek(pos);
 }

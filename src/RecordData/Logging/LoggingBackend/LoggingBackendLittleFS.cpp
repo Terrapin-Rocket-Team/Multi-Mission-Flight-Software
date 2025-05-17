@@ -35,22 +35,38 @@ bool LoggingBackendLittleFS::begin()
     return rdy;
 }
 
-LoggingBackendFile *LoggingBackendLittleFS::open(const char *filename)
+LoggingBackendFile *LoggingBackendLittleFS::open(const char *filename, uint8_t flags)
 {
-
+    int lfsFlags = 0;
+    if (flags == FI_READ)
+        lfsFlags = FILE_READ;
+    else if (flags == FI_WRITE_BEGINNING)
+        lfsFlags = FILE_WRITE_BEGIN;
+    else if (flags == FI_WRITE)
+        lfsFlags = FILE_WRITE;
+    else
+        return nullptr;
+    
     unsigned int i = 0;
-    while (activeFiles[i] && i < MAX_FILES) // if exists
+    while (i < MAX_FILES && activeFiles[i]) // if exists
     {
-        if (!strcmp(activeFiles[i]->name(), filename))
-            return new LoggingBackendFile(this, i);
+        if (!strcmp(activeFiles[i]->name(), filename)){
+            activeFiles[i]->close();
+            delete activeFiles[i];
+            File *f = new File(lfs->open(filename, lfsFlags));
+            if (f && *f)
+            {
+                activeFiles[i] = f;
+                return new LoggingBackendFile(this, i);
+            }
+        }
         i++;
     }
-
     // if doesnt exist
     if (i < MAX_FILES)
     {
-        File *f = new File(lfs->open(filename, FILE_READ | FILE_WRITE));
-        if (f)
+        File *f = new File(lfs->open(filename, lfsFlags));
+        if (f && *f)
         {
             activeFiles[i] = f;
             return new LoggingBackendFile(this, i);

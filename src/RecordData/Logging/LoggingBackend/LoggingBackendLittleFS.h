@@ -13,7 +13,7 @@ namespace mmfs
     public:
         LoggingBackendLittleFS();
         virtual bool begin() override;
-        virtual LoggingBackendFile *open(const char *filename) override;
+        virtual LoggingBackendFile *open(const char *filename, uint8_t flags) override;
         virtual void close(int file) override;
         virtual void save(int file) override;
         virtual size_t read(int file, char *dest, size_t len) override;
