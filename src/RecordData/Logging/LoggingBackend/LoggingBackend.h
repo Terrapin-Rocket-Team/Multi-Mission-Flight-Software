@@ -5,6 +5,9 @@
 #include <cstddef>
 #include "../../../Constants.h"
 #include "LoggingBackendFile.h"
+
+class Stream;
+
 namespace mmfs
 {
     enum FIO
@@ -25,7 +28,7 @@ namespace mmfs
         virtual size_t write(int file, const uint8_t *data, size_t len) = 0;
         virtual bool exists(const char *filename) = 0;
         virtual bool isAvailable() = 0;
-        virtual void ls(int i = -1) = 0;
+        virtual void ls(Stream &s) = 0;
         virtual void format() = 0;
         virtual bool remove(const char *filename) = 0;
         virtual ~LoggingBackend() {}

@@ -2,6 +2,11 @@
 
 using namespace mmfs;
 
+namespace mmfs::littlefs // declare some helper functions used at the end
+{
+    void printDirectory(Stream &s, FsFile dir, int numSpaces);
+} // namespace littlefs
+
 LoggingBackendSdFat::LoggingBackendSdFat()
 {
     sdfs = new SdFs();
@@ -100,7 +105,7 @@ void LoggingBackendSdFat::save(int file)
     }
 }
 
-void LoggingBackendSdFat::ls(int i)
+void LoggingBackendSdFat::ls(Stream &s)
 {
     // TODO...
     Serial.println("Not yet implemented. Come back later :P");
@@ -124,7 +129,46 @@ size_t LoggingBackendSdFat::read(int file, char *dest, size_t len)
 }
 
 void LoggingBackendSdFat::seek(int file, long pos)
+
 {
-    if (activeFiles[file])
+    if  (activeFiles[file])
+       
         activeFiles[file].seek(pos);
+}
+
+// From https://github.com/PaulStoffregen/LittleFS/blob/main/examples/ListFiles/ListFiles.ino
+void littlefs::printDirectory(Stream &s, FsFile dir, int numSpaces)
+{
+    while (true)
+    {
+        FsFile entry = dir.openNextFile();
+        if (!entry)
+        {
+            s.println();
+            break;
+        }
+        char name[256];
+        int l = entry.getName(name, 256);
+        s.write(name, l);
+        if (entry.isDirectory())
+        {
+            s.println('/');
+            printDirectory(s, entry, numSpaces + 2);
+        }
+        else
+        {
+            // files have sizes, directories do not
+            s.print(',');
+            s.print(entry.size(), DEC);
+            s.print(',');
+            uint16_t d = 0, t = 0;
+            if (entry.getModifyDateTime(&d, &t))
+            {
+                if(!fsPrintDateTime(&s, d, t))
+                    s.print("N/A");
+            }
+            s.println();
+        }
+        entry.close();
+    }
 }

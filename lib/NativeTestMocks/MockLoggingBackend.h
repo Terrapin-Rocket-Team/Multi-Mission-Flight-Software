@@ -182,7 +182,7 @@ namespace mmfs
             return rdy;
         }
 
-        void ls(int i = -1) override {}
+        void ls(Stream &s) override {}
         void format() override
         {
             for (int i = 0; i < MAX_FILES; ++i)
