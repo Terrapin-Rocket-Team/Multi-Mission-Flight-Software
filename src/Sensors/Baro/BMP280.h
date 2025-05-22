@@ -9,8 +9,8 @@ namespace mmfs
     class BMP280 : public Barometer
     {
     private:
-        Adafruit_BMP280 bmp;
         uint8_t addr;
+        Adafruit_BMP280 bmp;
 
     public:
         BMP280(const char *name = "BMP280", uint8_t addr = BMP280_ADDRESS, TwoWire *wire = &Wire);

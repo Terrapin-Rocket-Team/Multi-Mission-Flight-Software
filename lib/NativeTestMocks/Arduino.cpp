@@ -37,7 +37,7 @@ void digitalWrite(int pin, int value)
     printf("\x1B[%dm%.3f - %d to \x1B[%dm%s\x1B[0m\n", color, millis() / 1000.0, pin, value == LOW ? 91 : 92, value == LOW ? "LOW" : "HIGH");
 }
 
-void SerialClass::write(const char *data, int i)
+void Stream::write(const char *data, int i)
 {
     while (i > 0)
     {
@@ -48,19 +48,19 @@ void SerialClass::write(const char *data, int i)
     fakeBuffer[cursor] = '\0';
 }
 
-void SerialClass::print(const char *data)
+void Stream::print(const char *data)
 {
     write(data, strlen(data));
     printf("%s", data);
 }
 
-void SerialClass::println(const char *data)
+void Stream::println(const char *data)
 {
     print(data);
     print("\n");
     printf("%s\n", data);
 }
-void SerialClass::printf(const char *data, ...)
+void Stream::printf(const char *data, ...)
 {
     va_list args;
     va_start(args, data);
@@ -68,21 +68,21 @@ void SerialClass::printf(const char *data, ...)
     va_end(args);
 }
 
-void SerialClass::begin(int baud) {}
+void Stream::begin(int baud) {}
 
-void SerialClass::clearBuffer()
+void Stream::clearBuffer()
 {
     cursor = 0;
     fakeBuffer[0] = '\0';
 }
 
-int SerialClass::readBytesUntil(char c, char *i, size_t len) {return 0;}
+int Stream::readBytesUntil(char c, char *i, size_t len) {return 0;}
 
-bool SerialClass::available() { return true; }
+bool Stream::available() { return true; }
 
-void SerialClass::write(char &c) { write(&c, 1); }
+void Stream::write(char &c) { write(&c, 1); }
 
-void SerialClass::println(int i) {}
+void Stream::println(int i) {}
 
 SerialClass Serial;
 CrashReportClass CrashReport;

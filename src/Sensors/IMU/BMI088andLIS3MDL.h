@@ -10,9 +10,8 @@ namespace mmfs
     {
     public:
         // See https://github.com/bolderflight/bmi088-arduino/blob/main/README.md for default addresses
-        BMI088andLIS3MDL(const char *name = "BMI088andLIS3MDL", TwoWire *bus = &Wire, uint8_t accelAddr = 0x18, uint8_t gyroAddr = 0x68, u_int8_t magAddr = 0x1c) : accel(*bus, accelAddr), gyro(*bus, gyroAddr)
+        BMI088andLIS3MDL(const char *name = "BMI088andLIS3MDL", TwoWire *bus = &Wire, uint8_t accelAddr = 0x18, uint8_t gyroAddr = 0x68, u_int8_t magAddr = 0x1c) : IMU(name), accel(*bus, accelAddr), gyro(*bus, gyroAddr)
         {
-            Sensor::setName(name);
         }
         bool init() override;
         void read() override;

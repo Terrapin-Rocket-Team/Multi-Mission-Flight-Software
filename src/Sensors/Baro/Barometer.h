@@ -19,13 +19,11 @@ namespace mmfs
         virtual double getAGLAltFt() const;
 
         // Sensor virtual functions
-        virtual const char *getTypeString() const override;
-        virtual const SensorType getType() const override;
         virtual void update() override;
         virtual bool begin(bool useBiasCorrection = true) override;
 
     protected:
-        Barometer();
+        Barometer(const char *name = "Barometer");
         double pressure = 0;
         double temp = 0;
 

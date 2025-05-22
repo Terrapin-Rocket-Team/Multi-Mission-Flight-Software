@@ -13,10 +13,17 @@ namespace mmfs
 
 #define MOCK_FILE_SIZE 4096 // Adjust as needed
 
+    struct DateTime
+    {
+        uint16_t yr1 = 0;
+        uint8_t yr2 = 0, m = 0, d = 0, h = 0, mm = 0, s = 0;
+    };
+
     struct MockFileData
     {
         char arr[MOCK_FILE_SIZE];
         size_t size, cur;
+        DateTime modify;
 
         MockFileData() : size(0), cur(0)
         {
@@ -46,7 +53,7 @@ namespace mmfs
         }
         void seek(size_t pos)
         {
-            cur = ::std::min(size, ::std::max((size_t) 0, pos));
+            cur = ::std::min(size, ::std::max((size_t)0, pos));
         }
     };
 
@@ -99,7 +106,6 @@ namespace mmfs
         {
             return write(d);
         }
-
     };
 
     class LoggingBackendMock : public LoggingBackend
@@ -117,6 +123,7 @@ namespace mmfs
                 filenames[i] = new char[64];
             }
         }
+        virtual ~LoggingBackendMock() {}
 
         bool begin() override
         {
@@ -124,13 +131,16 @@ namespace mmfs
             return true;
         }
 
-        LoggingBackendFile *open(const char *filename) override
+        LoggingBackendFile *open(const char *filename, uint8_t flags) override
         {
             for (int i = 0; i < MAX_FILES; ++i)
             {
                 if (fileExists[i] && strcmp(filename, filenames[i]) == 0)
                 {
-                    files[i].seek(0);
+                    if (flags == FI_WRITE_BEGINNING || flags == FI_READ)
+                        files[i].seek(0);
+                    else
+                        files[i].seek(files[i].size);
                     return new LoggingBackendFile(this, i);
                 }
             }
@@ -180,7 +190,7 @@ namespace mmfs
             return rdy;
         }
 
-        void ls(int i = -1) override {}
+        void ls(Stream &s) override {}
         void format() override
         {
             for (int i = 0; i < MAX_FILES; ++i)
@@ -208,11 +218,12 @@ namespace mmfs
 
         void seek(int file, long pos) override
         {
-            if(fileExists[file])
+            if (fileExists[file])
                 files[file].seek(pos);
         }
 
-        MockFileData *getMockFileData(const char *name){
+        MockFileData *getMockFileData(const char *name)
+        {
             for (int i = 0; i < MAX_FILES; ++i)
             {
                 if (fileExists[i] && strcmp(filenames[i], name) == 0)
@@ -222,8 +233,22 @@ namespace mmfs
             }
             return nullptr;
         }
-    };
 
+        void timestamp(int file, const char *dateTime) override
+        {
+            if (fileExists[file])
+            {
+                DateTime dt;
+                dt.yr2 = (uint8_t)(atoi(dateTime) - 1900);
+
+                sscanf(dateTime + 4, "-%hhd-%hhd %hhd:%hhd:%hhd", &dt.m, &dt.d, &dt.h, &dt.mm, &dt.s);
+
+                sscanf(dateTime, "%hd", &dt.yr1);
+
+                files[file].modify = dt;
+            }
+        }
+    };
 }
 
 #endif

@@ -1,5 +1,7 @@
 #include "BMI088andLIS3MDL.h"
+
 using namespace mmfs;
+
 bool BMI088andLIS3MDL::init()
 {
     int accelStatus = accel.begin();
@@ -9,6 +11,9 @@ bool BMI088andLIS3MDL::init()
     if (magStatus != 0)
     {
         mag.enableDefault();
+    }
+    else{
+        getLogger().recordLogData(WARNING_, "LIS3MDL Failed to initialize.");
     }
 
     initialized = (accelStatus > 0 && gyroStatus > 0);

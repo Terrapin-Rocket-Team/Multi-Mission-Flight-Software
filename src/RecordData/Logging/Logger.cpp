@@ -56,17 +56,17 @@ Logger::Logger()
 
     int len = 26; // max file name length
 
-    flightDataFile = backend->open(fileName);
+    flightDataFile = backend->open(fileName, FI_WRITE);
     flightDataFileName = new char[len];
     snprintf(flightDataFileName, len, "%s", fileName);
 
     snprintf(fileName, MAX_FILE_NAME_SIZE, "%d_%s", fileNo, "Log.txt");
-    logFile = backend->open(fileName);
+    logFile = backend->open(fileName, FI_WRITE);
     logFileName = new char[len];
     snprintf(logFileName, len, "%s", fileName);
 
     snprintf(fileName, MAX_FILE_NAME_SIZE, "%d_%s", fileNo, "PreFlightData.csv");
-    preFlightFile = backend->open(fileName);
+    preFlightFile = backend->open(fileName, FI_WRITE);
     preFlightFileName = new char[len];
     snprintf(preFlightFileName, len, "%s", fileName);
 
@@ -378,9 +378,11 @@ void Logger::setLogPrefixFormatting(const char *prefix)
 
 void Logger::modifyFileDates(const GPS *gps)
 {
-    // flightDataFile.timestamp(T_CREATE | T_WRITE | T_ACCESS, gps->getYear(), gps->getMonth(), gps->getDay(), gps->getHour(), gps->getMinute(), gps->getSecond());
-    // preFlightFile.timestamp(T_CREATE | T_WRITE | T_ACCESS, gps->getYear(), gps->getMonth(), gps->getDay(), gps->getHour(), gps->getMinute(), gps->getSecond());
-    // logFile.timestamp(T_WRITE | T_WRITE | T_ACCESS, gps->getYear(), gps->getMonth(), gps->getDay(), gps->getHour(), gps->getMinute(), gps->getSecond());
+    char str[30];
+    snprintf(str, 30, "%04hd-%02hhd-%02hhd %s", gps->getYear(), gps->getMonth(), gps->getDay(), gps->getTimeOfDay());
+    flightDataFile->timestamp(str);
+    preFlightFile->timestamp(str);
+    logFile->timestamp(str);
 }
 
 #pragma endregion Event Handling

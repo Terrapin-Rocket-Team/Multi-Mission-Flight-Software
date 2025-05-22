@@ -7,7 +7,7 @@ namespace mmfs
 
     Encoder_MMFS::~Encoder_MMFS() {}
 
-    Encoder_MMFS::Encoder_MMFS()
+    Encoder_MMFS::Encoder_MMFS(const char *name) : Sensor("Encoder", name)
     {
         addColumn(INT, &currentRelativeSteps, "Rel Steps");
     }
@@ -36,10 +36,6 @@ namespace mmfs
     }
 
 #pragma region Data Reporting
-
-    const char *Encoder_MMFS::getTypeString() const { return "Encoder"; }
-
-    const SensorType Encoder_MMFS::getType() const { return ENCODER_; }
 
 #pragma endregion // Data Reporting
 

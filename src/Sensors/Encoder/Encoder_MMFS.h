@@ -12,14 +12,12 @@ namespace mmfs
     public:
         virtual ~Encoder_MMFS();
         virtual int getSteps() const;
-        virtual const char *getTypeString() const override;
-        virtual const SensorType getType() const override;
         virtual void update() override;
         virtual bool begin(bool useBiasCorrection = true) override;
         virtual void setInitialSteps(int step);
 
     protected:
-        Encoder_MMFS();
+        Encoder_MMFS(const char *name = "Encoder");
         int currentRelativeSteps;
         int initialSteps;
     };

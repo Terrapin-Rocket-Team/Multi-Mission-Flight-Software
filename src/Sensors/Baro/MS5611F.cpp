@@ -3,10 +3,9 @@
 
 using namespace mmfs;
 
-mmfs::MS5611::MS5611(const char *name, TwoWire *bus, uint8_t addr) : ms(addr, bus)
-{
-    setName(name);
-}
+mmfs::MS5611::MS5611(const char *name, uint8_t addr, TwoWire *bus) : Barometer(name), ms(addr, bus) {}
+
+mmfs::MS5611::MS5611(uint8_t addr, TwoWire *bus) : Barometer("MS5611"), ms(addr, bus) {}
 
 bool mmfs::MS5611::init()
 {

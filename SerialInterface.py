@@ -114,12 +114,12 @@ def help():
 def main():
     global ser
     try:
-        port = "COM6"
+        port = "COM30"
         if not port:
             print("No serial port found.")
             return
 
-        ser = serial.Serial(port, 9600, timeout=1)
+        ser = serial.Serial(port, 115200, timeout=1)
         time.sleep(2)  # Allow Arduino to reset after connection
         print(f"Connected to {port}")
 
