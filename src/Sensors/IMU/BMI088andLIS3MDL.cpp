@@ -12,6 +12,9 @@ bool BMI088andLIS3MDL::init()
     {
         mag.enableDefault();
     }
+    else{
+        getLogger().recordLogData(WARNING_, "LIS3MDL Failed to initialize.");
+    }
 
     initialized = (accelStatus > 0 && gyroStatus > 0);
 

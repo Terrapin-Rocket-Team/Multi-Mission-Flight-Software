@@ -5,9 +5,8 @@ using namespace mmfs;
 
 namespace mmfs::littlefs // declare some helper functions used at the end
 {
-    void printDirectory(File dir, int numSpaces);
-    void printSpaces(int num);
-    void printTime(const DateTimeFields tm);
+    void printDirectory(Stream &s, File dir, int numSpaces);
+    void printTime(Stream &s, const DateTimeFields tm);
 } // namespace littlefs
 
 LoggingBackendLittleFS::LoggingBackendLittleFS()
@@ -35,22 +34,38 @@ bool LoggingBackendLittleFS::begin()
     return rdy;
 }
 
-LoggingBackendFile *LoggingBackendLittleFS::open(const char *filename)
+LoggingBackendFile *LoggingBackendLittleFS::open(const char *filename, uint8_t flags)
 {
-
+    int lfsFlags = 0;
+    if (flags == FI_READ)
+        lfsFlags = FILE_READ;
+    else if (flags == FI_WRITE_BEGINNING)
+        lfsFlags = FILE_WRITE_BEGIN;
+    else if (flags == FI_WRITE)
+        lfsFlags = FILE_WRITE;
+    else
+        return nullptr;
+    
     unsigned int i = 0;
-    while (activeFiles[i] && i < MAX_FILES) // if exists
+    while (i < MAX_FILES && activeFiles[i]) // if exists
     {
-        if (!strcmp(activeFiles[i]->name(), filename))
-            return new LoggingBackendFile(this, i);
+        if (!strcmp(activeFiles[i]->name(), filename)){
+            activeFiles[i]->close();
+            delete activeFiles[i];
+            File *f = new File(lfs->open(filename, lfsFlags));
+            if (f && *f)
+            {
+                activeFiles[i] = f;
+                return new LoggingBackendFile(this, i);
+            }
+        }
         i++;
     }
-
     // if doesnt exist
     if (i < MAX_FILES)
     {
-        File *f = new File(lfs->open(filename, FILE_READ | FILE_WRITE));
-        if (f)
+        File *f = new File(lfs->open(filename, lfsFlags));
+        if (f && *f)
         {
             activeFiles[i] = f;
             return new LoggingBackendFile(this, i);
@@ -94,9 +109,9 @@ void LoggingBackendLittleFS::save(int file)
     }
 }
 
-void LoggingBackendLittleFS::ls(int i)
+void LoggingBackendLittleFS::ls(Stream &s)
 {
-    littlefs::printDirectory(lfs->open("/"), 0);
+    littlefs::printDirectory(s, lfs->open("/"), 0);
     Serial.println();
 }
 
@@ -120,71 +135,86 @@ size_t LoggingBackendLittleFS::read(int file, char *dest, size_t len)
     return 0;
 }
 
+void LoggingBackendLittleFS::seek(int file, long pos)
+{
+    if (activeFiles[file])
+        activeFiles[file]->seek(pos);
+}
+void LoggingBackendLittleFS::timestamp(int file, const char *dateTime)
+{
+    if (activeFiles[file])
+    {
+        // Because DateTimeFields only stores year as uint8, we need to shrink it outside of the sscanf
+        DateTimeFields dt;
+        dt.year = (uint8_t)(atoi(dateTime) - 1900);
+
+        sscanf(dateTime + 4, "-%hhd-%hhd %hhd:%hhd:%hhd", &dt.mon, &dt.mday, &dt.hour, &dt.min, &dt.sec);
+        activeFiles[file]->setCreateTime(dt);
+        activeFiles[file]->setModifyTime(dt);
+    }
+}
+
 // From https://github.com/PaulStoffregen/LittleFS/blob/main/examples/ListFiles/ListFiles.ino
-void littlefs::printDirectory(File dir, int numSpaces)
+void mmfs::littlefs::printDirectory(Stream &s, File dir, int numSpaces)
 {
     while (true)
     {
         File entry = dir.openNextFile();
         if (!entry)
         {
-            // Serial.println("** no more files **");
+            s.println();
             break;
         }
-        printSpaces(numSpaces);
-        Serial.print(entry.name());
+        s.print(entry.name());
         if (entry.isDirectory())
         {
-            Serial.println("/");
-            printDirectory(entry, numSpaces + 2);
+            s.println('/');
+            printDirectory(s, entry, numSpaces + 2);
         }
         else
         {
             // files have sizes, directories do not
-            printSpaces(36 - numSpaces - strlen(entry.name()));
-            Serial.print("  ");
-            Serial.print(entry.size(), DEC);
+            s.print(',');
+            s.print(entry.size(), DEC);
+            s.print(',');
             DateTimeFields datetime;
             if (entry.getModifyTime(datetime))
             {
-                printSpaces(4);
-                printTime(datetime);
+                printTime(s, datetime);
             }
-            Serial.println();
+            s.println();
         }
         entry.close();
     }
 }
+
 // From https://github.com/PaulStoffregen/LittleFS/blob/main/examples/ListFiles/ListFiles.ino
-void littlefs::printSpaces(int num)
+void mmfs::littlefs::printTime(Stream &s, const DateTimeFields tm)
 {
-    for (int i = 0; i < num; i++)
+    // YYYY-MM-DD hh:mm
+    if (tm.year + 1900 < 2025) // Did not get a valid date or time from GPS or RTC
     {
-        Serial.print(" ");
+        s.print("N/A");
+        return;
     }
-}
 
-// From https://github.com/PaulStoffregen/LittleFS/blob/main/examples/ListFiles/ListFiles.ino
-void littlefs::printTime(const DateTimeFields tm)
-{
-    const char *months[12] = {
-        "January", "February", "March", "April", "May", "June",
-        "July", "August", "September", "October", "November", "December"};
+    s.print(tm.year + 1900);
+    s.print('-');
+    if (tm.mon < 10)
+        s.print('0');
+    s.print(tm.mon < 12 ? tm.mon : '?');
+    s.print('-');
+    if(tm.mday < 10)
+        s.print('0');
+    s.print(tm.mday);
+
+    s.print(' ');
+
     if (tm.hour < 10)
-        Serial.print('0');
-    Serial.print(tm.hour);
-    Serial.print(':');
+        s.print('0');
+    s.print(tm.hour);
+    s.print(':');
     if (tm.min < 10)
-        Serial.print('0');
-    Serial.print(tm.min);
-    Serial.print("  ");
-    Serial.print(tm.mon < 12 ? months[tm.mon] : "???");
-    Serial.print(" ");
-    Serial.print(tm.mday);
-    Serial.print(", ");
-    Serial.print(tm.year + 1900);
-}
-
-void LoggingBackendLittleFS::seek(int file, long pos){
-    if(activeFiles[file]) activeFiles[file]->seek(pos);
+        s.print('0');
+    s.print(tm.min);
 }
