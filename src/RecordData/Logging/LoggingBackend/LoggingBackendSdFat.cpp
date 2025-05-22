@@ -108,7 +108,7 @@ void LoggingBackendSdFat::save(int file)
 void LoggingBackendSdFat::ls(Stream &s)
 {
     // TODO...
-    Serial.println("Not yet implemented. Come back later :P");
+    littlefs::printDirectory(s, sdfs->open("/"), 0);
 }
 
 void LoggingBackendSdFat::format()
