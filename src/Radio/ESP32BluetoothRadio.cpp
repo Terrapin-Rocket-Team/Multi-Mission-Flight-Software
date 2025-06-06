@@ -158,3 +158,11 @@ const uint16_t mmfs::ESP32BluetoothRadio::getReceiveSize() const
 {
     return receiveBufferSize;
 }
+
+int mmfs::ESP32BluetoothRadio::readBuffer(char *dest, int maxLen)
+{
+    int read = min(receiveBufferSize, maxLen);
+    memcpy(dest, receiveBuffer, read);
+    receiveBufferSize -= max(read, 0);
+    return read;
+}

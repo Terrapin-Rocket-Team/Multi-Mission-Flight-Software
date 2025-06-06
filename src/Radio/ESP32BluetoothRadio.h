@@ -47,6 +47,8 @@ namespace mmfs
 
         const uint8_t *getReceiveBuffer() const;
         const uint16_t getReceiveSize() const;
+
+        int readBuffer(char *dest, int maxLen);
     };
 }
 
