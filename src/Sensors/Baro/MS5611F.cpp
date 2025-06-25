@@ -18,9 +18,10 @@ bool mmfs::MS5611::init()
 
     return initialized = true;
 }
-void mmfs::MS5611::read()
+bool mmfs::MS5611::read()
 {
     ms.read();
     temp = ms.getTemperature();
     pressure = ms.getPressure();
+    return true;
 }

@@ -12,7 +12,7 @@ Internally, the `Encoder_MMFS` class handles lifecycle integration and telemetry
 
 ```cpp
 bool init() override;
-void read() override;
+bool read() override;
 ```
 
 * `init()` sets up your encoder hardware (e.g., pin modes, timers, interrupts)
@@ -69,7 +69,7 @@ class MyEncoder : public Encoder_MMFS {
         return hw.begin(); // or whatever init call the library uses
     }
 
-    void read() override {
+    bool read() override {
         currentRelativeSteps = hw.getSteps();
     }
 };

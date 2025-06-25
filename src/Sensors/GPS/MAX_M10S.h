@@ -21,7 +21,7 @@ namespace mmfs
         virtual ~MAX_M10S() {}
         MAX_M10S(TwoWire *wire, uint8_t address = 0x42);
         bool init() override;
-        void read() override;
+        bool read() override;
     };
 }
 #endif // MAX_M10S_H

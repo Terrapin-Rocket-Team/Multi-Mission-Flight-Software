@@ -106,13 +106,12 @@ namespace mmfs
         return true;
     }
 
-    void MockGPS::read()
-    {
+    bool MockGPS::read()    {
         if (!dataReader.readLine(sdData))
         {
             getLogger().recordLogData(ERROR_, 100, "[MockGPS]: Failed to read data from file!");
             initialized = false;
-            return;
+            return false;
         }
         position.x() = sdData[posXColIdx];
         position.y() = sdData[posYColIdx];
@@ -120,6 +119,7 @@ namespace mmfs
 
         heading = sdData[headingColIdx];
         fixQual = static_cast<int>(sdData[fixQualityColIdx]);
+        return true;
     }
 
 } // namespace mmfs

@@ -63,15 +63,16 @@ namespace mmfs
         return true;
     }
 
-    void MockBarometer::read()
+    bool MockBarometer::read()
     {
         if (!dataReader.readLine(sdData))
         {
             getLogger().recordLogData(ERROR_, 100, "[MockBarometer]: Failed to read data from file!");
             initialized = false;
-            return;
+            return false;
         }
         pressure = sdData[pressureColIndex];
         temp = sdData[temperatureColIndex];
+        return true;
     }
 }

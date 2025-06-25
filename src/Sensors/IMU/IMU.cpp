@@ -45,9 +45,8 @@ namespace mmfs
         return Vector<3>(accelInterial.x(), accelInterial.y(), accelInterial.z());
     }
     
-    void IMU::update()
-    {
-        read();
+    bool IMU::update()    {
+      return read();
     }
 
     bool IMU::begin(bool useBiasCorrection)

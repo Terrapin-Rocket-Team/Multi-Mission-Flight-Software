@@ -141,9 +141,10 @@ void GPS::findTimeZone()
 
 #pragma region Sensor Virtual Function Implementations
 
-void GPS::update()
+bool GPS::update()
 {
-    read();
+    if (!read())
+        return false;
 
     if (!hasFix && fixQual >= 4)
     {
@@ -186,6 +187,7 @@ void GPS::update()
         sec = sec % 60;                                    // just in case
         snprintf(tod, 12, "%02d:%02d:%02d", hr, min, sec); // size is really 9 but 12 ignores warnings about truncation. IRL it will never truncate
     }
+    return true;
 }
 
 bool GPS::begin(bool useBiasCorrection)

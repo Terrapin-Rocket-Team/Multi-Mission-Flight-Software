@@ -19,7 +19,7 @@ namespace mmfs
         virtual int getFixQual() const;
         virtual double getHeading() const;
         virtual bool getHasFix() const;
-        virtual void update() override;
+        virtual bool update() override;
         virtual bool begin(bool useBiasCorrection = true) override;
 
         virtual const char *getTimeOfDay() const;

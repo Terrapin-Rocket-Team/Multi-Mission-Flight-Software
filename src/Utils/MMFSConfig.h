@@ -15,41 +15,64 @@ namespace mmfs
         // Add state (and its sensors) to MMFS's knowledge.
         // No default.
         MMFSConfig &withState(State *state);
-        // Set an update rate (in hz).
+
+        // Set a sensor/state update rate (in hz).
+        // Mutually exclusive with `withUpdateInterval()`. Last one called will take effect.
         // Default `10`.
         MMFSConfig &withUpdateRate(unsigned int updateRate);
-        // Set an update Interval (in ms). 
+
+        // Set a sensor/state update interval (in ms).
+        // Mutually exclusive with `withUpdateRate()`. Last one called will take effect.
         // Default `100`.
         MMFSConfig &withUpdateInterval(unsigned int updateInterval);
+
+        // Set the rate at which logs will be written to the SD card (in hz).
+        // Mutually exclusive with `withLoggingInterval()`. Last one called will take effect.
+        // Default `10`.
+        MMFSConfig &withLoggingRate(unsigned int loggingRate);
+
+        // Set the interval at which logs will be written to the SD card (in ms).
+        // Mutually exclusive with `withLoggingRate()`. Last one called will take effect.
+        // Default `100`.
+        MMFSConfig &withLoggingInterval(unsigned int loggingInterval);
+
         // Set the duration that sensors will average over to correct for drift (in s)
         // Affected by update rate/update interval.
         // Default `2`.
         MMFSConfig &withSensorBiasCorrectionDataLength(unsigned int sensorBiasCorrectionDataLength);
+
         // Set the duration of the most recent data to ignore for drift correction averaging.(in s)
         // Affected by update rate/update interval.
         // Default `1`.
         MMFSConfig &withSensorBiasCorrectionDataIgnore(unsigned int sensorBiasCorrectionDataIgnore);
+
         // Determines if the sensors will continuously re-zero themselves while on the ground.
         // Default `false`.
         // ***DANGER** Must have working launch detection or data will not be accurate.
         MMFSConfig &withUsingSensorBiasCorrection(bool useBiasCorrection);
+
         // Set the named `BUZZER_PIN` for use with `BlinkBuzz`.
         // Default `-3`.
         MMFSConfig &withBuzzerPin(unsigned int buzzerPin);
+
         // Add a pin to `BlinkBuzz`. Without this, BB will refuse to toggle the pin.
         // No pins added by default.
         MMFSConfig &withBBPin(unsigned int bbPin);
+
         // Allow `BlinkBuzz` to use Async features.
         // Incurs moderate memory overhead based on `queueSize`, which is the number of state changes a pin can queue up at once.
         // Default `true`, `50`.
         MMFSConfig &withBBAsync(bool bbAsync, unsigned int queueSize = 50);
+
         // Add more `DataReporter` objects for Logger to record flight data from.
         // Passing in a State (via `withState()`) will also capture the state's sensors for logging, so adding them here is redundant.
         // No other `DataReporter`s added by default.
         MMFSConfig &withOtherDataReporters(DataReporter **others);
+
         // Remove the default event handler from the event manager.
         // Useful if you have your own that alters the behavior.
         MMFSConfig &withNoDefaultEventListener();
+
         // Change the formatting of the log prefix.
         // use $time and $logType to access the time and log type of the current log.
         // Default: `"$time - [$logType] "`

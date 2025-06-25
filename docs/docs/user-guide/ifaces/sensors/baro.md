@@ -20,7 +20,7 @@ Barometers convert pressure readings into meaningful altitude data using standar
 The only two methods you must implement in a derived class is:
 
 ```cpp
-void read() override;
+bool read() override;
 bool init() override;
 ```
 `read()` is intended to read the physical hardware data using the library you've found or written to talk to the sensor and update Barometer's internal variables.

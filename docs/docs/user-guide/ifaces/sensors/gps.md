@@ -21,7 +21,7 @@ You only need to override two methods:
 
 ```cpp
 bool init() override;
-void read() override;
+bool read() override;
 ```
 
 * `init()` should configure the underlying hardware (e.g., set baud rate, GPS mode, power state)
@@ -116,7 +116,7 @@ To add a new GPS module:
             hw.begin(9600);
             return true;
         }
-        void read() override {
+        bool read() override {
             hw.read();
             if (hw.hasFix()) {
                 position = { hw.latitude(), hw.longitude(), hw.altitude() };

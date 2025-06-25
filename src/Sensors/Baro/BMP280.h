@@ -17,7 +17,7 @@ namespace mmfs
         virtual ~BMP280() {}
         BMP280(uint8_t addr = BMP280_ADDRESS, TwoWire *wire = &Wire);
         virtual bool init() override;
-        virtual void read() override;
+        virtual bool read() override;
     };
 } // namespace mmfs
 
