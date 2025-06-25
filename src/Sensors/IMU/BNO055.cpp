@@ -29,8 +29,7 @@ namespace mmfs
         return initialized = true;
     }
 
-    void BNO055::read()
-    {
+    bool BNO055::read()    {
         measuredAcc = convertIMUtoMMFS(bno.getVector(Adafruit_BNO055::VECTOR_LINEARACCEL));
         measuredGyro = convertIMUtoMMFS(bno.getVector(Adafruit_BNO055::VECTOR_GYROSCOPE));
         measuredMag = convertIMUtoMMFS(bno.getVector(Adafruit_BNO055::VECTOR_MAGNETOMETER));
@@ -45,6 +44,7 @@ namespace mmfs
             Wire.begin();
             getLogger().recordLogData(ERROR_, "BNO055 I2C Error");
         }
+        return true;
     }
 
     void BNO055::calibrateBno() // not used in flight, used with a separate main file to calibrate the BNO055. BNO does not store these values between power cycles.

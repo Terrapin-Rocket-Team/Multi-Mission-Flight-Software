@@ -39,10 +39,9 @@ namespace mmfs
     /*
     used to update all instance variables
     */
-    void MAX_M10S::read()
-    {
+    bool MAX_M10S::read()    {
         if (!initialized || !m10s.getPVT() || m10s.getInvalidLlh())
-            return; // See if new data is available
+            return false; // See if new data is available
 
         position.x() = m10s.getLatitude() / 10000000.0;
         position.y() = m10s.getLongitude() / 10000000.0;
@@ -55,5 +54,6 @@ namespace mmfs
         day = m10s.getDay();
         month = m10s.getMonth();
         year = m10s.getYear();
+        return true;
     }
 }

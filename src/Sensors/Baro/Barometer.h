@@ -19,7 +19,7 @@ namespace mmfs
         virtual double getAGLAltFt() const;
 
         // Sensor virtual functions
-        virtual void update() override;
+        virtual bool update() override;
         virtual bool begin(bool useBiasCorrection = true) override;
 
     protected:

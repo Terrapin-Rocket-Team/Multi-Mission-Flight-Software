@@ -23,9 +23,9 @@ namespace mmfs
         // For instance, a barometer might read pressure but use the rest of update() to convert that to altitude.
 
         // Updates the sensor's fields by querying the sensor for new data (calls read() internally)
-        virtual void update()
+        virtual bool update()
         {
-            read();
+            return read();
         }
         // Initializes the sensor and sets up any necessary parameters (calls init() internally)
         virtual bool begin(bool useBiasCorrection = true)
@@ -59,7 +59,7 @@ namespace mmfs
         // Sets up the sensor and stores any critical parameters. Needs to reset the sensor if it is already initialized. Called by begin()
         virtual bool init() = 0;
         // Physically reads the outputs from the sensor hardware. Called by update()
-        virtual void read() = 0;
+        virtual bool read() = 0;
 
         // ----------------------------------------------------------------------------------------------------------
         bool initialized = false;

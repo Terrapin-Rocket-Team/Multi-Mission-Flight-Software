@@ -24,7 +24,7 @@ An IMU in MMFS provides:
 
 ```cpp
 bool init() override;
-void read() override;
+bool read() override;
 ```
 
 * `init()` sets up the hardware driver(s), configures sensors, and prepares communication.
@@ -111,7 +111,7 @@ class MyIMU : public IMU {
         return hw.begin();
     }
 
-    void read() override {
+    bool read() override {
         measuredAcc = { hw.ax(), hw.ay(), hw.az() };
         measuredGyro = { hw.gx(), hw.gy(), hw.gz() };
         measuredMag = { hw.mx(), hw.my(), hw.mz() }; // optional

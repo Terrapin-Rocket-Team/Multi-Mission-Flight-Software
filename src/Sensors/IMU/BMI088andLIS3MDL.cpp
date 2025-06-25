@@ -32,8 +32,7 @@ bool BMI088andLIS3MDL::init()
     return initialized;
 }
 
-void BMI088andLIS3MDL::read()
-{
+bool BMI088andLIS3MDL::read(){
     accel.readSensor();
     gyro.readSensor();
     mag.read();
@@ -43,7 +42,7 @@ void BMI088andLIS3MDL::read()
     measuredGyro = mmfs::Vector<3>(gyro.getGyroX_rads(), gyro.getGyroY_rads(), gyro.getGyroZ_rads());
     
     quaternionBasedComplimentaryFilter(UPDATE_INTERVAL / 1000.0);
-
+    return true;
 }
 
 

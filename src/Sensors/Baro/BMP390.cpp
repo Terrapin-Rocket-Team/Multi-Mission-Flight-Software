@@ -33,8 +33,8 @@ bool BMP390::init()
     return initialized = true;
 }
 
-void BMP390::read()
-{
+bool BMP390::read(){
     pressure = bmp.readPressure() / 100.0; // hPa
     temp = bmp.readTemperature();          // C
+    return true;
 }

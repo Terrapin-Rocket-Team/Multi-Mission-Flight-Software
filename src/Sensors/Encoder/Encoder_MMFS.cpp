@@ -18,9 +18,8 @@ namespace mmfs
 
 #pragma region Sensor Virtual Function Implementations
 
-    void Encoder_MMFS::update()
-    {
-        read();
+    bool Encoder_MMFS::update()    {
+      return read();
     }
 
     bool Encoder_MMFS::begin(bool useBiasCorrection)

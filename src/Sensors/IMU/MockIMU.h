@@ -24,7 +24,7 @@ class MockIMU : public mmfs::IMU {
         MockIMU(const char* dataPath, const std::string accColNames[3], const std::string gyroColNames[3], const std::string magColNames[3]);
 
         bool init() override;
-        void read() override;
+        bool read() override;
     };
 }
 

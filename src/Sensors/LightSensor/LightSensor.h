@@ -12,7 +12,7 @@ namespace mmfs
         virtual const double getLux() const;
 
         // Sensor virtual functions
-        virtual void update() override;
+        virtual bool update() override;
         virtual bool begin(bool useBiasCorrection = true) override;
 
     protected:

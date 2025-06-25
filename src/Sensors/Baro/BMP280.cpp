@@ -20,8 +20,8 @@ bool BMP280::init()
     return initialized = true;
 }
 
-void BMP280::read()
-{
+bool BMP280::read(){
     pressure = bmp.readPressure() / 100.0; // hPa
     temp = bmp.readTemperature();          // C
+    return true;
 }

@@ -14,10 +14,11 @@ public:
     }
     ~FakeBarometer() {}
 
-    void read() override
+    bool read() override
     {
         pressure = fakeP;
         temp = fakeT;
+        return true;
     }
     void set(double p, double t)
     {
@@ -52,7 +53,9 @@ public:
     }
     ~FakeGPS() {}
 
-    void read() override {}
+    bool read() override {
+        return true;
+    }
     void set(double lat, double lon, double alt)
     {
         position.x() = lat;
@@ -108,8 +111,9 @@ public:
     }
     ~FakeIMU() {}
 
-    void read() override
+    bool read() override
     {
+        return true;
     }
     void set(Vector<3> acc, Vector<3> gyro, Vector<3> mag)
     {

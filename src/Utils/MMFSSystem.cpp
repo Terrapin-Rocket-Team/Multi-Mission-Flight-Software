@@ -50,6 +50,7 @@ void MMFSSystem::init()
 }
 bool MMFSSystem::update(double ms)
 {
+    bool didUpdate = false;
     if (!ready)
     {
         getLogger().recordLogData(WARNING_, "Attempted to update MMFSSystem before it was initialized. Initializing it now...");
@@ -60,15 +61,22 @@ bool MMFSSystem::update(double ms)
     bb.update();
     if (ms == -1)
         ms = millis();
-    if (ms - lastUpdate > UPDATE_INTERVAL)
+
+    if (ms - lastStateUpdate > UPDATE_INTERVAL)
     {
-        lastUpdate = ms;
+        lastStateUpdate = ms;
         if (config->state)
             config->state->updateState();
         else
             getLogger().recordLogData(WARNING_, "MMFS Attempted to update State without a reference to it! (use MMFSConfig.withState(&stateVar))");
-        getLogger().recordFlightData();
-        return true;
+        didUpdate = true;
     }
-    return false;
+    
+    if (ms - lastLoggingUpdate > LOGGING_INTERVAL)
+    {
+        lastLoggingUpdate = ms;
+        getLogger().recordFlightData();
+    }
+
+    return didUpdate;
 }

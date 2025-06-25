@@ -14,7 +14,7 @@ namespace mmfs
         {
         }
         bool init() override;
-        void read() override;
+        bool read() override;
         
     protected:
         Bmi088Accel accel;
