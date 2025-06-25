@@ -42,20 +42,20 @@ bool mmfs::ESP32BluetoothRadio::tx(const uint8_t *message, int len)
     port.write(DATA_MESSAGE);
     uint16_t messageSize = len;
     port.write(reinterpret_cast<uint8_t *>(&messageSize), sizeof(uint16_t)); // prints both bits of the short to serial
-    port.write(message, messageSize);                                        // this is kinda crazy lol.
+    port.write(message, messageSize);                                        
     port.flush();
     return true;
 }
 
 void waitForSerial(uint32_t ms, Stream &s)
 {
-    uint32_t start = millis();
-    while (millis() - start < ms)
-    {
-        if (s.available())
-            break;
-        delay(1);
-    }
+    // uint32_t start = millis();
+    // while (millis() - start < ms)
+    // {
+    //     if (s.available())
+    //         break;
+    //     delay(1);
+    // }
 }
 
 bool mmfs::ESP32BluetoothRadio::rx()
@@ -74,7 +74,7 @@ bool mmfs::ESP32BluetoothRadio::rx()
         waitForSerial(100, port);
         port.readBytes(reinterpret_cast<char *>(&size), sizeof(size));
 
-        Serial.println("Data size received: " + String(size));
+        // Serial.println("Data size received: " + String(size));
 
         if (size > 0 && size <= RECEIVE_BUFFER_SIZE)
         {
@@ -83,26 +83,26 @@ bool mmfs::ESP32BluetoothRadio::rx()
             waitForSerial(100, port);
             port.readBytes(receiveBuffer, size);
 
-            Serial.println("Received message: ");
-            Serial.println("received size: " + String(receiveBufferSize));
-            for (uint8_t i = 0; i < receiveBufferSize; i++)
-            {
-                Serial.print((char)receiveBuffer[i]);
-            }
-            Serial.println("");
+            // Serial.println("Received message: ");
+            // Serial.println("received size: " + String(receiveBufferSize));
+            // for (uint8_t i = 0; i < receiveBufferSize; i++)
+            // {
+            //     Serial.print((char)receiveBuffer[i]);
+            // }
+            // Serial.println("");
 
             return true;
         }
         else
         {
-            Serial.println("Invalid message message size");
+            // Serial.println("Invalid message message size");
         }
     }
     else if (messageType == STATUS_MESSAGE)
     {
         waitForSerial(100, port);
         uint8_t status = port.read();
-        Serial.println("RECEIVED STATUS message: " + String(status));
+        // Serial.println("RECEIVED STATUS message: " + String(status));
         if (status == 1)
         {
             ready = true;
@@ -157,4 +157,12 @@ const uint8_t *mmfs::ESP32BluetoothRadio::getReceiveBuffer() const
 const uint16_t mmfs::ESP32BluetoothRadio::getReceiveSize() const
 {
     return receiveBufferSize;
+}
+
+int mmfs::ESP32BluetoothRadio::readBuffer(char *dest, int maxLen)
+{
+    int read = min(receiveBufferSize, maxLen);
+    memcpy(dest, receiveBuffer, read);
+    receiveBufferSize -= max(read, 0);
+    return read;
 }
