@@ -30,7 +30,7 @@ namespace mmfs
         // Initializes the sensor and sets up any necessary parameters (calls init() internally)
         virtual bool begin(bool useBiasCorrection = true)
         {
-            return init();
+            return initialized = init();
         }
 
         virtual const SensorType getType() const { return type; }        // Returns the type of the sensor
