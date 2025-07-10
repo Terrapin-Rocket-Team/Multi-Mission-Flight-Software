@@ -22,7 +22,7 @@ namespace mmfs
 
         // Returns false if any sensor failed to init. Check data log for failed sensor. Disables sensor if failed.
         // useBiasCorrection: whether or not to use bias correction. If true, the override class must call sensor.useBiasCorrection(false) upon liftoff to disable bias correction.
-        virtual bool init(bool useBiasCorrection = false);
+        virtual bool init();
 
         // Updates the state with the most recent sensor data. CurrentTime is the time in seconds since the uC was turned on. If not provided, the state will use the current time.
         virtual void updateState(double currentTime = -1);

@@ -35,7 +35,7 @@ namespace mmfs
 
 #pragma endregion
 
-    bool State::init(bool useBiasCorrection)
+    bool State::init()
     {
         int good = 0, tryNumSensors = 0;
         for (int i = 0; i < maxNumSensors; i++)
@@ -43,7 +43,7 @@ namespace mmfs
             if (sensors[i])
             {
                 tryNumSensors++;
-                if (sensors[i]->begin(useBiasCorrection))
+                if (sensors[i]->begin())
                 {
                     good++;
                     getLogger().recordLogData(INFO_, 100, "%s [%s] initialized.", sensors[i]->getTypeString(), sensors[i]->getName());
