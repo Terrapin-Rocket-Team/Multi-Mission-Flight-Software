@@ -2,7 +2,7 @@
 
 namespace mmfs
 {
-    Accel::Accel(const char *name) : Sensor(name)
+    Accel::Accel(const char *name) : Sensor("Accelerometer", name)
     {
     }
 

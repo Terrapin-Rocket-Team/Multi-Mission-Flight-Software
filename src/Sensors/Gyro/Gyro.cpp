@@ -2,7 +2,7 @@
 
 namespace mmfs
 {
-    Gyro::Gyro(const char *name) : Sensor(name)
+    Gyro::Gyro(const char *name) : Sensor("Gyroscope", name)
     {
     }
 

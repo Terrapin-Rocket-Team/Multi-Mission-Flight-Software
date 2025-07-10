@@ -2,7 +2,7 @@
 
 namespace mmfs
 {
-    Mag::Mag(const char *name) : Sensor(name)
+    Mag::Mag(const char *name) : Sensor("Magnetometer", name)
     {
     }
 
