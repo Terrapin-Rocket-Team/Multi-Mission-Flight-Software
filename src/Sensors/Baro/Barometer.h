@@ -20,7 +20,7 @@ namespace mmfs
 
         // Sensor virtual functions
         virtual bool update() override;
-        virtual bool begin(bool useBiasCorrection = true) override;
+        virtual bool begin() override;
 
     protected:
         Barometer(const char *name = "Barometer");

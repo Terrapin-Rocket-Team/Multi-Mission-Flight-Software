@@ -28,7 +28,7 @@ namespace mmfs
             return read();
         }
         // Initializes the sensor and sets up any necessary parameters (calls init() internally)
-        virtual bool begin(bool useBiasCorrection = true)
+        virtual bool begin()
         {
             return initialized = init();
         }
@@ -41,10 +41,6 @@ namespace mmfs
         virtual bool isInitialized() const { return initialized; } // Returns whether the sensor has been initialized or not
 
         virtual explicit operator bool() const { return initialized; } // Returns whether the sensor has been initialized or not
-
-        virtual void markLiftoff() { biasCorrectionMode = false; } // Sets the bias correction mode to false, storing origin positions
-
-        virtual void setBiasCorrectionMode(bool mode) { biasCorrectionMode = mode; } // whether or not to continually re-zero self using incoming data.
 
         // ----------------------------------------------------------------------------------------------------------
 
@@ -63,13 +59,9 @@ namespace mmfs
 
         // ----------------------------------------------------------------------------------------------------------
         bool initialized = false;
-        bool biasCorrectionMode = true;
 
         SensorType type;
         const char *typeString;
-
-        const int CIRC_BUFFER_LENGTH = UPDATE_RATE * SENSOR_BIAS_CORRECTION_DATA_LENGTH; // number of entries to give SBCDL length average
-        const int CIRC_BUFFER_IGNORE = UPDATE_RATE * SENSOR_BIAS_CORRECTION_DATA_IGNORE; // number of entries to ignore for SBCD
 
         // ----------------------------------------------------------------------------------------------------------
     };

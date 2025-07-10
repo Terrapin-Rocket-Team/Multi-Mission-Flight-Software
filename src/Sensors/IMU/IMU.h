@@ -24,8 +24,6 @@ namespace mmfs
         virtual void setAccelBestFilteringAtStatic(double a) {accel_best_filtering_at_static = a;};
         virtual double getMagBestFilteringAtStatic() {return mag_best_filtering_at_static;};
         virtual void setMagBestFilteringAtStatic(double m) {mag_best_filtering_at_static = m;};
-        virtual bool update() override;
-        virtual bool begin(bool useBiasCorrection = true) override;
 
         double adaptiveAccelGain(double alphaBar, double t_1 = .1, double t_2 = .2);
         virtual void quaternionBasedComplimentaryFilterSetup();

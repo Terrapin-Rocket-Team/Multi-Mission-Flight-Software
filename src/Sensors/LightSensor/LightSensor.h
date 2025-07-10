@@ -11,10 +11,6 @@ namespace mmfs
         virtual ~LightSensor();
         virtual const double getLux() const;
 
-        // Sensor virtual functions
-        virtual bool update() override;
-        virtual bool begin(bool useBiasCorrection = true) override;
-
     protected:
         LightSensor(const char *name = "LightSensor");
         double lux;

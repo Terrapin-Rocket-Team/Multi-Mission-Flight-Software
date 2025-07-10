@@ -46,25 +46,11 @@ namespace mmfs
         if (!read())
             return false;
         altitudeASL = calcAltitude(pressure);
-        if (biasCorrectionMode)
-        {
-            pressureBuffer.push(pressure);
-
-            double sum = 0;
-            int valsToCount = std::min(pressureBuffer.getCount(), CIRC_BUFFER_LENGTH - CIRC_BUFFER_IGNORE);
-            for (int i = 0; i < valsToCount; i++)
-            {
-                sum += pressureBuffer[i];
-            }
-            groundPressure = sum / valsToCount / 1.0;
-            groundAltitude = calcAltitude(groundPressure);
-        }
-
         altitudeAGL = altitudeASL - groundAltitude;
         return true;
     }
 
-    bool Barometer::begin(bool useBiasCorrection)
+    bool Barometer::begin()
     {
         pressure = 0;
         temp = 0;
@@ -72,11 +58,8 @@ namespace mmfs
         altitudeAGL = 0;
         groundPressure = 0;
         pressureBuffer.clear();
-        biasCorrectionMode = useBiasCorrection;
         if (init())
         {
-            if (!biasCorrectionMode)
-            {
                 double startPressure = 0;
                 for (int i = 0; i < 25; i++)
                 {
@@ -98,16 +81,7 @@ namespace mmfs
                 }
                 groundPressure = (startPressure / 75.0); // hPa
                 groundAltitude = calcAltitude(groundPressure);
-                printf("Ground Pressure: %.2f hPa\n", groundPressure);
-                printf("Ground Altitude: %.2f m\n", groundAltitude);
                 altitudeASL = groundAltitude;
-            }
-            for (int i = 0; i < 3; i++)
-            {
-                if (!read())
-                    return false;
-                delay(50);
-            }
             return true;
         }
         return false;
