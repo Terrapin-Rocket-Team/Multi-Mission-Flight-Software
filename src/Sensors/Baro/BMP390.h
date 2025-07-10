@@ -17,7 +17,7 @@ namespace mmfs
         BMP390(const char *name = "BMP390", uint8_t address = BMP3XX_DEFAULT_ADDRESS, TwoWire *theWire = &Wire);
         BMP390(uint8_t address, TwoWire *theWire = &Wire);
         virtual bool init() override;
-        virtual void read() override;
+        virtual bool read() override;
     };
 }
 

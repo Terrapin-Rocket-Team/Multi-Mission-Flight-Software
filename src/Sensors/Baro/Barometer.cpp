@@ -41,9 +41,10 @@ namespace mmfs
 
 #pragma region Sensor Virtual Function Implementations
 
-    void Barometer::update()
+    bool Barometer::update()
     {
-        read();
+        if (!read())
+            return false;
         altitudeASL = calcAltitude(pressure);
         if (biasCorrectionMode)
         {
@@ -60,6 +61,7 @@ namespace mmfs
         }
 
         altitudeAGL = altitudeASL - groundAltitude;
+        return true;
     }
 
     bool Barometer::begin(bool useBiasCorrection)
@@ -78,7 +80,8 @@ namespace mmfs
                 double startPressure = 0;
                 for (int i = 0; i < 25; i++)
                 {
-                    read();
+                    if (!read())
+                        return false;
 #ifndef PIO_UNIT_TESTING // Don't delay in unit tests
                     delay(25);
 #endif
@@ -86,7 +89,8 @@ namespace mmfs
 
                 for (int i = 0; i < 75; i++)
                 {
-                    read();
+                    if (!read())
+                        return false;
                     startPressure += pressure;
 #ifndef PIO_UNIT_TESTING // Don't delay in unit tests
                     delay(25);
@@ -100,7 +104,8 @@ namespace mmfs
             }
             for (int i = 0; i < 3; i++)
             {
-                read();
+                if (!read())
+                    return false;
                 delay(50);
             }
             return true;

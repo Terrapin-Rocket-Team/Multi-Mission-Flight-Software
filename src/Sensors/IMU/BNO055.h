@@ -40,7 +40,7 @@ namespace mmfs
         BNO055(uint8_t address, TwoWire *theWire = &Wire); // give an address without having to give name
         virtual void calibrateBno();
         virtual bool init() override;
-        virtual void read() override;
+        virtual bool read() override;
     };
 }
 

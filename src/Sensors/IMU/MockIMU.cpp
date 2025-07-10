@@ -95,13 +95,12 @@ MockIMU::MockIMU(const char *dataPath, const std::string accColNames[3], const s
         return initialized;
     }
 
-    void MockIMU::read()
-    {
+    bool MockIMU::read()    {
         if (!dataReader.readLine(sdData))
         {
             getLogger().recordLogData(ERROR_, 100, "[MockIMU]: Failed to read data from file!");
             initialized = false;
-            return;
+            return false;
         }
         for (int i = 0; i < 3; i++)
         {
@@ -111,4 +110,5 @@ MockIMU::MockIMU(const char *dataPath, const std::string accColNames[3], const s
         }
 
         quaternionBasedComplimentaryFilter(UPDATE_INTERVAL / 1000.0);
+        return true;
     }

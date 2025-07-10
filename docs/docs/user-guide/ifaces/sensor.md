@@ -28,7 +28,7 @@ Prepares the sensor for use. May involve hardware initialization, I2C/SPI setup,
 ### **Update**
 
 ```cpp
-virtual void update() = 0;
+virtual bool update() = 0;
 ```
 
 Fetches new data from the sensor. This function is called periodically (e.g., once per loop) and internally handles reading from the sensor and updating internal data buffers.
@@ -92,7 +92,7 @@ To implement your own sensor, inherit from `Sensor` and define the following:
 class MySensor : public Sensor {
 public:
     bool begin(bool useBiasCorrection = true) override;
-    void update() override;
+    bool update() override;
     SensorType getType() const override { return OTHER_; }
     const char* getTypeString() const override { return "MY_SENSOR"; }
 };

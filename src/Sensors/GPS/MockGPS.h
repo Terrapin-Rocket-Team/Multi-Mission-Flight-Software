@@ -32,7 +32,7 @@ public:
             const std::string& fixQualityColName);
 
     bool init() override;
-    void read() override;
+    bool read() override;
 };
 
 }

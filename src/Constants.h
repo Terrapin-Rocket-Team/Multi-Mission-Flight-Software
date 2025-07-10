@@ -38,6 +38,8 @@ inline unsigned int SENSOR_BIAS_CORRECTION_DATA_IGNORE = 1; // in seconds (how m
 
 inline unsigned int UPDATE_RATE = 10; // in hz
 inline unsigned int UPDATE_INTERVAL = 100; // in ms
+inline unsigned int LOGGING_RATE = 10; // in hz
+inline unsigned int LOGGING_INTERVAL = 100; // in ms
 
 // ------------------------------------------------------
 

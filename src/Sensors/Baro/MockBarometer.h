@@ -20,7 +20,7 @@ class MockBarometer : public mmfs::Barometer {
         MockBarometer(const char* dataPath, const std::string& pressureColName, const std::string& temperatureColName);
 
         bool init() override;
-        void read() override;
+        bool read() override;
     };
 }
 

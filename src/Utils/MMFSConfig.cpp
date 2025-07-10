@@ -38,6 +38,26 @@ namespace mmfs
         UPDATE_RATE = 1000.0 / updateInterval;
         return *this;
     }
+    MMFSConfig &MMFSConfig::withLoggingRate(unsigned int loggingRate)
+    {
+        if (LOGGING_RATE == loggingRate)
+            return *this;
+        getLogger().recordLogData(LOG_, "Logging rate modified from %d to %d hz.", LOGGING_RATE, loggingRate);
+        LOGGING_RATE = loggingRate;
+        LOGGING_INTERVAL = 1000.0 / loggingRate;
+        return *this;
+    }
+    MMFSConfig &MMFSConfig::withLoggingInterval(unsigned int loggingInterval)
+    {
+        if (LOGGING_INTERVAL == loggingInterval)
+            return *this;
+        getLogger().recordLogData(LOG_, "Logging interval modified from %d to %d ms.", LOGGING_INTERVAL, loggingInterval);
+        LOGGING_INTERVAL = loggingInterval;
+        LOGGING_RATE = 1000.0 / loggingInterval;
+        return *this;
+    }
+
+
     MMFSConfig &MMFSConfig::withSensorBiasCorrectionDataLength(unsigned int sensorBiasCorrectionDataLength)
     {
         if (SENSOR_BIAS_CORRECTION_DATA_LENGTH == sensorBiasCorrectionDataLength)
@@ -105,7 +125,7 @@ namespace mmfs
     {
         if (this->bbAsync == bbAsync)
             return *this;
-        getLogger().recordLogData(LOG_, "BlinkBuzz async modified from %s to %s.", bbAsync ? "true" : "false", bbAsync ? "true" : "false");
+        getLogger().recordLogData(LOG_, "BlinkBuzz async modified from %s to %s.", this->bbAsync ? "true" : "false", bbAsync ? "true" : "false");
         this->bbAsync = bbAsync;
         return *this;
     }

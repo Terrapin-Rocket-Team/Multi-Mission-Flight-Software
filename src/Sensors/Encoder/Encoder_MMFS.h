@@ -12,7 +12,7 @@ namespace mmfs
     public:
         virtual ~Encoder_MMFS();
         virtual int getSteps() const;
-        virtual void update() override;
+        virtual bool update() override;
         virtual bool begin(bool useBiasCorrection = true) override;
         virtual void setInitialSteps(int step);
 
