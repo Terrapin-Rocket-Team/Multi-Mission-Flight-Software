@@ -48,8 +48,6 @@ namespace mmfs
         double wrapLongitude(double val);
         void findTimeZone();
 
-        CircBuffer<Vector<3>> originBuffer = CircBuffer<Vector<3>>(CIRC_BUFFER_LENGTH);
-
         char tod[9];
 
         int8_t hr = 0, min = 0, sec = 0;

@@ -184,7 +184,6 @@ bool GPS::begin()
     position = Vector<3>(0, 0, 0);
     displacement = Vector<3>(0, 0, 0);
     origin = Vector<3>(0, 0, 0);
-    originBuffer.clear();
     fixQual = 0;
     hasFix = false;
     hasFirstFix = false;

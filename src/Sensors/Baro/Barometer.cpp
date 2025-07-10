@@ -57,7 +57,6 @@ namespace mmfs
         altitudeASL = 0;
         altitudeAGL = 0;
         groundPressure = 0;
-        pressureBuffer.clear();
         if (init())
         {
                 double startPressure = 0;

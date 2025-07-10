@@ -41,7 +41,7 @@ void MMFSSystem::init()
 
     delay(10);
     // then State
-    bool state = config->state->init(config->useBiasCorrection);
+    bool state = config->state->init();
     getEventManager().invoke(BoolEvent{"STATE_INIT"_i, state});
     ready = true;
 
