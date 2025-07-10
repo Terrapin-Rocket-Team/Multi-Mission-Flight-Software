@@ -88,7 +88,7 @@
         },
         {
             "name": "LittleFS",
-	        "version": "https://github.com/PaulStoffregen/LittleFS.git"
+	        "version": "https://github.com/PaulStoffregen/LittleFS.git#a061862589841627424170a12a246ce5660a4f0a"
         },
         {
             "name": "RadioMessage",
