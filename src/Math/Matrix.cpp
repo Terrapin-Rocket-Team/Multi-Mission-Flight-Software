@@ -16,7 +16,7 @@ Matrix::Matrix()
 //  int cols -> number of columns of matrix
 //  double[] array -> array of elements of matrix in column-major order
 // IMPORTANT: DO NOT modify array after use in constructor!
-Matrix::Matrix(int rows, int cols, double *array)
+Matrix::Matrix(uint8_t rows, uint8_t cols, double *array)
 {
     this->rows = rows;
     this->cols = cols;
@@ -54,23 +54,23 @@ Matrix &Matrix::operator=(const Matrix &other)
 }
 
 // Gets #rows of the matrix
-int Matrix::getRows() const
+uint8_t Matrix::getRows() const
 {
     return this->rows;
 }
 
 // Gets #columns of the matrix
-int Matrix::getCols() const
+uint8_t Matrix::getCols() const
 {
     return this->cols;
 }
 
-double *Matrix::getArr()
+double *Matrix::getArr() const
 {
     return this->array;
 }
 
-double Matrix::get(int i, int j)
+double Matrix::get(uint8_t i, uint8_t j)
 {
     return this->array[i * this->cols + j];
 }
@@ -348,7 +348,7 @@ double Matrix::trace()
 }
 
 // Get identity matrix of size [n n]
-Matrix Matrix::ident(int n)
+Matrix Matrix::ident(uint8_t n)
 {
     double *result = new double[n * n];
 
