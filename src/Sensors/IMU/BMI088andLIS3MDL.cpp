@@ -26,9 +26,9 @@ bool BMI088andLIS3MDL::init()
     measuredAcc = mmfs::Vector<3>(accel.getAccelX_mss(), accel.getAccelY_mss(), accel.getAccelZ_mss());
     measuredGyro = mmfs::Vector<3>(gyro.getGyroX_rads(), gyro.getGyroY_rads(), gyro.getGyroZ_rads());
 
-    quaternionBasedComplimentaryFilterSetup();
-    setAccelBestFilteringAtStatic(.5);
-    setMagBestFilteringAtStatic(.5);
+    // quaternionBasedComplimentaryFilterSetup();
+    // setAccelBestFilteringAtStatic(.5);
+    // setMagBestFilteringAtStatic(.5);
     return initialized;
 }
 
@@ -41,7 +41,7 @@ bool BMI088andLIS3MDL::read(){
     measuredAcc = mmfs::Vector<3>(accel.getAccelX_mss(), accel.getAccelY_mss(), accel.getAccelZ_mss());
     measuredGyro = mmfs::Vector<3>(gyro.getGyroX_rads(), gyro.getGyroY_rads(), gyro.getGyroZ_rads());
     
-    quaternionBasedComplimentaryFilter(UPDATE_INTERVAL / 1000.0);
+    // quaternionBasedComplimentaryFilter(UPDATE_INTERVAL / 1000.0);
     return true;
 }
 

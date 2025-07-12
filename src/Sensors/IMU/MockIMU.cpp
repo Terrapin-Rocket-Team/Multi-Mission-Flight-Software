@@ -89,9 +89,9 @@ MockIMU::MockIMU(const char *dataPath, const std::string accColNames[3], const s
         }
 
         initialized = true;
-        quaternionBasedComplimentaryFilterSetup();
-        setAccelBestFilteringAtStatic(.5);
-        setMagBestFilteringAtStatic(.5);
+        // quaternionBasedComplimentaryFilterSetup();
+        // setAccelBestFilteringAtStatic(.5);
+        // setMagBestFilteringAtStatic(.5);
         return initialized;
     }
 
@@ -109,6 +109,6 @@ MockIMU::MockIMU(const char *dataPath, const std::string accColNames[3], const s
             measuredMag[i] = sdData[magIndices[i]];
         }
 
-        quaternionBasedComplimentaryFilter(UPDATE_INTERVAL / 1000.0);
+        // quaternionBasedComplimentaryFilter(UPDATE_INTERVAL / 1000.0);
         return true;
     }

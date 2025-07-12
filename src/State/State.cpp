@@ -120,7 +120,7 @@ namespace mmfs
             heading = 0;
         }
 
-        orientation = sensorOK(imu) ? imu->getOrientation() : Quaternion(1, 0, 0, 0);
+        // orientation = sensorOK(imu) ? imu->getOrientation() : Quaternion(1, 0, 0, 0);
     }
 
     void State::updateWithoutKF()
@@ -140,8 +140,8 @@ namespace mmfs
             baroOldAltitude = position.z() = baro->getAGLAltM();
         }
 
-        if (sensorOK(imu))
-            acceleration = imu->getAccelerationGlobal();
+        // if (sensorOK(imu))
+        //     acceleration = imu->getAccelerationGlobal();
     }
 
     void State::updateKF()
@@ -159,9 +159,9 @@ namespace mmfs
         measurements[2] = baro->getAGLAltM();
 
         // imu x y z
-        inputs[0] = acceleration.x() = imu->getAccelerationGlobal().x();
-        inputs[1] = acceleration.y() = imu->getAccelerationGlobal().y();
-        inputs[2] = acceleration.z() = imu->getAccelerationGlobal().z();
+        // inputs[0] = acceleration.x() = imu->getAccelerationGlobal().x();
+        // inputs[1] = acceleration.y() = imu->getAccelerationGlobal().y();
+        // inputs[2] = acceleration.z() = imu->getAccelerationGlobal().z();
 
         stateVars[0] = position.x();
         stateVars[1] = position.y();
