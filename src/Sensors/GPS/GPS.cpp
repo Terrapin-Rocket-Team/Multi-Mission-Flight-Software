@@ -10,12 +10,9 @@ GPS::GPS(const char *name) : Sensor("GPS", name)
     min = 0;
     sec = 0;
     strcpy(tod, "00:00:00");
-    addColumn(DOUBLE_HP, &position.x(), "Lat");
-    addColumn(DOUBLE_HP, &position.y(), "Lon");
+    addColumn(DOUBLE_HP, &position.x(), "Lat (deg)");
+    addColumn(DOUBLE_HP, &position.y(), "Lon (deg)");
     addColumn(DOUBLE, &position.z(), "Alt (m)");
-    addColumn(DOUBLE, &displacement.x(), "Disp X (m)");
-    addColumn(DOUBLE, &displacement.y(), "Disp Y (m)");
-    addColumn(DOUBLE, &displacement.z(), "Disp Z (m)");
     addColumn(INT, &fixQual, "Fix Quality");
     addColumn(STRING, tod, "Time of Day");
     hasFirstFix = false;
@@ -27,10 +24,6 @@ GPS::~GPS() {}
 Vector<3> GPS::getPos() const { return position; }
 
 double GPS::getHeading() const { return heading; }
-
-Vector<3> GPS::getDisplacement() const { return displacement; }
-
-Vector<3> GPS::getOrigin() const { return origin; }
 
 bool GPS::getHasFix() const { return hasFix; }
 
@@ -57,15 +50,18 @@ void GPS::calcInitialValuesForDistance()
     kx = m * w * w2 * (1.0 - ECC_SQRD); // IDK what this means
 }
 
-void GPS::calcDistance()
+Vector<3> GPS::getDisplacement(Vector<3> origin) const
 {
+    Vector<3> displacement;
     double dy = wrapLongitude(position.y() - origin.y()) * ky;
     double dx = (position.x() - origin.x()) * kx;
     displacement.x() = dx;
     displacement.y() = dy;
+    displacement.z() = (position.z() - origin.z());
+    return displacement;
 }
 
-double GPS::wrapLongitude(double val)
+double GPS::wrapLongitude(double val) const
 {
     while (val > 180)
         val -= 360;
@@ -155,9 +151,6 @@ bool GPS::update()
             findTimeZone();
             hasFirstFix = true;
         }
-        origin.x() = position.x();
-        origin.y() = position.y();
-        origin.z() = position.z();
         calcInitialValuesForDistance();
     }
     if (hasFix)
@@ -167,9 +160,6 @@ bool GPS::update()
             hasFix = false;
             getEventManager().invoke(GPSFix{"GPS_FIX"_i, this, false});
         }
-        calcDistance();
-        displacement.z() = (position.z() - origin.z());
-
         hr += hrOffset;
         hr = (hr % 24 + 24) % 24; // in cpp -1 % 24 = -1, but we want it to be 23
         min = min % 60;
@@ -182,8 +172,6 @@ bool GPS::update()
 bool GPS::begin()
 {
     position = Vector<3>(0, 0, 0);
-    displacement = Vector<3>(0, 0, 0);
-    origin = Vector<3>(0, 0, 0);
     fixQual = 0;
     hasFix = false;
     hasFirstFix = false;

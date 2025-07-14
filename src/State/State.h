@@ -83,6 +83,7 @@ namespace mmfs
         Quaternion orientation; // in quaternion
         Vector<2> coordinates;  // in lat, lon
         double heading;         // in degrees
+        Vector<3> origin;      // in lat, lon, alt
 
         // These two only exist because of bugs in the KF. They will be removed when™ the KF is fixed.
         double baroVelocity;    // in m/s

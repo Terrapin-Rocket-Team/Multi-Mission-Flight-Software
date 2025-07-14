@@ -111,6 +111,8 @@ namespace mmfs
 
         if (sensorOK(gps))
         {
+            if(stage == 0)
+                origin = gps->getPos();
             coordinates = gps->getHasFix() ? Vector<2>(gps->getPos().x(), gps->getPos().y()) : Vector<2>(0, 0);
             heading = gps->getHeading();
         }
@@ -131,13 +133,13 @@ namespace mmfs
         Barometer *baro = reinterpret_cast<Barometer *>(getSensor("Barometer"_i));
 
         if (sensorOK(gps))
-            position = gps->getDisplacement();
+            position = gps->getPos() - origin;
 
         if (sensorOK(baro))
         {
-            position.z() = baro->getAGLAltM();
-            baroVelocity = velocity.z() = (baro->getAGLAltM() - baroOldAltitude) / (currentTime - lastTime);
-            baroOldAltitude = position.z() = baro->getAGLAltM();
+            position.z() = baro->getASLAltM();
+            baroVelocity = velocity.z() = (baro->getASLAltM() - baroOldAltitude) / (currentTime - lastTime);
+            baroOldAltitude = position.z() = baro->getASLAltM();
         }
 
         // if (sensorOK(imu))
@@ -154,9 +156,9 @@ namespace mmfs
         double *inputs = new double[filter->getInputSize()];
 
         // gps x y barometer z
-        measurements[0] = sensorOK(gps) ? gps->getDisplacement().x() : 0;
-        measurements[1] = sensorOK(gps) ? gps->getDisplacement().y() : 0;
-        measurements[2] = baro->getAGLAltM();
+        measurements[0] = sensorOK(gps) ? coordinates.x() - origin.x(): 0;
+        measurements[1] = sensorOK(gps) ? coordinates.y() - origin.y(): 0;
+        measurements[2] = baro->getASLAltM();
 
         // imu x y z
         // inputs[0] = acceleration.x() = imu->getAccelerationGlobal().x();
@@ -181,8 +183,8 @@ namespace mmfs
 
         if (sensorOK(baro))
         {
-            baroVelocity = (baro->getAGLAltM() - baroOldAltitude) / (currentTime - lastTime);
-            baroOldAltitude = baro->getAGLAltM();
+            baroVelocity = (baro->getASLAltM() - baroOldAltitude) / (currentTime - lastTime);
+            baroOldAltitude = baro->getASLAltM();
         }
     }
 

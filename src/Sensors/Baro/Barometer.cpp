@@ -10,7 +10,6 @@ namespace mmfs
         addColumn(DOUBLE, &pressure, "Pres (hPa)");
         addColumn(DOUBLE, &temp, "Temp (C)");
         addColumn(DOUBLE, &altitudeASL, "Alt ASL (m)");
-        addColumn(DOUBLE, &altitudeAGL, "Alt AGL (m)");
     }
 
     Barometer::~Barometer() {}
@@ -27,10 +26,6 @@ namespace mmfs
 
     double Barometer::getASLAltM() const { return altitudeASL; }
 
-    double Barometer::getAGLAltM() const { return altitudeAGL; }
-
-    double Barometer::getAGLAltFt() const { return altitudeAGL * 3.28084; }
-
     double Barometer::calcAltitude(double pressure)
     {
         // Equation from NOAA, but for meters: https://www.weather.gov/media/epz/wxcalc/pressureAltitude.pdf
@@ -46,7 +41,6 @@ namespace mmfs
         if (!read())
             return false;
         altitudeASL = calcAltitude(pressure);
-        altitudeAGL = altitudeASL - groundAltitude;
         return true;
     }
 
@@ -55,34 +49,11 @@ namespace mmfs
         pressure = 0;
         temp = 0;
         altitudeASL = 0;
-        altitudeAGL = 0;
-        groundPressure = 0;
-        if (init())
+        if(initialized = init())
         {
-                double startPressure = 0;
-                for (int i = 0; i < 25; i++)
-                {
-                    if (!read())
-                        return false;
-#ifndef PIO_UNIT_TESTING // Don't delay in unit tests
-                    delay(25);
-#endif
-                }
-
-                for (int i = 0; i < 75; i++)
-                {
-                    if (!read())
-                        return false;
-                    startPressure += pressure;
-#ifndef PIO_UNIT_TESTING // Don't delay in unit tests
-                    delay(25);
-#endif
-                }
-                groundPressure = (startPressure / 75.0); // hPa
-                groundAltitude = calcAltitude(groundPressure);
-                altitudeASL = groundAltitude;
-            return true;
+            read();
+            altitudeASL = calcAltitude(pressure);
         }
-        return false;
+        return initialized;
     }
 }

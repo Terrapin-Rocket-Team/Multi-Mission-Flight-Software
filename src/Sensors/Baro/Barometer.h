@@ -15,8 +15,6 @@ namespace mmfs
         virtual double getPressureAtm() const;
         virtual double getASLAltFt() const;
         virtual double getASLAltM() const;
-        virtual double getAGLAltM() const;
-        virtual double getAGLAltFt() const;
 
         // Sensor virtual functions
         virtual bool update() override;
@@ -29,9 +27,6 @@ namespace mmfs
 
         // Altitude-related data
         double altitudeASL = 0;
-        double altitudeAGL = 0;
-        double groundPressure = 0;
-        double groundAltitude = 0;
 
         double calcAltitude(double pressure);
     };
