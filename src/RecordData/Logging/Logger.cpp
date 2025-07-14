@@ -32,14 +32,14 @@ Logger::Logger()
     backend = new LoggingBackendMock();
     backend->begin();
 #else
-    backend = new LoggingBackendLittleFS();
+    // backend = new LoggingBackendLittleFS();
+    // if (!backend->begin())
+    // {
+    //     delete backend;
+    backend = new LoggingBackendSdFat();
     if (!backend->begin())
-    {
-        delete backend;
-        backend = new LoggingBackendSdFat();
-        if (!backend->begin())
-            Serial.println("Failed to start any long-term memory device.");
-    }
+        Serial.println("Failed to start any long-term memory device.");
+    // }
 #endif // NATIVE
 
     // find a unique file name
@@ -250,7 +250,7 @@ void Logger::recordLogData(double timeStamp, LogType type, const char *msg)
 
 void Logger::recordCrashReport()
 {
-#ifdef ARDUINO
+#ifdef TEENSYDUINO
     if (CrashReport)
     {
         ArrPrint p(500);

@@ -34,6 +34,5 @@ const uint8_t SD_CS_PIN = SDCARD_SS_PIN;
 #define SD_CONFIG SdSpiConfig(SD_CS_PIN, SHARED_SPI, SPI_CLOCK)
 #endif // HAS_SDIO_CLASS
 
-#undef SPI_CLOCK
 
 #endif

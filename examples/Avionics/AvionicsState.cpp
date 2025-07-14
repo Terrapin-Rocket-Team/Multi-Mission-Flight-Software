@@ -25,7 +25,7 @@ void AvionicsState::determineStage()
     Barometer *baro = reinterpret_cast<Barometer *>(getSensor("Barometer"_i));
     if (stage == 0 &&
         (sensorOK(imu) || sensorOK(baro)) &&
-        (sensorOK(imu) ? abs(imu->getAccelerationGlobal().z()) > 25 : true) &&
+        // (sensorOK(imu) ? abs(imu->getAccelerationGlobal().z()) > 25 : true) &&
         (sensorOK(baro) ? baro->getAGLAltFt() > 60 : true))
     // if we are in preflight AND
     // we have either the IMU OR the barometer AND
@@ -48,7 +48,7 @@ void AvionicsState::determineStage()
                 char logData[200];
                 //snprintf(logData, 200, "%s: %s", sensors[i]->getName(), sensors[i]->getStaticDataString());
                 getLogger().recordLogData(INFO_, logData);
-                sensors[i]->setBiasCorrectionMode(false);
+                // sensors[i]->setBiasCorrectionMode(false);
             }
         }
     } // TODO: Add checks for each sensor being ok and decide what to do if they aren't.

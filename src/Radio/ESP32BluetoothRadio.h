@@ -13,7 +13,7 @@ namespace mmfs
     class ESP32BluetoothRadio : public Radio
     {
     private:
-        HardwareSerialIMXRT &port;
+        HardwareSerial &port;
         std::string name;
         uint8_t receiveBuffer[RECEIVE_BUFFER_SIZE]{};
         uint16_t receiveBufferSize = 0;
@@ -25,7 +25,7 @@ namespace mmfs
         // ESP32 module configured in server mode or the name of the
         // server device to connect to when used with an ESP32 module
         // in client mode.
-        ESP32BluetoothRadio(HardwareSerialIMXRT &port, std::string name, bool hangForSerialOnInit = false);
+        ESP32BluetoothRadio(HardwareSerial &port, std::string name, bool hangForSerialOnInit = false);
 
         ~ESP32BluetoothRadio() override;
 
@@ -48,7 +48,7 @@ namespace mmfs
         const uint8_t *getReceiveBuffer() const;
         const uint16_t getReceiveSize() const;
 
-        int readBuffer(char *dest, int maxLen);
+        int readBuffer(char *dest, uint16_t maxLen);
     };
 }
 

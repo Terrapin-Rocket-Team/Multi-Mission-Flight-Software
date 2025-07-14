@@ -4,7 +4,7 @@ using namespace mmfs;
 
 namespace mmfs::littlefs // declare some helper functions used at the end
 {
-    void printDirectory(Stream &s, FsFile dir, int numSpaces);
+    void printDirectory(Stream &s, FsFile &dir, int numSpaces);
 } // namespace littlefs
 
 LoggingBackendSdFat::LoggingBackendSdFat()
@@ -27,7 +27,11 @@ LoggingBackendSdFat::~LoggingBackendSdFat()
 
 bool LoggingBackendSdFat::begin()
 {
+#ifdef TEENSYDUINO
     return rdy = sdfs != nullptr && (sdfs->begin(SD_CONFIG) || sdfs->restart());
+#else
+    return rdy = sdfs != nullptr && sdfs->begin(SD_CONFIG);
+#endif
 }
 
 LoggingBackendFile *LoggingBackendSdFat::open(const char *filename, uint8_t flags)
@@ -107,7 +111,8 @@ void LoggingBackendSdFat::save(int file)
 
 void LoggingBackendSdFat::ls(Stream &s)
 {
-    littlefs::printDirectory(s, sdfs->open("/"), 0);
+    FsFile root = sdfs->open("/");
+    littlefs::printDirectory(s, root, 0);
 }
 
 void LoggingBackendSdFat::format()
@@ -129,16 +134,14 @@ size_t LoggingBackendSdFat::read(int file, char *dest, size_t len)
 
 void LoggingBackendSdFat::seek(int file, long pos)
 
-
 {
-    if   (activeFiles[file])
-       
-       
+    if (activeFiles[file])
+
         activeFiles[file].seek(pos);
 }
 
 // From https://github.com/PaulStoffregen/LittleFS/blob/main/examples/ListFiles/ListFiles.ino
-void littlefs::printDirectory(Stream &s, FsFile dir, int numSpaces)
+void littlefs::printDirectory(Stream &s, FsFile &dir, int numSpaces)
 {
     while (true)
     {
@@ -165,7 +168,7 @@ void littlefs::printDirectory(Stream &s, FsFile dir, int numSpaces)
             uint16_t d = 0, t = 0;
             if (entry.getModifyDateTime(&d, &t))
             {
-                if(!fsPrintDateTime(&s, d, t))
+                if (!fsPrintDateTime(&s, d, t))
                     s.print("N/A");
             }
             s.println();
