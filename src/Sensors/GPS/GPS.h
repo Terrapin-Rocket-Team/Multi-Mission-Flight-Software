@@ -14,13 +14,12 @@ namespace mmfs
     public:
         virtual ~GPS();
         virtual Vector<3> getPos() const;
-        virtual Vector<3> getOrigin() const;
-        virtual Vector<3> getDisplacement() const;
         virtual int getFixQual() const;
         virtual double getHeading() const;
         virtual bool getHasFix() const;
         virtual bool update() override;
-        virtual bool begin(bool useBiasCorrection = true) override;
+        virtual bool begin() override;
+        virtual Vector<3> getDisplacement(Vector<3> origin) const;
 
         virtual const char *getTimeOfDay() const;
 
@@ -34,8 +33,6 @@ namespace mmfs
     protected:
         GPS(const char *name = "GPS");
         Vector<3> position;     // latitude, longitude, alt(m)
-        Vector<3> displacement; // displacement from starting location
-        Vector<3> origin;       // lat(deg), long(deg), alt(m) of the original location
         int fixQual = 0;        // number of satellite connections
         bool hasFix;            // whether or not GPS is currently connected to >= 4 satellites
         bool hasFirstFix;       // the first time it gets a fix
@@ -44,11 +41,8 @@ namespace mmfs
         // Distance-related calculations
         void calcInitialValuesForDistance();
         double kx, ky;
-        void calcDistance();
-        double wrapLongitude(double val);
+        double wrapLongitude(double val) const;
         void findTimeZone();
-
-        CircBuffer<Vector<3>> originBuffer = CircBuffer<Vector<3>>(CIRC_BUFFER_LENGTH);
 
         char tod[9];
 

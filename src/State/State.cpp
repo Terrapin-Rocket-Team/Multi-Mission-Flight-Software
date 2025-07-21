@@ -35,7 +35,7 @@ namespace mmfs
 
 #pragma endregion
 
-    bool State::init(bool useBiasCorrection)
+    bool State::init()
     {
         int good = 0, tryNumSensors = 0;
         for (int i = 0; i < maxNumSensors; i++)
@@ -43,7 +43,7 @@ namespace mmfs
             if (sensors[i])
             {
                 tryNumSensors++;
-                if (sensors[i]->begin(useBiasCorrection))
+                if (sensors[i]->begin())
                 {
                     good++;
                     getLogger().recordLogData(INFO_, 100, "%s [%s] initialized.", sensors[i]->getTypeString(), sensors[i]->getName());
@@ -111,6 +111,8 @@ namespace mmfs
 
         if (sensorOK(gps))
         {
+            if(stage == 0)
+                origin = gps->getPos();
             coordinates = gps->getHasFix() ? Vector<2>(gps->getPos().x(), gps->getPos().y()) : Vector<2>(0, 0);
             heading = gps->getHeading();
         }
@@ -120,7 +122,7 @@ namespace mmfs
             heading = 0;
         }
 
-        orientation = sensorOK(imu) ? imu->getOrientation() : Quaternion(1, 0, 0, 0);
+        // orientation = sensorOK(imu) ? imu->getOrientation() : Quaternion(1, 0, 0, 0);
     }
 
     void State::updateWithoutKF()
@@ -131,17 +133,17 @@ namespace mmfs
         Barometer *baro = reinterpret_cast<Barometer *>(getSensor("Barometer"_i));
 
         if (sensorOK(gps))
-            position = gps->getDisplacement();
+            position = gps->getPos() - origin;
 
         if (sensorOK(baro))
         {
-            position.z() = baro->getAGLAltM();
-            baroVelocity = velocity.z() = (baro->getAGLAltM() - baroOldAltitude) / (currentTime - lastTime);
-            baroOldAltitude = position.z() = baro->getAGLAltM();
+            position.z() = baro->getASLAltM();
+            baroVelocity = velocity.z() = (baro->getASLAltM() - baroOldAltitude) / (currentTime - lastTime);
+            baroOldAltitude = position.z() = baro->getASLAltM();
         }
 
-        if (sensorOK(imu))
-            acceleration = imu->getAccelerationGlobal();
+        // if (sensorOK(imu))
+        //     acceleration = imu->getAccelerationGlobal();
     }
 
     void State::updateKF()
@@ -154,14 +156,14 @@ namespace mmfs
         double *inputs = new double[filter->getInputSize()];
 
         // gps x y barometer z
-        measurements[0] = sensorOK(gps) ? gps->getDisplacement().x() : 0;
-        measurements[1] = sensorOK(gps) ? gps->getDisplacement().y() : 0;
-        measurements[2] = baro->getAGLAltM();
+        measurements[0] = sensorOK(gps) ? coordinates.x() - origin.x(): 0;
+        measurements[1] = sensorOK(gps) ? coordinates.y() - origin.y(): 0;
+        measurements[2] = baro->getASLAltM();
 
         // imu x y z
-        inputs[0] = acceleration.x() = imu->getAccelerationGlobal().x();
-        inputs[1] = acceleration.y() = imu->getAccelerationGlobal().y();
-        inputs[2] = acceleration.z() = imu->getAccelerationGlobal().z();
+        // inputs[0] = acceleration.x() = imu->getAccelerationGlobal().x();
+        // inputs[1] = acceleration.y() = imu->getAccelerationGlobal().y();
+        // inputs[2] = acceleration.z() = imu->getAccelerationGlobal().z();
 
         stateVars[0] = position.x();
         stateVars[1] = position.y();
@@ -181,8 +183,8 @@ namespace mmfs
 
         if (sensorOK(baro))
         {
-            baroVelocity = (baro->getAGLAltM() - baroOldAltitude) / (currentTime - lastTime);
-            baroOldAltitude = baro->getAGLAltM();
+            baroVelocity = (baro->getASLAltM() - baroOldAltitude) / (currentTime - lastTime);
+            baroOldAltitude = baro->getASLAltM();
         }
     }
 

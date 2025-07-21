@@ -25,8 +25,8 @@ void AvionicsState::determineStage()
     Barometer *baro = reinterpret_cast<Barometer *>(getSensor("Barometer"_i));
     if (stage == 0 &&
         (sensorOK(imu) || sensorOK(baro)) &&
-        (sensorOK(imu) ? abs(imu->getAccelerationGlobal().z()) > 25 : true) &&
-        (sensorOK(baro) ? baro->getAGLAltFt() > 60 : true))
+        // (sensorOK(imu) ? abs(imu->getAccelerationGlobal().z()) > 25 : true) &&
+        (sensorOK(baro) ? baro->getASLAltFt() > 60 : true))
     // if we are in preflight AND
     // we have either the IMU OR the barometer AND
     // imu is ok AND the z acceleration is greater than 29 ft/s^2 OR imu is not ok AND
@@ -48,7 +48,7 @@ void AvionicsState::determineStage()
                 char logData[200];
                 //snprintf(logData, 200, "%s: %s", sensors[i]->getName(), sensors[i]->getStaticDataString());
                 getLogger().recordLogData(INFO_, logData);
-                sensors[i]->setBiasCorrectionMode(false);
+                // sensors[i]->setBiasCorrectionMode(false);
             }
         }
     } // TODO: Add checks for each sensor being ok and decide what to do if they aren't.
@@ -67,14 +67,14 @@ void AvionicsState::determineStage()
         stage = 3;
         getLogger().recordLogData(INFO_, "Drogue conditions detected.");
     }
-    else if (stage == 3 && baro->getAGLAltFt() < 1000 && timeSinceLaunch > 10)
+    else if (stage == 3 && baro->getASLAltFt() < 1000 && timeSinceLaunch > 10)
     {
         bb.aonoff(BUZZER, 200, 4);
         stage = 4;
         timeOfLastStage = currentTime;
         getLogger().recordLogData(INFO_, "Main parachute conditions detected.");
     }
-    else if (stage == 4 && baroVelocity > -1 && baro->getAGLAltFt() < 66 && timeSinceLaunch > 15)
+    else if (stage == 4 && baroVelocity > -1 && baro->getASLAltFt() < 66 && timeSinceLaunch > 15)
     {
         bb.aonoff(BUZZER, 200, 5);
         timeOfLastStage = currentTime;

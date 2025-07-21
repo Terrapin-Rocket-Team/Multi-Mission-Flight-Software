@@ -2,7 +2,7 @@
 
 #include <utility>
 
-mmfs::ESP32BluetoothRadio::ESP32BluetoothRadio(HardwareSerialIMXRT &port, std::string name, bool hangForSerialReadyOnInit) : port(port), name(std::move(name))
+mmfs::ESP32BluetoothRadio::ESP32BluetoothRadio(HardwareSerial &port, std::string name, bool hangForSerialReadyOnInit) : port(port), name(std::move(name))
 {
     this->hangForSerialOnInit = hangForSerialReadyOnInit;
 }
@@ -30,7 +30,7 @@ bool mmfs::ESP32BluetoothRadio::begin()
 
     if (port.write(INIT_MESSAGE) <= 0)
         return false;
-    if (port.write(name.c_str()) + port.write('\0') < name.size())
+    if (port.write(name.c_str()) + port.write((uint8_t) '\0') < name.size())
         return false;
     port.flush();
 
@@ -159,7 +159,7 @@ const uint16_t mmfs::ESP32BluetoothRadio::getReceiveSize() const
     return receiveBufferSize;
 }
 
-int mmfs::ESP32BluetoothRadio::readBuffer(char *dest, int maxLen)
+int mmfs::ESP32BluetoothRadio::readBuffer(char *dest, uint16_t maxLen)
 {
     int read = min(receiveBufferSize, maxLen);
     memcpy(dest, receiveBuffer, read);

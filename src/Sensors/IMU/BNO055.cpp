@@ -25,7 +25,7 @@ namespace mmfs
 
         bno.setExtCrystalUse(true);
 
-        initialMagField = convertIMUtoMMFS(bno.getVector(Adafruit_BNO055::VECTOR_MAGNETOMETER));
+        // initialMagField = convertIMUtoMMFS(bno.getVector(Adafruit_BNO055::VECTOR_MAGNETOMETER));
         return initialized = true;
     }
 

@@ -25,4 +25,9 @@
 #include "Sensors/GPS/MAX_M10S.h"
 #include "Sensors/GPS/MockGPS.h"
 
+#include "Sensors/Accel/BMI088Accel.h"
+#include "Sensors/Mag/LIS3MDL.h"
+#include "Sensors/Gyro/BMI088Gyro.h"
+
+
 #include "Utils/MMFSSystem.h"

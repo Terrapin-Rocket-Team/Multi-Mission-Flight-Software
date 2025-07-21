@@ -15,12 +15,10 @@ namespace mmfs
         virtual double getPressureAtm() const;
         virtual double getASLAltFt() const;
         virtual double getASLAltM() const;
-        virtual double getAGLAltM() const;
-        virtual double getAGLAltFt() const;
 
         // Sensor virtual functions
         virtual bool update() override;
-        virtual bool begin(bool useBiasCorrection = true) override;
+        virtual bool begin() override;
 
     protected:
         Barometer(const char *name = "Barometer");
@@ -29,11 +27,6 @@ namespace mmfs
 
         // Altitude-related data
         double altitudeASL = 0;
-        double altitudeAGL = 0;
-        double groundPressure = 0;
-        double groundAltitude = 0;
-
-        CircBuffer<double> pressureBuffer = CircBuffer<double>(CIRC_BUFFER_LENGTH);
 
         double calcAltitude(double pressure);
     };

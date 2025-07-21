@@ -38,6 +38,34 @@ private:
 public:
     CircBuffer(int size);
     ~CircBuffer();
+        // Copy constructor
+    CircBuffer(const CircBuffer& other)
+      : size(other.size),
+        head(other.head),
+        tail(other.tail),
+        count(other.count)
+    {
+        buffer = new T[size];
+        for (int i = 0; i < size; ++i) {
+            buffer[i] = other.buffer[i];
+        }
+    }
+
+    // Copy‐assignment operator
+    CircBuffer& operator=(const CircBuffer& other) {
+        if (this != &other) {
+            delete[] buffer;
+            size  = other.size;
+            head  = other.head;
+            tail  = other.tail;
+            count = other.count;
+            buffer = new T[size];
+            for (int i = 0; i < size; ++i) {
+                buffer[i] = other.buffer[i];
+            }
+        }
+        return *this;
+    }
     void push(T item);
     T pop();
     T peek();

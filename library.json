@@ -88,14 +88,23 @@
         },
         {
             "name": "LittleFS",
-	        "version": "https://github.com/PaulStoffregen/LittleFS.git"
+	        "version": "https://github.com/PaulStoffregen/LittleFS.git#a061862589841627424170a12a246ce5660a4f0a"
         },
         {
             "name": "RadioMessage",
             "version": "https://github.com/erodarob/RadioMessage.git"
+        },
+        {
+            "name": "BMI088",
+            "version": "https://github.com/redstonee/bmi088-arduino-esp32.git"
+        },
+        {
+            "name": "SdFat",
+            "version": "https: //github.com/greiman/SdFat.git#2.3.0",
+            "platforms": ["espressif32", "ststm32"]
         }
     ],
-    "frameworks": "*",
+    "frameworks": "arduino",
     "platforms": "*",
     "build":
     {
@@ -106,6 +115,7 @@
             "+<*>"
         ],
         "flags": "-Wno-unknown-pragmas",
-        "extraScript": "get_version.py"
+        "extraScript": "get_version.py",
+        "unflags": "-std=gnu++11"
     }
 }

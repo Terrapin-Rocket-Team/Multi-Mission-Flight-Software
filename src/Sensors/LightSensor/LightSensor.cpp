@@ -17,14 +17,5 @@ namespace mmfs
 
 #pragma region Sensor Virtual Function Implementations
 
-    bool LightSensor::update()    {
-      return read();
-    }
-
-    bool LightSensor::begin(bool useBiasCorrection)
-    {
-        return init();
-    }
-
 #pragma endregion // Sensor Virtual Function Implementations
 }
